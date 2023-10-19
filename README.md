@@ -8,11 +8,21 @@ A python SDK for the Iconik API. Provides convenient methods for interacting wit
 
 ## Installation
 
-Coming soon
+```bash
+pip install pythonik
+```
 
 ## Usage
 
-Coming soon
+```python
+
+from pythonik.client import PythonikClient
+
+client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=5)
+
+client.assets().get(asset_id)
+
+```
 
 ## Support
 
