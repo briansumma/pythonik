@@ -1,9 +1,6 @@
 import uuid
 from pythonik.client import PythonikClient
-from pythonik.models.assets.assets import Asset
 from pythonik.models.files.proxy import Proxy
-from pythonik.specs.assets import GET_URL, AssetSpec
-from pythonik.specs.base import Spec
 import requests_mock
 
 from pythonik.specs.files import GET_ASSET_PROXY_PATH, FilesSpec
