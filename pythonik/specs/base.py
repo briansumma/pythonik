@@ -29,14 +29,18 @@ class Spec:
         # can call resp.raise_for_status
         return PythonikResponse(response=response, data=model)
 
+    @classmethod
+    def gen_url(cls, path):
+        url = urljoin(cls.server, f"{cls.api_version}/")
+        url = urljoin(cls.base_url, url)
+        return urljoin(url, path)
+
     def send_request(self, method, path, **kwargs) -> Response:
         """
         Send an http request to a particular URL with a particular method and arguments
         """
 
-        url = urljoin(self.server, f"{self.api_version}/")
-        url = urljoin(self.base_url, url)
-        url = urljoin(url, path)
+        url = self.gen_url(path)
         print(url)
         request = Request(
             method=method, url=url, headers=self.session.headers, **kwargs

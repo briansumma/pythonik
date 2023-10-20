@@ -7,6 +7,7 @@ from requests import Session, Request, Response, PreparedRequest
 from requests.adapters import HTTPAdapter
 
 from pythonik.specs.assets import AssetSpec
+from pythonik.specs.files import FilesSpec
 
 
 # Iconik APIs
@@ -45,3 +46,6 @@ class PythonikClient:
 
     def assets(self):
         return AssetSpec(self.session, self.timeout)
+
+    def files(self):
+        return FilesSpec(self.session, self.timeout)
