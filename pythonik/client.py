@@ -8,6 +8,7 @@ from requests.adapters import HTTPAdapter
 
 from pythonik.specs.assets import AssetSpec
 from pythonik.specs.files import FilesSpec
+from pythonik.specs.metadata import MetadataSpec
 
 
 # Iconik APIs
@@ -49,3 +50,6 @@ class PythonikClient:
 
     def files(self):
         return FilesSpec(self.session, self.timeout)
+
+    def metadata(self):
+        return MetadataSpec(self.session, self.timeout)

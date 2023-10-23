@@ -50,18 +50,22 @@ class Spec:
 
         return response
 
+    def _delete(self, path, **kwargs):
+        """DELETE http request"""
+        return self.send_request("DELETE", path, **kwargs)
+
     def _get(self, path, **kwargs):
         """GET http request"""
         return self.send_request("GET", path, **kwargs)
-
-    def _post(self, path, **kwargs):
-        """POST http request"""
-        return self.send_request("POST", path, **kwargs)
 
     def _patch(self, path, **kwargs):
         """PATCH http request"""
         return self.send_request("PATCH", path, **kwargs)
 
-    def _delete(self, path, **kwargs):
-        """DELETE http request"""
-        return self.send_request("DELETE", path, **kwargs)
+    def _post(self, path, **kwargs):
+        """POST http request"""
+        return self.send_request("POST", path, **kwargs)
+
+    def _put(self, path, **kwargs):
+        """PUT http request"""
+        return self.send_request("PUT", path, **kwargs)
