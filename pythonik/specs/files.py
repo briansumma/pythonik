@@ -1,8 +1,10 @@
 from pythonik.models.base import Response
+from pythonik.models.files.format import Format
 from pythonik.models.files.proxy import Proxy
 from pythonik.specs.base import Spec
 
 GET_ASSET_PROXY_PATH = "assets/{}/proxies/{}/"
+GET_ASSETS_FORMATS_PATH = "/v1/assets/{}/formats/"
 
 
 class FilesSpec(Spec):
@@ -16,3 +18,9 @@ class FilesSpec(Spec):
         resp = self._get(GET_ASSET_PROXY_PATH.format(asset_id, proxy_id))
 
         return self.parse_response(resp, Proxy)
+
+    def get_asset_formats(self, asset_id: str, **kwargs):
+        """Get all asset's formats"""
+        resp = self._get(GET_ASSETS_FORMATS_PATH.format(asset_id), **kwargs)
+
+        return self.parse_response(resp, Format)
