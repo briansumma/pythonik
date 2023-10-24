@@ -44,7 +44,6 @@ def test_update_asset_metadata():
             metadata_values=mutate_model.metadata_values.model_dump()
         )
 
-        data = mutate_model.model_dump()
         mock_address = MetadataSpec.gen_url(
             UPDATE_ASSET_METADATA.format(asset_id, view_id)
         )

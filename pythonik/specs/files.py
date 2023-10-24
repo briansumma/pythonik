@@ -19,7 +19,7 @@ class FilesSpec(Spec):
 
         return self.parse_response(resp, Proxy)
 
-    def get_asset_formats(self, asset_id: str, **kwargs):
+    def get_asset_formats(self, asset_id: str, **kwargs) -> Response:
         """Get all asset's formats"""
         resp = self._get(GET_ASSETS_FORMATS_PATH.format(asset_id), **kwargs)
 
