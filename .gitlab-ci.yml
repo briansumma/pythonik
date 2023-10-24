@@ -1,23 +1,25 @@
 image: python:3.9
 
 stages:
-  - build
+  - publish
 
 variables:
   POETRY_VERSION: 1.5.1
 
-before_script:
-  - curl -sSL https://install.python-poetry.org | POETRY_VERSION=$POETRY_VERSION python3 -
-  - export PATH="/root/.local/bin:$PATH"
-  - poetry install
-  - poetry source add --priority=supplemental gitlab https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/pypi
-  - poetry config repositories.gitlab https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/pypi
-  - poetry config http-basic.gitlab gitlab-ci-token $CI_JOB_TOKEN
+publish:
+  stage: publish
+  before_script:
+    - curl -sSL https://install.python-poetry.org | POETRY_VERSION=$POETRY_VERSION python3 -
+    - export PATH="/root/.local/bin:$PATH"
+    - poetry install
+    - poetry source add --priority=supplemental gitlab https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/pypi
+    - poetry config repositories.gitlab https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/pypi
+    - poetry config http-basic.gitlab gitlab-ci-token $CI_JOB_TOKEN
 
-build:
-  stage: build
   script:
+    - poetry version $CI_COMMIT_TAG
     - poetry publish --build --repository gitlab
-  artifacts:
-    paths:
-      - dist/*.whl
+  only:
+    - tags
+  except:
+    - branches
