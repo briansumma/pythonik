@@ -1,6 +1,7 @@
 [tool.poetry]
 name = "pythonik"
-version = "0.1.0"
+# version will be dynamically updated in ci/cd before build
+version = "0.0.0"
 description = "Python SDK for Iconik's API"
 authors = ["brant <brant@northshoreautomation.com>"]
 readme = "README.md"
@@ -19,3 +20,8 @@ pytest = "^7.4.2"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+# [gitlab]
+# repository = https://gitlab.example.com/api/v4/projects/${env.CI_PROJECT_ID}/packages/pypi
+# username = gitlab-ci-token
+# password = ${env.CI_JOB_TOKEN}
