@@ -28,8 +28,10 @@ publish:
 create_release:
   stage: release
   image: registry.gitlab.com/gitlab-org/release-cli:latest
-  needs:
-    - job: publish
+  only:
+    - tags
+  except:
+    - branches
   script:
     - echo "Create Release $tag"
   release:
