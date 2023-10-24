@@ -41,7 +41,7 @@ client.metadata().get_asset_metadata(asset_id, view_id)
 
 ```
 
-## NSA Internal PyPI Gitlab Package
+## NSA Internal PyPI Gitlab Package - Publishing
 
 CI/CD pipeline will automatically build and add a new version as a PyPI package to the package registry for this project.
 
@@ -50,6 +50,26 @@ To build and publish a new PyPI package to this projects gitab package registry:
 1. Create and push a tag on the default branch (main)
    - git tag {tag}
    - git push
+
+## NSA Internal PyPI Gitlab Package - Installing
+
+Installing in another project using Poetry
+
+```bash
+poetry source add --priority=supplemental gitlab https://gitlab.com/api/v4/projects/51363622/packages/pypi/simple
+# your gitlab user name and access token
+# example
+# username = <your_personal_access_token_name>
+# password = <your_personal_access_token>
+# or
+# username = <deploy token username>
+# password = <deploy token>
+# Note: If using a personal access token for authentication it needs scope set to api.
+# If using a deploy token set scope to read_package_registry.
+poetry config http-basic.gitlab <username> <password>
+# install the package
+poetry add --source gitlab pythonik
+```
 
 ## Support
 
