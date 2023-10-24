@@ -41,6 +41,16 @@ client.metadata().get_asset_metadata(asset_id, view_id)
 
 ```
 
+## NSA Internal PyPI Gitlab Package
+
+CI/CD pipeline will automatically build and add a new version as a PyPI package to the package registry for this project.
+
+To build and publish a new PyPI package to this projects gitab package registry:
+
+1. Create and push a tag on the default branch (main)
+   - git tag {tag}
+   - git push
+
 ## Support
 
 NSA
