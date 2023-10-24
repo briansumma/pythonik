@@ -10,6 +10,11 @@ before_script:
   - curl -sSL https://install.python-poetry.org | POETRY_VERSION=$POETRY_VERSION python3 -
   - export PATH="/root/.local/bin:$PATH"
   - poetry install
+  - poetry source add --priority=supplemental gitlab https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/pypi
+  # - poetry config http-basic.gitlab gitlab-ci-token $CI_JOB_TOKEN
+  - poetry config repositories.gitlab https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/packages/pypi
+  - poetry config http-basic.gitlab gitlab-ci-token $CI_JOB_TOKEN
+  - poetry publish --build --repository gitlab
 
 build:
   stage: build
