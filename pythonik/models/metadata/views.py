@@ -1,14 +1,32 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, RootModel
+
+
+class FieldValue(BaseModel):
+    value: Optional[str] = ""
+
+
+class FieldValues(BaseModel):
+    field_values: Optional[List[FieldValue]] = []
+
+
+class MetadataValues(RootModel):
+    root: Dict[str, FieldValues]
+
+    def __iter__(self):
+        return iter(self.root)
+
+    def __getitem__(self, item):
+        return self.root[item]
 
 
 class ViewMetadata(BaseModel):
-    date_created: Optional[str] = None
-    date_modified: Optional[str] = None
-    metadata_values: Optional[Dict[str, Any]] = None
-    object_id: Optional[str] = None
-    object_type: Optional[str] = None
-    version_id: Optional[str] = None
+    date_created: Optional[str] = ""
+    date_modified: Optional[str] = ""
+    metadata_values: Optional[Dict[str, Any]] = {}
+    object_id: Optional[str] = ""
+    object_type: Optional[str] = ""
+    version_id: Optional[str] = ""
