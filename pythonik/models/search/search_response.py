@@ -14,7 +14,7 @@ class Object(BaseModel):
     date_modified: Optional[str] = ""
     description: Optional[str] = ""
     id: Optional[str] = ""
-    metadata: Dict[str, Any]
+    metadata: Optional[Dict[str, Any]] = {}
     object_type: Optional[str] = ""
     title: Optional[str] = ""
     files: Optional[List[File]] = []
