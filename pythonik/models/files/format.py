@@ -5,23 +5,11 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
-class Metadata(BaseModel):
-    additionalProp1: Optional[str] = ""
-    additionalProp2: Optional[str] = ""
-    additionalProp3: Optional[str] = ""
-
-
 class Component(BaseModel):
     id: Optional[str] = ""
-    metadata: Optional[Metadata]
+    metadata: Optional[dict]
     name: Optional[str] = ""
     type: Optional[str] = ""
-
-
-class Metadatum(BaseModel):
-    additionalProp1: Optional[str] = ""
-    additionalProp2: Optional[str] = ""
-    additionalProp3: Optional[str] = ""
 
 
 class Format(BaseModel):
@@ -32,7 +20,7 @@ class Format(BaseModel):
     deleted_by_user: Optional[str] = ""
     id: Optional[str] = ""
     is_online: Optional[bool] = None
-    metadata: List[Metadatum] = []
+    metadata: List[dict] = []
     name: Optional[str] = ""
     status: Optional[str] = ""
     storage_methods: List[str] = []
