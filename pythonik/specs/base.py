@@ -20,7 +20,7 @@ class Spec:
         Return an ErrorResponse object if the response error code is >=400, an instance of "model", or the status code
         """
         # try to populate the model
-        if response.status_code == 200:
+        if response.ok:
             print(response.text)
             data = response.json()
             model = model.model_validate(data)
