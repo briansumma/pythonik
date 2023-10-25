@@ -8,6 +8,7 @@ from requests.adapters import HTTPAdapter
 
 from pythonik.specs.assets import AssetSpec
 from pythonik.specs.files import FilesSpec
+from pythonik.specs.jobs import JobSpec
 from pythonik.specs.metadata import MetadataSpec
 from pythonik.specs.search import SearchSpec
 
@@ -45,3 +46,6 @@ class PythonikClient:
 
     def search(self):
         return SearchSpec(self.session, self.timeout)
+
+    def jobs(self):
+        return JobSpec(self.session, self.timeout)
