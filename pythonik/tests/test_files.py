@@ -1,6 +1,6 @@
 import uuid
 from pythonik.client import PythonikClient
-from pythonik.models.files.format import Formats
+from pythonik.models.files.format import Formats, Format
 from pythonik.models.files.proxy import Proxy
 import requests_mock
 
@@ -37,7 +37,7 @@ def test_get_asset_format():
         asset_id = str(uuid.uuid4())
         format_id = str(uuid.uuid4())
 
-        model = Formats()
+        model = Format()
         data = model.model_dump()
         mock_address = FilesSpec.gen_url(
             GET_ASSETS_FORMAT_PATH.format(asset_id, format_id)

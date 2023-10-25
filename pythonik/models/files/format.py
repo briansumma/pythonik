@@ -27,18 +27,18 @@ class Metadatum(BaseModel):
 class Format(BaseModel):
     archive_status: Optional[str] = ""
     asset_id: Optional[str] = ""
-    components: List[Component]
+    components: Optional[List[Component]] = []
     date_deleted: Optional[str] = ""
     deleted_by_user: Optional[str] = ""
     id: Optional[str] = ""
-    is_online: Optional[bool]
-    metadata: List[Metadatum]
+    is_online: Optional[bool] = None
+    metadata: List[Metadatum] = []
     name: Optional[str] = ""
     status: Optional[str] = ""
-    storage_methods: List[str]
+    storage_methods: List[str] = []
     user_id: Optional[str] = ""
     version_id: Optional[str] = ""
-    warnings: Optional[List[str]]
+    warnings: Optional[List[str]] = []
 
 
 class Formats(BaseModel):
