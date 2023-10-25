@@ -24,7 +24,7 @@ class Metadatum(BaseModel):
     additionalProp3: Optional[str] = ""
 
 
-class Object(BaseModel):
+class Format(BaseModel):
     archive_status: Optional[str] = ""
     asset_id: Optional[str] = ""
     components: List[Component]
@@ -41,11 +41,11 @@ class Object(BaseModel):
     warnings: Optional[List[str]]
 
 
-class Format(BaseModel):
+class Formats(BaseModel):
     first_url: Optional[str] = None
     last_url: Optional[str] = None
     next_url: Optional[str] = None
-    objects: Optional[List[Object]] = None
+    objects: Optional[List[Format]] = None
     page: Optional[int] = None
     pages: Optional[int] = None
     per_page: Optional[int] = None

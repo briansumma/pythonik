@@ -1,5 +1,5 @@
 from pythonik.models.base import Response
-from pythonik.models.files.format import Format
+from pythonik.models.files.format import Formats, Format
 from pythonik.models.files.proxy import Proxy
 from pythonik.specs.base import Spec
 
@@ -24,7 +24,7 @@ class FilesSpec(Spec):
         """Get all asset's formats"""
         resp = self._get(GET_ASSETS_FORMATS_PATH.format(asset_id), **kwargs)
 
-        return self.parse_response(resp, Format)
+        return self.parse_response(resp, Formats)
 
     def get_asset_format(self, asset_id: str, format_id: str, **kwargs) -> Response:
         """Get asset format"""
