@@ -1,5 +1,6 @@
+from typing import Optional
 from pythonik.models.jobs.job_body import JobBody
 
 
 class JobResponse(JobBody):
-    pass
+    id: Optional[str] = ""
