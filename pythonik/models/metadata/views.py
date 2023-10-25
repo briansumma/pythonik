@@ -26,7 +26,7 @@ class MetadataValues(RootModel):
 class ViewMetadata(BaseModel):
     date_created: Optional[str] = ""
     date_modified: Optional[str] = ""
-    metadata_values: Optional[Dict[str, Any]] = {}
+    metadata_values: Optional[MetadataValues] = MetadataValues({})
     object_id: Optional[str] = ""
     object_type: Optional[str] = ""
     version_id: Optional[str] = ""
