@@ -8,9 +8,15 @@ SEARCH_PATH = "search/"
 
 
 class SearchSpec(Spec):
-    server = "API/search"
+    server = "API/search/"
 
-    def search(self, search_body: SearchBody, **kwargs) -> Response:
+    def search(
+        self, search_body: SearchBody, exclude_defaults=True, **kwargs
+    ) -> Response:
         """search iconik"""
-        resp = self._post(SEARCH_PATH, **kwargs)
+        resp = self._post(
+            SEARCH_PATH,
+            json=search_body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
+        )
         return self.parse_response(resp, SearchResponse)
