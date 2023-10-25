@@ -12,22 +12,30 @@ UPDATE_JOB_PATH = "jobs/{}"
 class JobSpec(Spec):
     server = "API/jobs/"
 
-    def create(self, body: JobBody, **kwargs) -> Response:
+    def create(self, body: JobBody, exclude_defaults=True, **kwargs) -> Response:
         """
         Create a job
         """
 
-        resp = self._post(CREATE_JOB_PATH, json=body.model_dump(), **kwargs)
+        resp = self._post(
+            CREATE_JOB_PATH,
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
+        )
 
         return self.parse_response(resp, JobResponse)
 
-    def update(self, job_id: str, body: JobBody, **kwargs) -> Response:
+    def update(
+        self, job_id: str, body: JobBody, exclude_defaults=True, **kwargs
+    ) -> Response:
         """
         update a job
         """
 
         resp = self._put(
-            UPDATE_JOB_PATH.format(job_id), json=body.model_dump(), **kwargs
+            UPDATE_JOB_PATH.format(job_id),
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
         )
 
         return self.parse_response(resp, JobResponse)
