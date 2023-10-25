@@ -74,6 +74,7 @@ class RelatedObject(BaseModel):
 
 
 class JobBody(BaseModel):
+    id: Optional[str] = ""
     action_context: Optional[ActionContext] = None
     completed_at: Optional[str] = ""
     custom_type: Optional[JobTypes] = JobTypes.EMPTY.value

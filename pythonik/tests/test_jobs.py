@@ -40,7 +40,7 @@ def test_update_job():
         data = model.model_dump()
         mock_address = JobSpec.gen_url(UPDATE_JOB_PATH.format(job_id))
 
-        m.post(mock_address, json=data)
+        m.put(mock_address, json=data)
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
 
         client.jobs().update(job_id, model)
