@@ -1,8 +1,15 @@
 import uuid
+from venv import logger
 import requests_mock
 from pythonik.client import PythonikClient
+from requests import HTTPError
 
-from pythonik.models.metadata.views import ViewMetadata
+from pythonik.models.metadata.views import (
+    FieldValue,
+    FieldValues,
+    MetadataValues,
+    ViewMetadata,
+)
 from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadata,
     UpdateMetadataResponse,
@@ -29,6 +36,105 @@ def test_get_asset_metadata():
         m.get(mock_address, json=data)
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         client.metadata().get_asset_metadata(asset_id, view_id)
+
+
+def test_get_asset_intercept_404():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+
+        intercept_404 = MetadataValues(
+            {
+                "this_worked_right?": FieldValues(
+                    field_values=[FieldValue(value="lets hope")]
+                )
+            }
+        )
+
+        model = ViewMetadata()
+        data = model.model_dump()
+        mock_address = MetadataSpec.gen_url(
+            ASSET_METADATA_FROM_VIEW_PATH.format(asset_id, view_id)
+        )
+        m.get(mock_address, json=data, status_code=404)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        resp = client.metadata().get_asset_metadata(
+            asset_id, view_id, intercept_404=intercept_404
+        )
+        assert resp.data == intercept_404
+
+
+def test_get_asset_intercept_404_raise_for_status():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+
+        intercept_404 = MetadataValues(
+            {
+                "this_worked_right?": FieldValues(
+                    field_values=[FieldValue(value="lets hope")]
+                )
+            }
+        )
+
+        model = ViewMetadata()
+        data = model.model_dump()
+        mock_address = MetadataSpec.gen_url(
+            ASSET_METADATA_FROM_VIEW_PATH.format(asset_id, view_id)
+        )
+        m.get(mock_address, json=data, status_code=404)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        resp = client.metadata().get_asset_metadata(
+            asset_id, view_id, intercept_404=intercept_404
+        )
+        # should not raise for status
+        try:
+            resp.response.raise_for_status()
+            # this line should run and the above should not raise for status
+            assert True is True
+        except Exception as e:
+            pass
+
+
+def test_get_asset_intercept_404_raise_for_status_404():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+
+        intercept_404 = MetadataValues(
+            {
+                "this_worked_right?": FieldValues(
+                    field_values=[FieldValue(value="lets hope")]
+                )
+            }
+        )
+
+        model = ViewMetadata()
+        data = model.model_dump()
+        mock_address = MetadataSpec.gen_url(
+            ASSET_METADATA_FROM_VIEW_PATH.format(asset_id, view_id)
+        )
+        m.get(mock_address, json=data, status_code=404)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        resp = client.metadata().get_asset_metadata(
+            asset_id, view_id, intercept_404=intercept_404
+        )
+        # should not raise for status
+        exception = None
+        try:
+            resp.response.raise_for_status_404()
+            # this line should run and the above should not raise for status
+        except HTTPError as e:
+            exception = e
+
+        # assert exception still raised with 404
+        assert exception.response.status_code == 404
 
 
 def test_update_asset_metadata():
