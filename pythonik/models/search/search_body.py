@@ -22,7 +22,7 @@ class Term(BaseModel):
     name: Optional[str] = ""
     range: Optional[Range] = None
     value: Optional[str] = ""
-    value_in: List[str]
+    value_in: Optional[List[str]] = []
 
 
 class Filter(BaseModel):
@@ -36,7 +36,7 @@ class SortItem(BaseModel):
     order: Optional[str] = ""
 
 
-class Criteria(BaseModel):
+class SearchBody(BaseModel):
     doc_types: Optional[List[str]] = None
     exclude_fields: Optional[List[str]] = None
     facets: Optional[List[str]] = None
@@ -48,10 +48,3 @@ class Criteria(BaseModel):
     search_after: Optional[List[Any]] = None
     search_fields: Optional[List[str]] = None
     sort: Optional[List[SortItem]] = None
-
-
-class SearchBody(BaseModel):
-    criteria: Optional[Criteria] = None
-    group_id: Optional[str] = None
-    name: Optional[str] = None
-    permissions: Optional[List[str]] = None

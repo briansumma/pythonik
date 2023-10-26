@@ -7,7 +7,7 @@ from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadata,
     UpdateMetadataResponse,
 )
-from pythonik.models.search.search_body import Criteria, SearchBody
+from pythonik.models.search.search_body import Filter, SearchBody, SortItem, Term
 from pythonik.specs.metadata import (
     ASSET_METADATA_FROM_VIEW_PATH,
     UPDATE_ASSET_METADATA,
@@ -27,17 +27,18 @@ def test_search_assets():
         params = {"generate_signed_url": "true", "generate_signed_download_url": "true"}
 
         # search criteria
-        search_chriteria = Criteria()
+        search_chriteria = SearchBody()
         search_chriteria.doc_types = ["assets"]
         search_chriteria.query = f"id:{asset_id}"
-        search_chriteria.filter.operator = "AND"
-        # get only active assets
-        search_chriteria.filter.terms = [{"name": "status", "value": "ACTIVE"}]
-        search_chriteria.sort = [{"name": "date_created", "order": "desc"}]
 
-        body_model = SearchBody()
-        body = body_model.model_dump()
+        search_chriteria.filter = Filter(
+            operator="AND", terms=[Term(name="status", value="active")]
+        )
+        # get only active assets
+
+        search_chriteria.sort = [SortItem(name="date_created", order="desc")]
+
         mock_address = SearchSpec.gen_url(SEARCH_PATH)
-        m.post(mock_address, json=body)
+        m.post(mock_address, json=search_chriteria.model_dump())
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
-        client.search().search(body_model, params=params)
+        client.search().search(search_chriteria, params=params)
