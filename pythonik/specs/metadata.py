@@ -6,7 +6,7 @@ from pythonik.models.mutation.metadata.mutate import (
 )
 from pythonik.specs.base import Spec
 
-ASSET_METADATA_FROM_VIEW_PATH = "assets/{}views/{}"
+ASSET_METADATA_FROM_VIEW_PATH = "assets/{}/views/{}"
 UPDATE_ASSET_METADATA = "assets/{}/views/{}/"
 
 
