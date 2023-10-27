@@ -45,7 +45,7 @@ def test_get_asset_intercept_404():
         asset_id = str(uuid.uuid4())
         view_id = str(uuid.uuid4())
 
-        intercept_404 = MetadataValues(
+        mv = MetadataValues(
             {
                 "this_worked_right?": FieldValues(
                     field_values=[FieldValue(value="lets hope")]
@@ -54,6 +54,7 @@ def test_get_asset_intercept_404():
         )
 
         model = ViewMetadata()
+        model.metadata_values = mv
         data = model.model_dump()
         mock_address = MetadataSpec.gen_url(
             ASSET_METADATA_FROM_VIEW_PATH.format(asset_id, view_id)
@@ -61,9 +62,9 @@ def test_get_asset_intercept_404():
         m.get(mock_address, json=data, status_code=404)
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         resp = client.metadata().get_asset_metadata(
-            asset_id, view_id, intercept_404=intercept_404
+            asset_id, view_id, intercept_404=model
         )
-        assert resp.data == intercept_404
+        assert resp.data == model
 
 
 def test_get_asset_intercept_404_raise_for_status():
@@ -73,7 +74,7 @@ def test_get_asset_intercept_404_raise_for_status():
         asset_id = str(uuid.uuid4())
         view_id = str(uuid.uuid4())
 
-        intercept_404 = MetadataValues(
+        mv = MetadataValues(
             {
                 "this_worked_right?": FieldValues(
                     field_values=[FieldValue(value="lets hope")]
@@ -82,6 +83,7 @@ def test_get_asset_intercept_404_raise_for_status():
         )
 
         model = ViewMetadata()
+        model.metadata_values = mv
         data = model.model_dump()
         mock_address = MetadataSpec.gen_url(
             ASSET_METADATA_FROM_VIEW_PATH.format(asset_id, view_id)
@@ -89,7 +91,7 @@ def test_get_asset_intercept_404_raise_for_status():
         m.get(mock_address, json=data, status_code=404)
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         resp = client.metadata().get_asset_metadata(
-            asset_id, view_id, intercept_404=intercept_404
+            asset_id, view_id, intercept_404=model
         )
         # should not raise for status
         try:
@@ -107,7 +109,7 @@ def test_get_asset_intercept_404_raise_for_status_404():
         asset_id = str(uuid.uuid4())
         view_id = str(uuid.uuid4())
 
-        intercept_404 = MetadataValues(
+        mv = MetadataValues(
             {
                 "this_worked_right?": FieldValues(
                     field_values=[FieldValue(value="lets hope")]
@@ -116,6 +118,7 @@ def test_get_asset_intercept_404_raise_for_status_404():
         )
 
         model = ViewMetadata()
+        model.metadata_values = mv
         data = model.model_dump()
         mock_address = MetadataSpec.gen_url(
             ASSET_METADATA_FROM_VIEW_PATH.format(asset_id, view_id)
@@ -123,7 +126,7 @@ def test_get_asset_intercept_404_raise_for_status_404():
         m.get(mock_address, json=data, status_code=404)
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         resp = client.metadata().get_asset_metadata(
-            asset_id, view_id, intercept_404=intercept_404
+            asset_id, view_id, intercept_404=model
         )
         # should not raise for status
         exception = None
