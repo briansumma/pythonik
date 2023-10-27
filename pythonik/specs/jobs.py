@@ -32,7 +32,7 @@ class JobSpec(Spec):
         update a job
         """
 
-        resp = self._put(
+        resp = self._patch(
             UPDATE_JOB_PATH.format(job_id),
             json=body.model_dump(exclude_defaults=exclude_defaults),
             **kwargs
