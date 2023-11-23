@@ -40,7 +40,7 @@ class Files(BaseModel):
     first_url: Optional[str] = None
     last_url: Optional[str] = None
     next_url: Optional[str] = None
-    objects: Optional[List[Files]] = None
+    objects: Optional[List[File]] = None
     page: Optional[int] = None
     pages: Optional[int] = None
     per_page: Optional[int] = None
