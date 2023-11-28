@@ -4,7 +4,8 @@ from pythonik.models.files.format import Formats, Format
 from pythonik.models.files.proxy import Proxy
 from pythonik.specs.base import Spec
 
-GET_ASSET_PROXY_PATH = "assets/{}/proxies/{}/"
+GET_ASSET_PROXY_PATH_BY_PROXY_ID = "assets/{}/proxies/{}/"
+GET_ASSET_PROXY_PATH = "assets/{}/proxies/"
 GET_ASSETS_FORMATS_PATH = "assets/{}/formats/"
 GET_ASSETS_FORMAT_PATH = "assets/{}/formats/{}"
 GET_ASSETS_FILES_PATH = "assets/{}/files/"
@@ -13,12 +14,17 @@ GET_ASSETS_FILES_PATH = "assets/{}/files/"
 class FilesSpec(Spec):
     server = "API/files/"
 
-    def get_asset_proxy(self, asset_id: str, proxy_id: str) -> Response:
+    def get_asset_proxy_by_proxy_id(self, asset_id: str, proxy_id: str) -> Response:
         """Get asset's proxy
         Returns: Response(model=Proxy)
         """
 
-        resp = self._get(GET_ASSET_PROXY_PATH.format(asset_id, proxy_id))
+        resp = self._get(GET_ASSET_PROXY_PATH_BY_PROXY_ID.format(asset_id, proxy_id))
+
+        return self.parse_response(resp, Proxy)
+
+    def get_asset_proxy(self, asset_id: str):
+        resp = self._get(GET_ASSET_PROXY_PATH.format(asset_id))
 
         return self.parse_response(resp, Proxy)
 
