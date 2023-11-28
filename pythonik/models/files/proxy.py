@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -35,3 +35,16 @@ class Proxy(BaseModel):
     upload_url: Optional[str] = None
     url: Optional[str] = None
     version_id: Optional[str] = None
+
+
+class Proxies(BaseModel):
+    first_url: Optional[str] = None
+    last_url: Optional[str] = None
+    next_url: Optional[str] = None
+    objects: Optional[List[Proxy]] = None
+    page: Optional[int] = None
+    pages: Optional[int] = None
+    per_page: Optional[int] = None
+    prev_url: Optional[str] = None
+    scroll_id: Optional[str] = None
+    total: Optional[int] = None
