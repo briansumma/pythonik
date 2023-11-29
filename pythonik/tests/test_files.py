@@ -4,6 +4,7 @@ from pythonik.models.files.file import Files
 from pythonik.models.files.format import Formats, Format
 from pythonik.models.files.proxy import Proxies, Proxy
 import requests_mock
+from pythonik.models.files.storage import Storage
 
 from pythonik.specs.files import (
     GET_ASSET_PROXIES_PATH,
@@ -11,6 +12,8 @@ from pythonik.specs.files import (
     GET_ASSETS_FILES_PATH,
     GET_ASSETS_FORMAT_PATH,
     GET_ASSETS_FORMATS_PATH,
+    GET_STORAGE_PATH,
+    GET_STORAGES_PATH,
     FilesSpec,
 )
 
@@ -93,3 +96,30 @@ def test_get_asset_files():
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         params = {"per_page": 20}
         client.files().get_asset_files(asset_id, params=params)
+
+
+def test_get_storage():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        storage_id = str(uuid.uuid4())
+
+        model = Storage()
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(GET_STORAGE_PATH.format(storage_id))
+        m.get(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().get_storage(storage_id)
+
+
+def test_get_storages():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+
+        model = Storage()
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(GET_STORAGES_PATH)
+        m.get(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().get_storages()
