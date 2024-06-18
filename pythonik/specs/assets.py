@@ -6,6 +6,7 @@ from pythonik.specs.base import Spec
 BASE = "assets"
 GET_URL = BASE + "/{}/"
 SEGMENT_URL = BASE + "/{}/segments/"
+SEGMENT_URL_UPDATE = SEGMENT_URL + "{}/"
 
 
 class AssetSpec(Spec):
@@ -38,7 +39,12 @@ class AssetSpec(Spec):
         return self.parse_response(resp, SegmentResponse)
 
     def update_segment(
-        self, asset_id: str, body: SegmentBody, exclude_defaults=True, **kwargs
+        self,
+        asset_id: str,
+        segment_id: str,
+        body: SegmentBody,
+        exclude_defaults=True,
+        **kwargs
     ) -> Response:
         """
         Update a segment on an asset, such as a comment, using PUT
@@ -59,7 +65,7 @@ class AssetSpec(Spec):
         """
 
         resp = self._put(
-            SEGMENT_URL.format(asset_id),
+            SEGMENT_URL_UPDATE.format(asset_id, segment_id),
             json=body.model_dump(exclude_defaults=exclude_defaults),
             **kwargs
         )
@@ -67,7 +73,12 @@ class AssetSpec(Spec):
         return self.parse_response(resp, SegmentResponse)
 
     def partial_update_segment(
-        self, asset_id: str, body: SegmentBody, exclude_defaults=True, **kwargs
+        self,
+        asset_id: str,
+        segment_id: str,
+        body: SegmentBody,
+        exclude_defaults=True,
+        **kwargs
     ) -> Response:
         """
         Partially Update a segment on an asset, such as a comment, using PATCH
@@ -84,7 +95,7 @@ class AssetSpec(Spec):
         """
 
         resp = self._patch(
-            SEGMENT_URL.format(asset_id),
+            SEGMENT_URL_UPDATE.format(asset_id, segment_id),
             json=body.model_dump(exclude_defaults=exclude_defaults),
             **kwargs
         )

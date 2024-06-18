@@ -59,4 +59,4 @@ class SegmentBody(BaseModel):
 
 
 class SegmentResponse(SegmentBody):
-    pass
+    id: Optional[str] = ""
