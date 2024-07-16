@@ -4,6 +4,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
+from pythonik.models.base import Status, ArchiveStatus, PaginatedResponse
+
 
 class Component(BaseModel):
     id: Optional[str] = ""
@@ -13,7 +15,7 @@ class Component(BaseModel):
 
 
 class Format(BaseModel):
-    archive_status: Optional[str] = ""
+    archive_status: Optional[ArchiveStatus] = None
     asset_id: Optional[str] = ""
     components: Optional[List[Component]] = []
     date_deleted: Optional[str] = ""
@@ -22,21 +24,19 @@ class Format(BaseModel):
     is_online: Optional[bool] = None
     metadata: List[dict] = []
     name: Optional[str] = ""
-    status: Optional[str] = ""
+    status: Optional[Status] = Status.ACTIVE
     storage_methods: List[str] = []
     user_id: Optional[str] = ""
     version_id: Optional[str] = ""
     warnings: Optional[List[str]] = []
 
 
-class Formats(BaseModel):
-    first_url: Optional[str] = None
-    last_url: Optional[str] = None
-    next_url: Optional[str] = None
-    objects: Optional[List[Format]] = None
-    page: Optional[int] = None
-    pages: Optional[int] = None
-    per_page: Optional[int] = None
-    prev_url: Optional[str] = None
-    scroll_id: Optional[str] = None
-    total: Optional[int] = None
+class FormatCreate(Format):
+    name: str
+    is_online: bool = True
+    metadata: Optional[List[dict]] = []
+    storage_methods: List[str] = ["FILE"]
+
+
+class Formats(PaginatedResponse):
+    objects: Optional[List[Format]] = []

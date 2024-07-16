@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, List, Optional, Dict
+from typing import Any, List, Optional
 
 from pydantic import BaseModel
 
@@ -37,14 +37,14 @@ class SortItem(BaseModel):
 
 
 class SearchBody(BaseModel):
-    doc_types: Optional[List[str]] = None
-    exclude_fields: Optional[List[str]] = None
+    doc_types: Optional[List[str]] = []
+    exclude_fields: Optional[List[str]] = []
     facets: Optional[List[str]] = None
-    facets_filters: Optional[List[FacetsFilter]] = None
+    facets_filters: Optional[List[FacetsFilter]] = []
     filter: Optional[Filter] = Filter()
-    include_fields: Optional[List[str]] = None
+    include_fields: Optional[List[str]] = []
     metadata_view_id: Optional[str] = ""
     query: Optional[str] = ""
-    search_after: Optional[List[Any]] = None
-    search_fields: Optional[List[str]] = None
-    sort: Optional[List[SortItem]] = None
+    search_after: Optional[List[Any]] = []
+    search_fields: Optional[List[str]] = []
+    sort: Optional[List[SortItem]] = []

@@ -1,8 +1,23 @@
 from __future__ import annotations
 
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
+
+from pythonik.models.base import FileType, PaginatedResponse
+
+
+class FileStatus(str, Enum):
+    OPEN = "OPEN"
+    GROWING = "GROWING"
+    AWAITED = "AWAITED"
+    CLOSED = "CLOSED"
+    FAILED = "FAILED"
+    ARCHIVED = "ARCHIVED"
+    MISSING = "MISSING"
+    REDISCOVERED = "REDISCOVERED"
+    DELETED = "DELETED"
 
 
 class File(BaseModel):
@@ -23,10 +38,10 @@ class File(BaseModel):
     original_name: Optional[str] = ""
     parent_id: Optional[str] = ""
     size: Optional[int] = ""
-    status: Optional[str] = ""
+    status: Optional[FileStatus] = ""
     storage_id: Optional[str] = ""
     storage_method: Optional[str] = ""
-    type: Optional[str] = ""
+    type: Optional[FileType] = ""
     upload_credentials: Optional[Dict[str, Any]] = {}
     upload_filename: Optional[str] = ""
     upload_method: Optional[str] = ""
@@ -36,14 +51,48 @@ class File(BaseModel):
     version_id: Optional[str] = ""
 
 
-class Files(BaseModel):
-    first_url: Optional[str] = None
-    last_url: Optional[str] = None
-    next_url: Optional[str] = None
-    objects: Optional[List[File]] = None
-    page: Optional[int] = None
-    pages: Optional[int] = None
-    per_page: Optional[int] = None
-    prev_url: Optional[str] = None
-    scroll_id: Optional[str] = None
-    total: Optional[int] = None
+class FileCreate(File):
+    file_set_id: str
+    format_id: str
+    storage_id: str
+    name: str
+    original_name: str
+    size: int
+    type: str = FileType.FILE
+    directory_path: str = ""
+    status: str = FileStatus.CLOSED
+
+
+class FileSet(BaseModel):
+    id: Optional[str] = ""
+    asset_id: Optional[str] = ""
+    archive_file_set_id: Optional[str] = ""
+    format_id: Optional[str] = ""
+    name: Optional[str] = ""
+    original_storage_id: Optional[str] = ""
+    storage_id: Optional[str] = ""
+    version_id: Optional[str] = ""
+    base_dir: str = ""
+    component_ids: list = []
+    date_created: Optional[str] = ""
+    date_deleted: Optional[str] = ""
+    date_modified: Optional[str] = ""
+    deleted_by_user: Optional[str] = ""
+    file_count: Optional[int] = 0
+    status: Optional[str] = ""
+
+
+class FileSetCreate(FileSet):
+    format_id: str
+    name: str
+    storage_id: str
+    base_dir: str = ""
+    component_ids: list = []
+
+
+class Files(PaginatedResponse):
+    objects: Optional[List[File]] = []
+
+
+class FileSets(PaginatedResponse):
+    objects: Optional[List[FileSet]] = []
