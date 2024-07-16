@@ -1,6 +1,6 @@
 from pythonik.models.base import Response
-from pythonik.models.files.file import Files
-from pythonik.models.files.format import Formats, Format
+from pythonik.models.files.file import Files, File, FileCreate, FileSetCreate, FileSet, FileSets
+from pythonik.models.files.format import Formats, Format, FormatCreate
 from pythonik.models.files.proxy import Proxies, Proxy
 from pythonik.models.files.storage import Storage, Storages
 from pythonik.specs.base import Spec
@@ -10,6 +10,7 @@ GET_ASSET_PROXIES_PATH = "assets/{}/proxies/"
 GET_ASSETS_FORMATS_PATH = "assets/{}/formats/"
 GET_ASSETS_FORMAT_PATH = "assets/{}/formats/{}"
 GET_ASSETS_FILES_PATH = "assets/{}/files/"
+GET_ASSETS_FILE_SET_PATH = "assets/{}/files_sets/"
 GET_STORAGE_PATH = "storages/{}"
 GET_STORAGES_PATH = "storages/"
 
@@ -30,6 +31,48 @@ class FilesSpec(Spec):
         resp = self._get(GET_ASSET_PROXIES_PATH.format(asset_id))
 
         return self.parse_response(resp, Proxies)
+
+    def create_asset_format(self, asset_id: str, body: FormatCreate, exclude_defaults=True, **kwargs) -> Response:
+        """
+        Create format and associate it to asset
+        Returns: Response(model=Format)
+        """
+        response = self._post(
+            GET_ASSETS_FORMATS_PATH.format(asset_id),
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
+        )
+        return self.parse_response(response, Format)
+
+    def create_asset_file(self, asset_id: str, body: FileCreate, exclude_defaults=True, **kwargs) -> Response:
+        """
+        Create file and associate to asset
+        Returns: Response(model=File)
+        """
+        response = self._post(
+            GET_ASSETS_FILES_PATH.format(asset_id),
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
+        )
+        return self.parse_response(response, File)
+
+    def create_asset_filesets(self, asset_id: str, body: FileSetCreate, exclude_defaults=True, **kwargs) -> Response:
+        """
+        Create file sets and associate it to asset
+        Returns: Response(model=FileSet)
+        """
+        response = self._post(
+            GET_ASSETS_FILE_SET_PATH.format(asset_id),
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
+        )
+        return self.parse_response(response, FileSet)
+
+    def get_asset_filesets(self, asset_id: str, **kwargs) -> Response:
+        """Get all asset's file sets"""
+        resp = self._get(GET_ASSETS_FILE_SET_PATH.format(asset_id), **kwargs)
+
+        return self.parse_response(resp, FileSets)
 
     def get_asset_formats(self, asset_id: str, **kwargs) -> Response:
         """Get all asset's formats"""

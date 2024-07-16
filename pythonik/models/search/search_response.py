@@ -3,9 +3,10 @@ from __future__ import annotations
 from typing import Any, List, Optional, Dict
 
 from pydantic import BaseModel
-from pythonik.models.files.keyframe import Keyframe
 
+from pythonik.models.base import PaginatedResponse
 from pythonik.models.files.file import File
+from pythonik.models.files.keyframe import Keyframe
 from pythonik.models.files.proxy import Proxy
 
 
@@ -22,15 +23,6 @@ class Object(BaseModel):
     keyframes: Optional[List[Keyframe]] = []
 
 
-class SearchResponse(BaseModel):
-    facets: Optional[Dict[str, Any]] = ""
-    first_url: Optional[str] = ""
-    last_url: Optional[str] = ""
-    next_url: Optional[str] = ""
-    objects: Optional[List[Object]] = ""
-    page: Optional[int] = None
-    pages: Optional[int] = None
-    per_page: Optional[int] = None
-    prev_url: Optional[str] = ""
-    scroll_id: Optional[str] = ""
-    total: Optional[int] = ""
+class SearchResponse(PaginatedResponse):
+    facets: Optional[Dict[str, Any]] = {}
+    objects: Optional[List[Object]] = []

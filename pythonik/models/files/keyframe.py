@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
+from pythonik.models.base import PaginatedResponse
 
 
 class Resolution(BaseModel):
@@ -45,14 +46,5 @@ class Keyframe(BaseModel):
     version_id: Optional[str] = ""
 
 
-class Keyframes(BaseModel):
-    first_url: Optional[str] = ""
-    last_url: Optional[str] = ""
-    next_url: Optional[str] = ""
+class Keyframes(PaginatedResponse):
     objects: Optional[List[Keyframe]] = []
-    page: Optional[int] = None
-    pages: Optional[int] = None
-    per_page: Optional[int] = None
-    prev_url: Optional[str] = ""
-    scroll_id: Optional[str] = ""
-    total: Optional[int] = ""

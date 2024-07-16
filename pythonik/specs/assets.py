@@ -1,4 +1,4 @@
-from pythonik.models.assets.assets import Asset
+from pythonik.models.assets.assets import Asset, AssetCreate
 from pythonik.models.assets.segments import SegmentBody, SegmentResponse
 from pythonik.models.base import Response
 from pythonik.specs.base import Spec
@@ -21,6 +21,18 @@ class AssetSpec(Spec):
         resp = self._get(GET_URL.format(asset_id))
 
         return self.parse_response(resp, Asset)
+
+    def create(self, body: AssetCreate, exclude_defaults=True, **kwargs) -> Response:
+        """
+        Create a new asset
+        Returns: Response(model=Asset)
+        """
+        response = self._post(
+            BASE,
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
+        )
+        return self.parse_response(response, Asset)
 
     def create_segment(
         self, asset_id: str, body: SegmentBody, exclude_defaults=True, **kwargs

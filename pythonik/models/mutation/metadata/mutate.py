@@ -28,9 +28,9 @@ class UpdateMetadata(BaseModel):
 
 
 class UpdateMetadataResponse(BaseModel):
-    date_created: Optional[str] = None
-    date_modified: Optional[str] = None
-    metadata_values: Optional[Dict[str, Any]] = None
-    object_id: Optional[str] = None
-    object_type: Optional[str] = None
-    version_id: Optional[str] = None
+    date_created: Optional[str] = ""
+    date_modified: Optional[str] = ""
+    metadata_values: Optional[Dict[str, Any]] = {}
+    object_id: Optional[str] = ""
+    object_type: Optional[str] = ""
+    version_id: Optional[str] = ""

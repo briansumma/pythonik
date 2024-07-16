@@ -1,78 +1,92 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from enum import Enum
+from typing import List, Optional, Union
 
 from pydantic import BaseModel
 
-
-class CreatedByUserInfo(BaseModel):
-    email: Optional[str] = None
-    first_name: Optional[str] = None
-    id: Optional[str] = None
-    last_name: Optional[str] = None
-    photo: Optional[str] = None
-    photo_big: Optional[str] = None
-    photo_small: Optional[str] = None
+from pythonik.models.base import ArchiveStatus, Status, UserInfo
 
 
-class DeletedByUserInfo(BaseModel):
-    email: Optional[str] = None
-    first_name: Optional[str] = None
-    id: Optional[str] = None
-    last_name: Optional[str] = None
-    photo: Optional[str] = None
-    photo_big: Optional[str] = None
-    photo_small: Optional[str] = None
+class AnalyzeStatus(str, Enum):
+    N_A = "N/A"
+    REQUESTED = "REQUESTED"
+    IN_PROGRESS = "IN_PROGRESS"
+    FAILED = "FAILED"
+    DONE = "DONE"
 
 
-class UpdatedByUserInfo(BaseModel):
-    email: Optional[str] = None
-    first_name: Optional[str] = None
-    id: Optional[str] = None
-    last_name: Optional[str] = None
-    photo: Optional[str] = None
-    photo_big: Optional[str] = None
-    photo_small: Optional[str] = None
+class AssetType(str, Enum):
+    ASSET = "ASSET"
+    SEQUENCE = "SEQUENCE"
+    NLE_PROJECT = "NLE_PROJECT"
+    PLACEHOLDER = "PLACEHOLDER"
+    CUSTOM = "CUSTOM"
+    LINK = "LINK"
+    SUBCLIP = "SUBCLIP"
+
+
+class CreatedByUserInfo(UserInfo):
+    pass
+
+
+class DeletedByUserInfo(UserInfo):
+    pass
+
+
+class UpdatedByUserInfo(UserInfo):
+    pass
 
 
 class Version(BaseModel):
-    analyze_status: Optional[str] = None
-    archive_status: Optional[str] = None
-    created_by_user: Optional[str] = None
+    analyze_status: Optional[str] = ""
+    archive_status: Optional[str] = ""
+    created_by_user: Optional[str] = ""
     created_by_user_info: Optional[CreatedByUserInfo] = None
-    date_created: Optional[str] = None
-    id: Optional[str] = None
+    date_created: Optional[str] = ""
+    id: Optional[str] = ""
     is_online: Optional[bool] = None
-    status: Optional[str] = None
-    transcribe_status: Optional[str] = None
+    status: Optional[str] = ""
+    transcribe_status: Optional[str] = ""
 
 
 class Asset(BaseModel):
-    analyze_status: Optional[str] = None
-    archive_status: Optional[str] = None
-    category: Optional[str] = None
-    created_by_user: Optional[str] = None
+    analyze_status: Optional[AnalyzeStatus] = None
+    archive_status: Optional[ArchiveStatus] = None
+    category: Optional[str] = ""
+    created_by_user: Optional[str] = ""
     created_by_user_info: Optional[CreatedByUserInfo] = None
-    custom_keyframe: Optional[str] = None
-    custom_poster: Optional[str] = None
-    date_created: Optional[str] = None
-    date_deleted: Optional[str] = None
-    date_imported: Optional[str] = None
-    date_modified: Optional[str] = None
-    deleted_by_user: Optional[str] = None
+    custom_keyframe: Optional[str] = ""
+    custom_poster: Optional[str] = ""
+    date_created: Optional[str] = ""
+    date_deleted: Optional[str] = ""
+    date_imported: Optional[str] = ""
+    date_modified: Optional[str] = ""
+    deleted_by_user: Optional[str] = ""
     deleted_by_user_info: Optional[DeletedByUserInfo] = None
-    external_id: Optional[str] = None
-    external_link: Optional[str] = None
+    external_id: Optional[str] = ""
+    external_link: Optional[str] = ""
     favoured: Optional[bool] = None
-    id: Optional[str] = None
-    in_collections: Optional[List[str]] = None
+    id: Optional[str] = ""
+    in_collections: Optional[List[str]] = []
     is_blocked: Optional[bool] = None
     is_online: Optional[bool] = None
-    site_name: Optional[str] = None
-    status: Optional[str] = None
-    title: Optional[str] = None
-    type: Optional[str] = None
-    updated_by_user: Optional[str] = None
+    site_name: Optional[str] = ""
+    status: Optional[Status] = Status.ACTIVE
+    title: Optional[str] = ""
+    type: Optional[AssetType] = AssetType.ASSET
+    updated_by_user: Optional[str] = ""
     updated_by_user_info: Optional[UpdatedByUserInfo] = None
-    versions: Optional[List[Version]] = None
-    warning: Optional[str] = None
+    versions: Optional[List[Version]] = []
+    warning: Optional[str] = ""
+
+
+class AssetCreate(Asset):
+    title: str
+    external_id: Union[str, None] = ""
+    type: AssetType = AssetType.ASSET
+    status: str = Status.ACTIVE
+    analyze_status: str = AnalyzeStatus.N_A
+    archive_status: str = ArchiveStatus.NOT_ARCHIVED
+    is_online: bool = True
+    is_blocked: bool = False
