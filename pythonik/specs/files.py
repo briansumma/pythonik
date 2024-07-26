@@ -10,7 +10,7 @@ GET_ASSET_PROXIES_PATH = "assets/{}/proxies/"
 GET_ASSETS_FORMATS_PATH = "assets/{}/formats/"
 GET_ASSETS_FORMAT_PATH = "assets/{}/formats/{}"
 GET_ASSETS_FILES_PATH = "assets/{}/files/"
-GET_ASSETS_FILE_SET_PATH = "assets/{}/files_sets/"
+GET_ASSETS_FILE_SET_PATH = "assets/{}/file_sets/"
 GET_STORAGE_PATH = "storages/{}"
 GET_STORAGES_PATH = "storages/"
 
