@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from datetime import datetime
 from enum import Enum
-from typing import List, Optional, Union
+from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer, Field
 
 from pythonik.models.base import ArchiveStatus, Status, UserInfo
 
@@ -81,12 +82,31 @@ class Asset(BaseModel):
     warning: Optional[str] = ""
 
 
-class AssetCreate(Asset):
+class AssetCreate(BaseModel):
     title: str
-    external_id: Union[str, None] = ""
-    type: AssetType = AssetType.ASSET
-    status: str = Status.ACTIVE
-    analyze_status: str = AnalyzeStatus.N_A
-    archive_status: str = ArchiveStatus.NOT_ARCHIVED
-    is_online: bool = True
-    is_blocked: bool = False
+    date_created: datetime = Field(default_factory=datetime.now)
+    date_deleted: datetime = Field(default_factory=datetime.now)
+    date_modified: datetime = Field(default_factory=datetime.now)
+    type: Optional[AssetType] = None
+    status: Optional[str] = None
+    is_online: Optional[bool] = None
+    is_blocked: Optional[bool] = None
+    has_unconfirmed_persons: Optional[bool] = None
+    analyze_status: Optional[AnalyzeStatus] = None
+    archive_status: Optional[ArchiveStatus] = None
+    category: Optional[str] = None
+    custom_keyframe: Optional[str] = None
+    custom_poster: Optional[str] = None
+    external_id: Optional[str] = None
+    external_link: Optional[str] = None
+    favoured: Optional[bool] = None
+    face_recognition_status: Optional[AnalyzeStatus] = None
+    site_name: Optional[str] = None
+    time_end_milliseconds: Optional[int] = None
+    time_start_milliseconds: Optional[int] = None
+    warning: Optional[str] = None
+
+    @field_serializer("date_created", "date_deleted", "date_modified")
+    @classmethod
+    def date_to_string(cls, dt: datetime) -> str:
+        return dt.isoformat()
