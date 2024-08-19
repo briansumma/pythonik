@@ -108,7 +108,5 @@ class AssetCreate(BaseModel):
 
     @field_serializer("date_created", "date_deleted", "date_modified")
     @classmethod
-    def date_to_string(cls, dt: Optional[datetime]) -> Optional[str]:
-        if dt is None:
-            return None
+    def date_to_string(cls, dt: datetime) -> str:
         return dt.isoformat()
