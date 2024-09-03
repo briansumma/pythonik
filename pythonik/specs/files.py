@@ -27,6 +27,18 @@ class FilesSpec(Spec):
 
         return self.parse_response(resp, Proxy)
 
+    def create_asset_proxy(self, asset_id: str, body: Proxy, exclude_defaults=True, **kwargs) -> Response:
+        """
+        Create proxy and associate to asset
+        Returns: Response(model=Proxy)
+        """
+        response = self._post(
+            GET_ASSET_PROXIES_PATH.format(asset_id),
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
+        )
+        return self.parse_response(response, Proxy)
+
     def get_asset_proxies(self, asset_id: str):
         resp = self._get(GET_ASSET_PROXIES_PATH.format(asset_id))
 

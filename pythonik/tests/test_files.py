@@ -38,6 +38,23 @@ def test_get_proxy_by_proxy_id():
         client.files().get_asset_proxy(asset_id, proxy_id)
 
 
+def test_create_asset_proxy():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+
+        model = Proxy(asset_id=asset_id, storage_id=str(uuid.uuid4()), storage_method="S3")
+        # data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSET_PROXIES_PATH.format(asset_id)
+        )
+
+        m.post(mock_address, json=model.model_dump())
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().create_asset_proxy(asset_id, body=model)
+
+
 def test_get_proxies():
     with requests_mock.Mocker() as m:
         app_id = str(uuid.uuid4())
