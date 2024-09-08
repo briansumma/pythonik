@@ -1,12 +1,29 @@
-from pythonik.models.base import Response
-from pythonik.models.files.file import Files, File, FileCreate, FileSetCreate, FileSet, FileSets
+from urllib.parse import urlparse
+from xml.dom.minidom import parseString
+
+import requests
+
+from pythonik.constants import GCS_UPLOADID_KEY, S3_UPLOADID_KEY
+from pythonik.exceptions import UnexpectedStorageMethodForProxy
+from pythonik.models.base import Response, StorageMethod
+from pythonik.models.files.file import (
+    File,
+    Files,
+    FileSet,
+    FileSets,
+    FileCreate,
+    FileSetCreate,
+    S3MultipartUploadResponse
+)
 from pythonik.models.files.format import Formats, Format, FormatCreate
 from pythonik.models.files.proxy import Proxies, Proxy
 from pythonik.models.files.storage import Storage, Storages
-from pythonik.specs.base import Spec
+from pythonik.specs.base import Spec, PythonikResponse
 
 GET_ASSET_PROXY_PATH = "assets/{}/proxies/{}/"
 GET_ASSET_PROXIES_PATH = "assets/{}/proxies/"
+GET_ASSET_PROXIES_MULTIPART_URL_PATH = GET_ASSET_PROXY_PATH + "multipart_url/part/"
+GET_ASSET_PROXIES_MULTIPART_COMPLETE_URL_PATH = GET_ASSET_PROXY_PATH + "multipart_url/"
 GET_ASSETS_FORMATS_PATH = "assets/{}/formats/"
 GET_ASSETS_FORMAT_PATH = "assets/{}/formats/{}"
 GET_ASSETS_FILES_PATH = "assets/{}/files/"
@@ -27,6 +44,18 @@ class FilesSpec(Spec):
 
         return self.parse_response(resp, Proxy)
 
+    def update_asset_proxy(self, asset_id: str, proxy_id: str, body: Proxy, exclude_defaults=True,
+                           **kwargs) -> Response:
+        """
+        Update asset's proxy
+        """
+        response = self._patch(
+            GET_ASSET_PROXY_PATH.format(asset_id, proxy_id),
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
+        )
+        return self.parse_response(response, Proxy)
+
     def create_asset_proxy(self, asset_id: str, body: Proxy, exclude_defaults=True, **kwargs) -> Response:
         """
         Create proxy and associate to asset
@@ -38,6 +67,81 @@ class FilesSpec(Spec):
             **kwargs
         )
         return self.parse_response(response, Proxy)
+
+    def get_upload_id_for_proxy(self, asset_id: str, proxy_id: str) -> PythonikResponse:
+        """
+        Get upload ID for proxy. This ID is required to upload proxy files.
+        :param asset_id: Asset ID
+        :param proxy_id: Proxy ID
+        :return: PythonikResponse
+        :raises UnexpectedStorageMethodForProxy: When prox exists on an unsupported storage method (i.e. Pythonik cannot
+        automatically determine the upload ID)
+        """
+        proxy_response = self.get_asset_proxy(asset_id, proxy_id)
+        if not proxy_response.response.ok:
+            # bubble up the error for caller to handle
+            return proxy_response
+
+        proxy = proxy_response.data
+        headers = {"Origin": self.base_url, "Referer": self.base_url}
+        if proxy.storage_method == StorageMethod.S3:
+            upload_url = proxy.multipart_upload_url
+            headers = {"Host": urlparse(upload_url).netloc, **headers}
+        elif proxy.storage_method == StorageMethod.GCS:
+            upload_url = proxy.upload_url
+            headers = {"X-Goog-Resumable": "start", **headers}
+        else:
+            # escape hatch
+            supported_methods = [StorageMethod.S3, StorageMethod.GCS]
+            raise UnexpectedStorageMethodForProxy(f"Unexpected storage method: {proxy.storage_method}."
+                                                  f" Pythonik supports {supported_methods}.")
+
+        upload_url_response = requests.post(upload_url, headers=headers)
+        if not upload_url_response.ok:
+            return PythonikResponse(response=upload_url_response, data=None)
+
+        if proxy.storage_method == StorageMethod.S3:
+            xml = parseString(upload_url_response.text)
+            # key = xml.getElementsByTagName("Key")[0].firstChild.nodeValue
+            # bucket = xml.getElementsByTagName("Bucket")[0].firstChild.nodeValue
+            upload_id = xml.getElementsByTagName(S3_UPLOADID_KEY)[0].firstChild.nodeValue
+        elif proxy.storage_method == StorageMethod.GCS:
+            upload_id = upload_url_response.headers[GCS_UPLOADID_KEY]
+        else:
+            supported_methods = [StorageMethod.S3, StorageMethod.GCS]
+            raise UnexpectedStorageMethodForProxy(f"Unexpected storage method: {proxy.storage_method}."
+                                                  f" Pythonik supports {supported_methods}.")
+
+        return PythonikResponse(response=upload_url_response, data=upload_id)
+
+    def get_s3_presigned_url(self, asset_id: str, proxy_id: str, upload_id: str,
+                             part_number: int) -> PythonikResponse:
+        """
+        Get a singed part URL to upload a proxy.
+        :param asset_id: Asset ID
+        :param proxy_id: Proxy ID
+        :param upload_id: Upload ID
+        :param part_number: Upload part number
+        :return: PythonikResponse
+        """
+        response = self._get(
+            path=GET_ASSET_PROXIES_MULTIPART_URL_PATH.format(asset_id, proxy_id),
+            params={"upload_id": upload_id, "parts_num": part_number},
+        )
+
+        if not response.ok:
+            return PythonikResponse(response=response, data=None)
+
+        return self.parse_response(response, S3MultipartUploadResponse)
+
+    def get_s3_complete_url(self, asset_id: str, proxy_id: str, upload_id: str) -> PythonikResponse:
+        response = self._get(
+            GET_ASSET_PROXIES_MULTIPART_COMPLETE_URL_PATH.format(asset_id, proxy_id),
+            params={"upload_id": upload_id, "type": "complete_url"},
+        )
+        if not response.ok:
+            return PythonikResponse(response=response, data=None)
+        return PythonikResponse(response=response, data=response.json()["complete_url"])
 
     def get_asset_proxies(self, asset_id: str):
         resp = self._get(GET_ASSET_PROXIES_PATH.format(asset_id))

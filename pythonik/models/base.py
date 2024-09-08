@@ -31,6 +31,11 @@ class FileType(str, Enum):
     SYMLINK = "SYMLINK"
 
 
+class StorageMethod(str, Enum):
+    S3 = "S3"
+    GCS = "GCS"
+
+
 class PaginatedResponse(BaseModel):
     first_url: Optional[str] = ""
     last_url: Optional[str] = ""
