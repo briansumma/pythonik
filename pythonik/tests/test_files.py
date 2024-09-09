@@ -1,23 +1,46 @@
 import uuid
+from enum import Enum
 
+import pytest
 import requests_mock
 
 from pythonik.client import PythonikClient
-from pythonik.models.files.file import Files, FileSetCreate, FileSets, FileCreate
+from pythonik.exceptions import UnexpectedStorageMethodForProxy
+from pythonik.models.files.file import (
+    Files,
+    FileSets,
+    FileCreate,
+    FileSetCreate,
+    UploadUrlResponse,
+    S3MultipartUploadResponse,
+)
 from pythonik.models.files.format import Formats, Format, FormatCreate
 from pythonik.models.files.proxy import Proxies, Proxy
 from pythonik.models.files.storage import Storage
 from pythonik.specs.files import (
-    GET_ASSET_PROXIES_PATH,
+    FilesSpec,
+    GET_STORAGE_PATH,
+    GET_STORAGES_PATH,
     GET_ASSET_PROXY_PATH,
     GET_ASSETS_FILES_PATH,
+    GET_ASSET_PROXIES_PATH,
     GET_ASSETS_FORMAT_PATH,
     GET_ASSETS_FORMATS_PATH,
     GET_ASSETS_FILE_SET_PATH,
-    GET_STORAGE_PATH,
-    GET_STORAGES_PATH,
-    FilesSpec,
+    GET_ASSET_PROXIES_MULTIPART_URL_PATH
 )
+from pythonik.tests.utils import (
+    generate_mock_gcs_upload_url,
+    generate_mock_s3_multipart_upload_url,
+    generate_mock_s3_multipart_upload_start_response,
+)
+
+
+# cannot extend enums, unfortunately
+class StorageMethod(str, Enum):
+    S3 = "S3"
+    GCS = "GCS"
+    NOT_REAL = "I_MADE_IT_UP"
 
 
 def test_get_proxy_by_proxy_id():
@@ -36,6 +59,101 @@ def test_get_proxy_by_proxy_id():
         m.get(mock_address, json=data)
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         client.files().get_asset_proxy(asset_id, proxy_id)
+
+
+def test_create_asset_proxy():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+
+        model = Proxy(asset_id=asset_id, storage_id=str(uuid.uuid4()), storage_method="S3")
+        # data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSET_PROXIES_PATH.format(asset_id)
+        )
+
+        m.post(mock_address, json=model.model_dump())
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().create_asset_proxy(asset_id, body=model)
+
+
+def test_update_asset_proxy():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        proxy_id = str(uuid.uuid4())
+
+        model = Proxy(asset_id=asset_id, status="CLOSED", id=proxy_id)
+        mock_address = FilesSpec.gen_url(
+            GET_ASSET_PROXY_PATH.format(asset_id, proxy_id)
+        )
+
+        m.patch(mock_address, json=model.model_dump())
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().update_asset_proxy(asset_id, proxy_id, body=model)
+
+
+@pytest.mark.parametrize("storage_method,exception",
+                         [(StorageMethod.S3, False), (StorageMethod.GCS, False),
+                          (StorageMethod.NOT_REAL, True)])
+def test_get_proxy_upload_id(storage_method, exception):
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        proxy_id = str(uuid.uuid4())
+
+        bucket_name = str(uuid.uuid4())
+        object_key = f"{str(uuid.uuid4())}.mp4"
+
+        if storage_method == StorageMethod.GCS:
+            upload_url = generate_mock_gcs_upload_url(bucket_name, object_key)
+            proxy = Proxy(asset_id=asset_id, id=proxy_id, upload_url=upload_url, storage_method=storage_method)
+
+            # request to get upload ID
+            m.post(upload_url, headers={"X-GUploader-UploadID": "X-GUploader-UploadID"})
+        else:
+            upload_url = generate_mock_s3_multipart_upload_url(bucket_name, object_key)
+            proxy = Proxy(asset_id=asset_id, id=proxy_id,
+                          multipart_upload_url=upload_url,
+                          storage_method=storage_method)
+
+            # request to get upload ID
+            text = generate_mock_s3_multipart_upload_start_response(bucket_name, object_key)
+            m.post(upload_url, text=text)
+
+        # request to get proxy
+        m.get(url=FilesSpec.gen_url(GET_ASSET_PROXY_PATH.format(asset_id, proxy_id)),
+              json=proxy.model_dump())
+
+        if exception:  # we expect an exception to be raised
+            with pytest.raises(UnexpectedStorageMethodForProxy):
+                client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+                client.files().get_upload_id_for_proxy(asset_id, proxy_id)
+            return
+
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().get_upload_id_for_proxy(asset_id, proxy_id)
+
+
+def test_get_s3_presigned_url():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        proxy_id = str(uuid.uuid4())
+        upload_id = str(uuid.uuid4())
+
+        model = S3MultipartUploadResponse(objects=[UploadUrlResponse(number=1)])
+        mock_address = FilesSpec.gen_url(
+            GET_ASSET_PROXIES_MULTIPART_URL_PATH.format(asset_id, proxy_id)
+        )
+
+        m.get(mock_address, json=model.model_dump())
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().get_s3_presigned_url(asset_id, proxy_id, upload_id=upload_id, part_number=1)
 
 
 def test_get_proxies():

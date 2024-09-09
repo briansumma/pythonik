@@ -8,6 +8,18 @@ from pydantic import BaseModel
 from pythonik.models.base import FileType, PaginatedResponse
 
 
+class UploadUrlResponse(BaseModel):
+    delete_url: str = ""
+    download_url: str = ""
+    key: str = ""
+    number: int = None
+    url: str = ""
+
+
+class S3MultipartUploadResponse(BaseModel):
+    objects: List[UploadUrlResponse]
+
+
 class FileStatus(str, Enum):
     OPEN = "OPEN"
     GROWING = "GROWING"

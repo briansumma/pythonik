@@ -1,7 +1,8 @@
-from typing import Optional
 from urllib.parse import urljoin
+
 from pydantic import BaseModel
 from requests import Request, Response, Session
+
 from pythonik.models.base import Response as PythonikResponse
 
 
