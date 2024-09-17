@@ -1,20 +1,26 @@
-# Contributing to [Project Name]
+# Contributing to Pythonik
 
-Thank you for your interest in contributing to Pythonik! We welcome contributions from the community and are grateful for any help you can provide.
+Thank you for your interest in contributing to Pythonik! We welcome
+contributions from the community and are grateful for any help you can provide.
+
+## Code of Conduct
+
+Please note that this project is released with a [Contributor Code of Conduct](
+CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its
+terms.
 
 ## Getting Started
 
 1. Fork the repository on GitHub
 2. Clone your fork locally
 3. Create a new branch for your contribution
-4. Make your changes
+4. Make your changes, including any necessary tests
 5. Push your changes to your fork
 6. Submit a pull request
 
 ## Code Style
 
 - Please follow the existing code style in the project
-- Use consistent indentation (we recommend [specify preferred indentation])
 - Write clear, descriptive commit messages
 
 ## Reporting Issues
@@ -30,10 +36,6 @@ Thank you for your interest in contributing to Pythonik! We welcome contribution
 - Add tests for any new features or bug fixes
 - Update documentation as necessary
 - Ensure all tests pass before submitting your pull request
-
-## Code of Conduct
-
-Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
 
 ## Questions?
 

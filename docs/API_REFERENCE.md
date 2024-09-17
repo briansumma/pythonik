@@ -1,23 +1,43 @@
-# Pythonik SDK API Reference
+# Pythonik API Reference
 
-This document provides detailed documentation for the classes and methods available in the Pythonik SDK.
+This document provides detailed documentation for the classes and methods
+available Pythonik.
+
+## Pythonik Response
+
+Every request returns a `PythonikResponse`, which is a Pydantic model with 2 fields:
+
+- `response` - underlying requests response object
+- `data` - if the request was `OK` and has an associated model, the response
+JSON is converted to that Pydantic model.
+
+```python
+from pythonik.client import PythonikClient
+
+client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=5)
+request = client.assets().get(asset_id)
+
+# access response data via underlying requests response
+response_json = request.response.json()
+print(response_json["id"])
+
+# access response data via Pydantic model
+asset = request.data
+print(asset.id)
+```
 
 ## Table of Contents
 
-1. [AssetSpec](#assetspec)
+1. [Assets](#assets)
    - [get](#get)
    - [create](#create)
    - [create_segment](#create_segment)
    - [update_segment](#update_segment)
    - [partial_update_segment](#partial_update_segment)
-2. [CollectionSpec](#collectionspec)
-   - [get](#get-1)
-   - [create](#create-1)
-   - [update](#update)
-3. [JobSpec](#jobspec)
+2. [Jobs](#jobs)
    - [create](#create-2)
    - [update](#update-1)
-4. [FilesSpec](#filesspec)
+3. [Files](#files)
    - [get_asset_proxy](#get_asset_proxy)
    - [update_asset_proxy](#update_asset_proxy)
    - [create_asset_proxy](#create_asset_proxy)
@@ -34,19 +54,22 @@ This document provides detailed documentation for the classes and methods availa
    - [get_asset_files](#get_asset_files)
    - [get_storage](#get_storage)
    - [get_storages](#get_storages)
-5. [SearchSpec](#searchspec)
+4. [Search](#search)
    - [search](#search)
+5. [Metadata](#metadata)
+   - [get_asset_metadata](#get_asset_metadata)
+   - [update_asset_metadata](#update_asset_metadata)
 
-## AssetSpec
+## Assets
 
-`AssetSpec` is a class that provides methods for interacting with assets in the Iconik system.
+`AssetSpec` provides methods for interacting with Iconik assets.
 
 ### get
 
 Retrieves an Iconik asset by its ID.
 
 ```python
-asset = AssetSpec().get(asset_id="1234567890abcdef")
+asset = client.assets().get(asset_id="1234567890abcdef")
 ```
 
 ### create
@@ -54,14 +77,16 @@ asset = AssetSpec().get(asset_id="1234567890abcdef")
 Creates a new Iconik asset.
 
 ```python
+from pythonik.models.assets.assets import AssetCreate
+
 asset_data = {
-    "title": "My New Asset",
-    "description": "This is a sample asset",
+    "name": "My New Asset",
     "metadata": {
         "custom_field": "Custom value"
     }
 }
-asset = AssetSpec().create(asset_data)
+body = AssetCreate(**asset_data)
+asset = client.assets().create(body=body)
 ```
 
 ### create_segment
@@ -69,45 +94,48 @@ asset = AssetSpec().create(asset_data)
 Creates a new segment for an Iconik asset.
 
 ```python
+from pythonik.models.assets.segments import SegmentBody
+
 segment_data = {
-    "title": "Segment 1",
-    "in_timecode": "00:00:10:00",
-    "out_timecode": "00:00:30:00",
+    "segment_text": "Segment 1",
     "metadata": {
         "segment_type": "interview"
     }
 }
-segment = AssetSpec().create_segment(asset_id="1234567890abcdef", segment_data=segment_data)
+body = SegmentBody(**segment_data)
+segment = client.assets().create_segment(asset_id="1234567890abcdef", body=body)
 ```
 
 ### update_segment
 
-Updates an existing segment for an Iconik asset.
+Update a segment on an asset, such as a comment, using `PUT`.
 
 ```python
-updated_segment_data = {
-    "title": "Updated Segment 1",
-    "out_timecode": "00:00:35:00"
-}
-updated_segment = AssetSpec().update_segment(asset_id="1234567890abcdef", segment_id="seg123456", segment_data=updated_segment_data)
+from pythonik.models.assets.segments import SegmentBody
+
+body = SegmentBody(segment_text="Update Segment 1")
+updated_segment = client.assets().update_segment(asset_id="1234567890abcdef", segment_id="seg123456", body=body)
 ```
 
 ### partial_update_segment
 
-Partially updates an existing segment for an Iconik asset.
+Partially update a segment on an asset, such as a comment, using `PATCH`.
 
 ```python
+from pythonik.models.assets.segments import SegmentBody
+
 partial_update_data = {
     "metadata": {
         "segment_type": "b-roll"
     }
 }
-partially_updated_segment = AssetSpec().partial_update_segment(asset_id="1234567890abcdef", segment_id="seg123456", segment_data=partial_update_data)
+body = SegmentBody(**partial_update_data)
+partially_updated_segment = client.assets().partial_update_segment(asset_id="1234567890abcdef", segment_id="seg123456", body=body)
 ```
 
-## CollectionSpec
+<!-- ## CollectionSpec
 
-`CollectionSpec` is a class that provides methods for interacting with collections in the Iconik system.
+`CollectionSpec` provides methods for interacting with collections Iconik.
 
 ### get
 
@@ -144,26 +172,22 @@ update_data = {
     }
 }
 updated_collection = CollectionSpec().update(collection_id="coll987654", collection_data=update_data)
-```
+``` -->
 
-## JobSpec
+## Jobs
 
-`JobSpec` is a class that provides methods for interacting with jobs in the Iconik system.
+`JobSpec` provides methods for interacting with jobs in Iconik.
 
 ### create
 
 Creates a new Iconik job.
 
 ```python
-job_body = {
-    "job_type": "TRANSCODE",
-    "asset_id": "1234567890abcdef",
-    "parameters": {
-        "output_format": "MP4",
-        "resolution": "1920x1080"
-    }
-}
-job = JobSpec().create(job_body)
+from pythonik.models.jobs.job_body import JobBody, JobTypes, JobStatus
+
+job_body = JobBody(title="Transfer Job", type=JobTypes.TRANSFER, metadata={"client": "Pythonik"}, status=JobStatus.STARTED)
+
+job = client.jobs().create(job_body)
 ```
 
 ### update
@@ -171,23 +195,22 @@ job = JobSpec().create(job_body)
 Updates an existing Iconik job.
 
 ```python
-job_update = {
-    "status": "COMPLETED",
-    "progress": 100
-}
-updated_job = JobSpec().update(job_id="job123456", job_body=job_update)
+from pythonik.models.jobs.job_body import JobBody, JobStatus
+
+job_update = JobBody(status=JobStatus.FINISHED, progress=100)
+updated_job = client.jobs().update(job_id="job123456", body=job_update)
 ```
 
-## FilesSpec
+## Files
 
-`FilesSpec` is a class that provides methods for interacting with files, proxies, formats, and storages in the Iconik system.
+`FilesSpec` provides methods for interacting with files, proxies, formats, and storages in Iconik.
 
 ### get_asset_proxy
 
 Retrieves a proxy for a specific asset.
 
 ```python
-proxy = FilesSpec().get_asset_proxy(asset_id="1234567890abcdef", proxy_id="proxy123")
+proxy = client.files().get_asset_proxy(asset_id="1234567890abcdef", proxy_id="proxy123")
 ```
 
 ### update_asset_proxy
@@ -195,11 +218,10 @@ proxy = FilesSpec().get_asset_proxy(asset_id="1234567890abcdef", proxy_id="proxy
 Updates an existing proxy for an asset.
 
 ```python
-proxy_update = {
-    "status": "READY",
-    "file_size": 1024000
-}
-updated_proxy = FilesSpec().update_asset_proxy(asset_id="1234567890abcdef", proxy_id="proxy123", proxy_data=proxy_update)
+from pythonik.models.files.proxy import Proxy
+
+proxy_update = Proxy(status="CLOSED")
+updated_proxy = client.files().update_asset_proxy(asset_id="1234567890abcdef", proxy_id="proxy123", body=proxy_update)
 ```
 
 ### create_asset_proxy
@@ -207,12 +229,19 @@ updated_proxy = FilesSpec().update_asset_proxy(asset_id="1234567890abcdef", prox
 Creates a new proxy for an asset.
 
 ```python
-proxy_data = {
-    "type": "VIDEO",
-    "format": "MP4",
-    "resolution": "1280x720"
-}
-new_proxy = FilesSpec().create_asset_proxy(asset_id="1234567890abcdef", proxy_data=proxy_data)
+from pythonik.models.files.proxy import Proxy
+
+proxy_data = Proxy(
+    resolution={"height": 1920, "width": 1080},
+    size=1024000,
+    status="OPEN",
+    name="3235603-uhd_3840_2160.mp4",
+    storage_id="eef9280a-0057-4198-8f4b-06705a54d142",
+    storage_method="S3",
+    codec="av01",
+    filename="3235603-uhd_3840_2160.mp4"
+)
+new_proxy = client.files().create_asset_proxy(asset_id="1234567890abcdef", body=proxy_data)
 ```
 
 ### get_upload_id_for_proxy
@@ -220,15 +249,18 @@ new_proxy = FilesSpec().create_asset_proxy(asset_id="1234567890abcdef", proxy_da
 Retrieves an upload ID for a proxy, which is required for uploading proxy files.
 
 ```python
-upload_id = FilesSpec().get_upload_id_for_proxy(asset_id="1234567890abcdef", proxy_id="proxy123")
+response = client.files().get_upload_id_for_proxy(asset_id="1234567890abcdef", proxy_id="proxy123")
+upload_id = response.data
 ```
 
 ### get_s3_presigned_url
 
 Retrieves a signed part URL for uploading a proxy to S3.
+Iconik (and thus Pythonik) uses multipart uploads when uploading to S3.
+If uploading a split file, you’ll need a pre-signed URL and upload for each part.
 
 ```python
-presigned_url = FilesSpec().get_s3_presigned_url(asset_id="1234567890abcdef", proxy_id="proxy123", upload_id="upload456", part_number=1)
+presigned_url = client.files().get_s3_presigned_url(asset_id="1234567890abcdef", proxy_id="proxy123", upload_id="upload456", part_number=1)
 ```
 
 ### get_s3_complete_url
@@ -236,7 +268,7 @@ presigned_url = FilesSpec().get_s3_presigned_url(asset_id="1234567890abcdef", pr
 Retrieves the URL to complete an S3 multipart upload.
 
 ```python
-complete_url = FilesSpec().get_s3_complete_url(asset_id="1234567890abcdef", proxy_id="proxy123", upload_id="upload456")
+complete_url = client.files().get_s3_complete_url(asset_id="1234567890abcdef", proxy_id="proxy123", upload_id="upload456")
 ```
 
 ### get_asset_proxies
@@ -244,7 +276,7 @@ complete_url = FilesSpec().get_s3_complete_url(asset_id="1234567890abcdef", prox
 Retrieves all proxies for a specific asset.
 
 ```python
-proxies = FilesSpec().get_asset_proxies(asset_id="1234567890abcdef")
+proxies = client.files().get_asset_proxies(asset_id="1234567890abcdef")
 ```
 
 ### create_asset_format
@@ -252,12 +284,14 @@ proxies = FilesSpec().get_asset_proxies(asset_id="1234567890abcdef")
 Creates a new format for an asset.
 
 ```python
-format_data = {
-    "name": "High Resolution",
-    "file_extension": "mov",
-    "mime_type": "video/quicktime"
-}
-new_format = FilesSpec().create_asset_format(asset_id="1234567890abcdef", format_data=format_data)
+from pythonik.models.files.format import FormatCreate
+
+format_data = FormatCreate(
+    name="High Resolution",
+    is_online=True,
+    storage_methods=["FILE"]
+)
+new_format =client.files().create_asset_format(asset_id="1234567890abcdef", body=format_data)
 ```
 
 ### create_asset_file
@@ -265,12 +299,17 @@ new_format = FilesSpec().create_asset_format(asset_id="1234567890abcdef", format
 Creates a new file for an asset.
 
 ```python
-file_data = {
-    "filename": "sample_video.mp4",
-    "size": 1024000,
-    "checksum": "abcdef1234567890"
-}
-new_file = FilesSpec().create_asset_file(asset_id="1234567890abcdef", file_data=file_data)
+from pythonik.models.files.file import FileCreate
+
+file_data = FileCreate(
+    size=102004,
+    name="odor amet",
+    original_name="odor amet",
+    format_id="c41b5c9a-05f9-4ca5-ac50-74a125f5aeac",
+    storage_id="2c5ac73d-0860-42b9-91f3-44a361441143",
+    file_set_id="c41b5c9a-05f9-4ca5-ac50-74a125f5aeac",
+)
+new_file = client.files().create_asset_file(asset_id="1234567890abcdef", body=file_data)
 ```
 
 ### create_asset_filesets
@@ -278,11 +317,14 @@ new_file = FilesSpec().create_asset_file(asset_id="1234567890abcdef", file_data=
 Creates new file sets for an asset.
 
 ```python
-fileset_data = {
-    "name": "4K Master",
-    "files": ["file_id_1", "file_id_2"]
-}
-new_filesets = FilesSpec().create_asset_filesets(asset_id="1234567890abcdef", fileset_data=fileset_data)
+from pythonik.models.files.file import FileSetCreate
+
+fileset_data = FileSetCreate(
+    name="4K Master",
+    format_id="c41b5c9a-05f9-4ca5-ac50-74a125f5aeac",
+    storage_id="2c5ac73d-0860-42b9-91f3-44a361441143",
+)
+new_filesets =client.files().create_asset_filesets(asset_id="1234567890abcdef", body=fileset_data)
 ```
 
 ### get_asset_filesets
@@ -290,7 +332,7 @@ new_filesets = FilesSpec().create_asset_filesets(asset_id="1234567890abcdef", fi
 Retrieves all file sets for a specific asset.
 
 ```python
-filesets = FilesSpec().get_asset_filesets(asset_id="1234567890abcdef")
+filesets = client.files().get_asset_filesets(asset_id="1234567890abcdef")
 ```
 
 ### get_asset_formats
@@ -298,7 +340,7 @@ filesets = FilesSpec().get_asset_filesets(asset_id="1234567890abcdef")
 Retrieves all formats for a specific asset.
 
 ```python
-formats = FilesSpec().get_asset_formats(asset_id="1234567890abcdef")
+formats = client.files().get_asset_formats(asset_id="1234567890abcdef")
 ```
 
 ### get_asset_format
@@ -306,7 +348,7 @@ formats = FilesSpec().get_asset_formats(asset_id="1234567890abcdef")
 Retrieves a specific format for an asset.
 
 ```python
-format = FilesSpec().get_asset_format(asset_id="1234567890abcdef", format_id="format789")
+asset_format = client.files().get_asset_format(asset_id="1234567890abcdef", format_id="format789")
 ```
 
 ### get_asset_files
@@ -314,7 +356,7 @@ format = FilesSpec().get_asset_format(asset_id="1234567890abcdef", format_id="fo
 Retrieves all files for a specific asset.
 
 ```python
-files = FilesSpec().get_asset_files(asset_id="1234567890abcdef")
+files = client.files().get_asset_files(asset_id="1234567890abcdef")
 ```
 
 ### get_storage
@@ -322,7 +364,7 @@ files = FilesSpec().get_asset_files(asset_id="1234567890abcdef")
 Retrieves metadata for a specific storage.
 
 ```python
-storage = FilesSpec().get_storage(storage_id="storage123")
+storage = client.files().get_storage(storage_id="storage123")
 ```
 
 ### get_storages
@@ -330,34 +372,70 @@ storage = FilesSpec().get_storage(storage_id="storage123")
 Retrieves metadata for all storages.
 
 ```python
-storages = FilesSpec().get_storages()
+storages = client.files().get_storages()
 ```
 
-## SearchSpec
+## Search
 
-`SearchSpec` is a class that provides methods for searching in the Iconik system.
+`SearchSpec` provides methods to search Iconik.
 
 ### search
 
 Performs a search in Iconik.
 
 ```python
+from pythonik.models.search.search_body import SearchBody
+
+# In this example, we're searching for assets on a specific storage, has
+# has the corresponding original_name and path
 search_body = {
-    "query": "sample asset",
-    "filters": {
-        "asset_type": ["video", "image"],
-        "created_date": {
-            "from": "2023-01-01",
-            "to": "2023-12-31"
-        }
-    },
-    "sort": [{"field": "created_date", "order": "desc"}],
-    "limit": 50,
-    "offset": 0
+    "operator": "AND",
+    "doc_types": ["assets"],
+        "terms": [
+            {
+                "name": "files.storage_id",
+                "value_in": [
+                    "51cd6a7e-8f3d-4aaf-9db5-ce167b3d1c43"
+                ]
+            },
+            {
+                "name": "files.original_name",
+                "value_in": [
+                    "Lorem_ipsum_odor_amet.png"
+                ]
+            },
+            {
+                "name": "files.directory_path",
+                "value_in": [
+                    "_consectetuer/adipiscing/elit"
+                ]
+            }
+        ]
 }
-search_results = SearchSpec().search(search_body)
+body = SearchBody(**search_body)
+search_results = client.search().search(search_body)
 ```
 
-## Conclusion
+## Metadata
+`MetadataSpec` provides methods for interacting with asset metadata in Iconik.
 
-This API reference provides an overview of the main classes and methods available in the Pythonik SDK. For more detailed information on method parameters and return values, please refer to the inline documentation in the source code.
+### get_asset_metadata
+
+Fetches metadata from the asset's view.
+
+```python
+metadata = client.metadata().get_asset_metadata(asset_id="2c5ac73d-0860-42b9-91f3-44a361441143", view_id="51099c0f-9586-416e-ae47-e653fbc9a71f")
+```
+
+### update_asset_metadata
+
+Update metadata in asset's view.
+
+```python
+from pythonik.models.mutation.metadata.mutate import UpdateMetadata
+
+body = UpdateMetadata(metadata_values=[])
+metadata = client.metadata().update_asset_metadata(
+    asset_id="2c5ac73d-0860-42b9-91f3-44a361441143",
+    view_id="51099c0f-9586-416e-ae47-e653fbc9a71f", metadata=body)
+```

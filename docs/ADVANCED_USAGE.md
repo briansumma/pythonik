@@ -1,10 +1,11 @@
-Here's your document with Python code blocks correctly formatted and a few adjustments for clarity:
+# Advanced Usage of Pythonik
 
----
+This document covers advanced usage scenarios and features of the Pythonik SDK.
+These examples demonstrate some of the more complex operations you can perform
+with the Pythonik SDK.
 
-# Advanced Usage of Pythonik SDK
-
-This document covers advanced usage scenarios and features of the Pythonik SDK. These techniques are designed for users who are already familiar with the basic operations and want to leverage more complex functionalities.
+Always refer to the API documentation for the most up-to-date information on
+available methods and their parameters.
 
 ## Table of Contents
 
@@ -76,7 +77,9 @@ while True:
 
 ## Working with Proxies
 
-The Pythonik SDK supports creating and managing proxy placeholders. This is useful when you want to create an asset with a proxy before the actual media file is available:
+The Pythonik SDK supports creating and managing proxy placeholders. This is
+useful when you want to create an asset with a proxy before the actual media
+file is available:
 
 ```python
 # Create a proxy placeholder
@@ -165,5 +168,3 @@ created_job = client.jobs().create(job)
 # Update job status
 updated_job = client.jobs().update(created_job.data.id, JobBody(status=JobStatus.FINISHED))
 ```
-
-These advanced usage examples demonstrate some of the more complex operations you can perform with the Pythonik SDK. Always refer to the API documentation for the most up-to-date information on available methods and their parameters.

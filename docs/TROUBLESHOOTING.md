@@ -1,6 +1,6 @@
 # Troubleshooting Guide for Pythonik
 
-This document provides solutions to common issues you might encounter while using the Pythonik SDK.
+This document provides solutions to common issues you might encounter while using Pythonik.
 
 ## Table of Contents
 
@@ -51,7 +51,6 @@ If you're hitting rate limits:
 
 1. Implement exponential backoff and retry logic in your code.
 2. Consider batching requests if you're making many calls in quick succession.
-3. Contact Iconik support to discuss increasing your rate limits if necessary.
 
 ## Proxy Upload Issues
 
@@ -64,4 +63,4 @@ If you're having trouble with proxy uploads:
 
 For more detailed information on using Pythonik, refer to the [README.md](../README.md) file.
 
-If you continue to experience issues after trying these troubleshooting steps, please open an issue on the Pythonik GitHub repository or contact NSA support.
+If you continue to experience issues after trying these troubleshooting steps, please open an issue on the Pythonik GitHub repository
