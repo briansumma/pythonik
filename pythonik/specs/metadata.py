@@ -1,7 +1,6 @@
 from loguru import logger
-from pydantic import BaseModel
 from pythonik.models.base import Response
-from pythonik.models.metadata.views import MetadataValues, ViewMetadata
+from pythonik.models.metadata.views import ViewMetadata
 from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadata,
     UpdateMetadataResponse,

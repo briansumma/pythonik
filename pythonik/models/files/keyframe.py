@@ -6,6 +6,11 @@ from pydantic import BaseModel
 from pythonik.models.base import PaginatedResponse
 
 
+class GCSKeyframeUploadResponse(BaseModel):
+    upload_id: Optional[str] = ""
+    location: Optional[str] = ""
+
+
 class Resolution(BaseModel):
     height: Optional[int] = None
     width: Optional[int] = None
