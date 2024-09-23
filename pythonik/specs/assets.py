@@ -12,6 +12,17 @@ SEGMENT_URL_UPDATE = SEGMENT_URL + "{}/"
 class AssetSpec(Spec):
     server = "API/assets/"
 
+    def partial_update_asset(
+        self, asset_id: str, body: Asset, exclude_defaults=True, **kwargs
+    ) -> Response:
+        """Partially update an asset using PATCH"""
+        response = self._patch(
+            GET_URL.format(asset_id),
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
+        )
+        return self.parse_response(response, Asset)
+
     def get(self, asset_id: str) -> Response:
         """
         Get an iconik asset by id
@@ -28,9 +39,7 @@ class AssetSpec(Spec):
         Returns: Response(model=Asset)
         """
         response = self._post(
-            BASE,
-            json=body.model_dump(exclude_defaults=exclude_defaults),
-            **kwargs
+            BASE, json=body.model_dump(exclude_defaults=exclude_defaults), **kwargs
         )
         return self.parse_response(response, Asset)
 

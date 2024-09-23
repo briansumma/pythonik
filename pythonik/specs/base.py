@@ -23,8 +23,9 @@ class Spec:
         # try to populate the model
         if response.ok:
             print(response.text)
-            data = response.json()
-            model = model.model_validate(data)
+            if model:
+                data = response.json()
+                model = model.model_validate(data)
 
         # else we just let the dev decide what to do
         # can call resp.raise_for_status
