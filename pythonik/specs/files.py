@@ -168,7 +168,6 @@ class FilesSpec(Spec):
             raise NotImplementedError(
                 "Pythonik does not currently support creating keyframes on S3"
             )
-            print(upload_url_response.text)
             xml = parseString(upload_url_response.text)
             key = xml.getElementsByTagName("Key")[0].firstChild.nodeValue
             bucket = xml.getElementsByTagName("Bucket")[0].firstChild.nodeValue
