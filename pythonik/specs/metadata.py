@@ -21,10 +21,10 @@ class MetadataSpec(Spec):
 
         intercept_404:
             Iconik returns a 404 when a view has no metadata, intercept_404 will intercept that error
-            and return a the ViewMetadata model provided
+            and return the ViewMetadata model provided
 
-            you can no longer call response.raise_for_status, so be careful using this
-            call raise_for_status_404 if you still want to raise status on 404 error
+            you can no longer call response.raise_for_status, so be careful using this.
+            Call raise_for_status_404 if you still want to raise status on 404 error
         """
 
         resp = self._get(ASSET_METADATA_FROM_VIEW_PATH.format(asset_id, view_id))

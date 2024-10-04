@@ -1,10 +1,9 @@
 # Pythonik
 
-## Iconik Python SDK
-
-## Description
-
-Pythonik is a comprehensive Python SDK designed for seamless interaction with the Iconik API. It offers a user-friendly interface to access various functionalities of Iconik, making it easier for developers to integrate and manage Iconik assets and metadata within their applications.
+Pythonik is a comprehensive Python SDK designed for seamless interaction with
+the Iconik API. It offers a user-friendly interface to access various
+functionalities of Iconik, making it easier for developers to integrate and
+manage Iconik assets and metadata within their applications.
 
 ## Features
 
@@ -48,6 +47,8 @@ client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=5)
 metadata = client.metadata().get_asset_metadata(asset_id, view_id)
 print(metadata)
 ```
+
+Checkout the [API reference](./docs/API_REFERENCE.md) and [advanced usage guide](./docs/ADVANCED_USAGE.md) to see all you can do with Pythonik.
 
 ## Publishing to NSA Internal PyPI GitLab Package Registry
 
@@ -106,7 +107,7 @@ To create and activate a Poetry shell, which sets up an isolated virtual environ
 
 This command will activate a virtual environment managed by Poetry. You can now run Python commands and scripts within this environment.
 
-### Install all dependenices inclduing pytest
+### Install all dependencies including pytest
 
 ```sh
     poetry install
@@ -138,11 +139,14 @@ Details about upcoming features and enhancements will be added here.
 
 ## Contributing
 
-Information on how to contribute to the project will be provided here.
+Please see the [contribution guide](./CONTRIBUTING.md) for information on how to contribute.
 
 ## Authors and Acknowledgment
 
-This SDK is developed and maintained by North Shore Automation Developers, including Brant Goddard.
+This SDK is developed and maintained by North Shore Automation developers,
+including Brant Goddard, Prince Duepa, Giovann Wah, and Brandon Dedolph.
+
+## Contributors
 
 ## License
 
