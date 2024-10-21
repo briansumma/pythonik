@@ -11,6 +11,7 @@ from pythonik.specs.files import FilesSpec
 from pythonik.specs.jobs import JobSpec
 from pythonik.specs.metadata import MetadataSpec
 from pythonik.specs.search import SearchSpec
+from pythonik.specs.collections import CollectionSpec
 
 
 # Iconik APIs
@@ -34,6 +35,9 @@ class PythonikClient:
             "Accept": "application/json",
         }
         self.timeout = timeout
+
+    def collections(self):
+        return CollectionSpec(self.session, self.timeout)
 
     def assets(self):
         return AssetSpec(self.session, self.timeout)

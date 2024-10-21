@@ -13,6 +13,7 @@ from pythonik.exceptions import UnexpectedStorageMethodForProxy
 from pythonik.models.base import Response, StorageMethod
 from pythonik.models.files.file import (
     File,
+    FileSetsFilesResponse,
     Files,
     FileSet,
     FileSets,
@@ -21,14 +22,14 @@ from pythonik.models.files.file import (
     S3MultipartUploadResponse,
 )
 from pythonik.models.files.keyframe import (
-    GCSKeyframeUploadResponse,
     Keyframe,
     Keyframes,
+    GCSKeyframeUploadResponse,
 )
 from pythonik.models.files.proxy import Proxies, Proxy
 from pythonik.specs.base import Spec, PythonikResponse
 from pythonik.models.files.storage import Storage, Storages
-from pythonik.models.files.format import Formats, Format, FormatCreate
+from pythonik.models.files.format import Component, Formats, Format, FormatCreate
 
 GET_ASSET_PROXY_PATH = "assets/{}/proxies/{}/"
 GET_ASSET_PROXIES_PATH = "assets/{}/proxies/"
@@ -36,8 +37,10 @@ GET_ASSET_PROXIES_MULTIPART_URL_PATH = GET_ASSET_PROXY_PATH + "multipart_url/par
 GET_ASSET_PROXIES_MULTIPART_COMPLETE_URL_PATH = GET_ASSET_PROXY_PATH + "multipart_url/"
 GET_ASSETS_FORMATS_PATH = "assets/{}/formats/"
 GET_ASSETS_FORMAT_PATH = "assets/{}/formats/{}/"
+GET_ASSETS_FORMAT_COMPONENTS_PATH = "assets/{}/formats/{}/components"
 GET_ASSETS_FILES_PATH = "assets/{}/files/"
 GET_ASSETS_FILE_SET_PATH = "assets/{}/file_sets/"
+GET_ASSETS_FILE_SET_FILES_PATH = "assets/{}/file_sets/{}/files/"
 GET_STORAGE_PATH = "storages/{}/"
 GET_STORAGES_PATH = "storages/"
 GET_ASSET_KEYFRAME = "assets/{}/keyframes/{}/"
@@ -46,6 +49,27 @@ GET_ASSET_KEYFRAMES = "assets/{}/keyframes/"
 
 class FilesSpec(Spec):
     server = "API/files/"
+
+    def get_fileset_files(self, asset_id: str, fileset_id: str):
+        response = self._get(
+            GET_ASSETS_FILE_SET_FILES_PATH.format(asset_id, fileset_id)
+        )
+        return self.parse_response(response, FileSetsFilesResponse)
+
+    def create_asset_format_component(
+        self,
+        asset_id: str,
+        format_id: str,
+        body: Component,
+        exclude_defaults=True,
+        **kwargs,
+    ):
+        response = self._post(
+            GET_ASSETS_FORMAT_COMPONENTS_PATH.format(asset_id, format_id),
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs,
+        )
+        return self.parse_response(response, Component)
 
     def delete_asset_keyframe(self, asset_id: str, keyframe_id: str):
         response = self._delete(GET_ASSET_KEYFRAME.format(asset_id, keyframe_id))
