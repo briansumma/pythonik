@@ -6,9 +6,13 @@ from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadataResponse,
 )
 from pythonik.specs.base import Spec
+from typing import Literal
 
 ASSET_METADATA_FROM_VIEW_PATH = "assets/{}/views/{}"
 UPDATE_ASSET_METADATA = "assets/{}/views/{}/"
+ASSET_OBJECT_VIEW_PATH = "v1/assets/{}/{}/{}/views/{}/"
+
+ObjectType = Literal["segments"]
 
 
 class MetadataSpec(Spec):
@@ -53,3 +57,18 @@ class MetadataSpec(Spec):
         )
 
         return self.parse_response(resp, UpdateMetadataResponse)
+
+    def put_object_view_metadata(
+        self, asset_id: str, object_type: ObjectType, object_id: str, view_id: str, metadata: UpdateMetadata
+    ) -> Response:
+        """Put metadata for a specific sub-object view of an asset"""
+        endpoint = ASSET_OBJECT_VIEW_PATH.format(asset_id, object_type, object_id, view_id)
+        resp = self._put(endpoint, json=metadata.model_dump())
+
+        return self.parse_response(resp, UpdateMetadataResponse)
+
+    def put_segment_view_metadata(
+        self, asset_id: str, segment_id: str, view_id: str, metadata: UpdateMetadata
+    ) -> Response:
+        """Put metadata for a segment of an asset"""
+        return self.put_object_view_metadata(asset_id, "segments", segment_id, view_id, metadata)
