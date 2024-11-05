@@ -16,12 +16,12 @@ manage Iconik assets and metadata within their applications.
 You can install Pythonik directly from PyPI:
 
 ```bash
-pip install pythonik
+pip install nsa-pythonik
 ```
 
 If you're using Poetry:
 ```bash
-poetry add pythonik
+poetry add nsa-pythonik
 ```
 
 ## Usage
