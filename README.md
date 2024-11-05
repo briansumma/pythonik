@@ -13,10 +13,15 @@ manage Iconik assets and metadata within their applications.
 
 ## Installation
 
-Install the Pythonik SDK using pip:
+You can install Pythonik directly from PyPI:
 
 ```bash
 pip install pythonik
+```
+
+If you're using Poetry:
+```bash
+poetry add pythonik
 ```
 
 ## Usage
@@ -50,41 +55,15 @@ print(metadata)
 
 Checkout the [API reference](./docs/API_REFERENCE.md) and [advanced usage guide](./docs/ADVANCED_USAGE.md) to see all you can do with Pythonik.
 
-## Publishing to NSA Internal PyPI GitLab Package Registry
+## Publishing to PyPI (for maintainers) (Coming Soon)
 
-The CI/CD pipeline will automatically build and add a new version as a PyPI package to the package registry for this project.
-
-To manually build and publish a new PyPI package:
+To publish a new version to PyPI:
 
 1. Create and push a tag on the default branch (main):
    ```bash
    git tag {tag}
-   git push
+   git push --tags
    ```
-
-## Installing from NSA Internal PyPI GitLab Package Registry
-
-To install the package in another project using Poetry:
-
-1. Add the GitLab source with a priority of supplemental:
-
-   ```bash
-   poetry source add --priority=supplemental gitlab https://gitlab.com/api/v4/projects/51363622/packages/pypi/simple
-   ```
-
-2. Configure authentication:
-
-   ```bash
-   # your GitLab username and access token
-   poetry config http-basic.gitlab <username> <password>
-   ```
-
-3. Install the package:
-   ```bash
-   poetry add --source gitlab pythonik
-   ```
-
-Note: If using a personal access token for authentication, it needs the `api` scope. If using a deploy token, set the scope to `read_package_registry`.
 
 ## Using Poetry
 
