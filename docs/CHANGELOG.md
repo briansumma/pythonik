@@ -1,5 +1,11 @@
 # Changelog
 
+## 2024-11-05 "Public Metamorphosis" - version 0.6.0
+
+### Added
+
+- Add ability to update sub-object metadata for segments (Brant Goddard)
+
 ## 2024-09-09
 
 - Merge branch 'feature/proxy-placeholder-workflow' into 'main' (Brant Goddard)
