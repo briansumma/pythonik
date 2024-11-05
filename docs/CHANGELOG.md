@@ -1,5 +1,12 @@
 # Changelog
 
+## 2024-11-05 "PyPi Public Release" - version 0.6.1
+
+### Changed
+- Updated package distribution name to `nsa-pythonik` for PyPI publishing
+- Updated installation instructions in README.md
+- Note: Internal imports remain unchanged, still using `from pythonik import ...`
+
 ## 2024-11-05 "Public Metamorphosis" - version 0.6.0
 
 ### Added

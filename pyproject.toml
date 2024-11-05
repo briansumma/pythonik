@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "pythonik"
-version = "0.6.0"
+name = "nsa-pythonik"
+version = "0.6.1"
 description = "Python SDK for Iconik's API"
 authors = ["brant <brant@northshoreautomation.com>"]
 readme = "README.md"
@@ -8,6 +8,9 @@ license = "MIT"
 repository = "https://github.com/NorthShoreAutomation/pythonik"
 homepage = "https://github.com/NorthShoreAutomation/pythonik"
 keywords = ["iconik", "api", "sdk", "media"]
+packages = [
+    { include = "pythonik" }
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
