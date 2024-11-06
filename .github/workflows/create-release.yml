@@ -78,3 +78,10 @@ jobs:
         make_latest: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+
+  publish:
+    needs: release
+    uses: ./.github/workflows/publish.yml
+    with:
+      publish_test: false  # Explicitly set to false to publish to main PyPI
+    secrets: inherit

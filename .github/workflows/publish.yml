@@ -2,7 +2,14 @@ name: Publish to PyPI
 
 on:
   release:
-    types: [published]
+    types: [published]  # Trigger on manual release publications
+  workflow_call:
+    inputs:
+      publish_test:
+        description: 'Publish to TestPyPI'
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       publish_test:
@@ -14,6 +21,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    if: inputs.publish_test != true 
     steps:
     - uses: actions/checkout@v4
     
@@ -70,7 +78,7 @@ jobs:
 
   publish-test:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || inputs.publish_test == true  # Make job optional
+    if: inputs.publish_test == true && github.event_name == 'workflow_dispatch'  # Only run for manual triggers with publish_test true
     steps:
     - uses: actions/checkout@v4
     
