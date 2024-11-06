@@ -41,14 +41,16 @@ jobs:
         # Update __init__.py
         echo "__version__ = \"$VERSION\"" > pythonik/__init__.py
         
-        # Checkout the default branch
-        git checkout ${GITHUB_REF_NAME}
+        # Fetch and checkout main branch
+        git fetch origin main
+        git checkout main
         
-        # Commit the changes
+        # Commit and push the changes
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git commit -am "chore: update version to $VERSION [skip ci]"
-        git push origin ${GITHUB_REF_NAME}
+        git add pyproject.toml pythonik/__init__.py
+        git commit -m "chore: update version to $VERSION [skip ci]"
+        git push origin main
     
     - name: Build and publish
       run: |
