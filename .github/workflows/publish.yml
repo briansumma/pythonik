@@ -41,11 +41,14 @@ jobs:
         # Update __init__.py
         echo "__version__ = \"$VERSION\"" > pythonik/__init__.py
         
+        # Checkout the default branch
+        git checkout ${GITHUB_REF_NAME}
+        
         # Commit the changes
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git commit -am "chore: update version to $VERSION [skip ci]"
-        git push
+        git push origin ${GITHUB_REF_NAME}
     
     - name: Build and publish
       run: |
