@@ -72,12 +72,9 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         name: "${{ steps.get_version.outputs.VERSION }} - ${{ steps.get_release_name.outputs.RELEASE_NAME }}"
-        body: |
-          Release ${{ steps.get_version.outputs.VERSION }} - ${{ steps.get_release_name.outputs.RELEASE_NAME }}
-
-          Changes in this release:
-          ${{ steps.release_notes.outputs.CHANGES }}
         draft: false
         prerelease: false
+        generate_release_notes: true
+        make_latest: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
