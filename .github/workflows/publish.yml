@@ -29,8 +29,19 @@ jobs:
       run: |
         poetry config pypi-token.pypi ${{ secrets.PYPI_TOKEN }}
     
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+    
     - name: Update versions
       run: |
+        # Configure git to use SSH
+        git config --local core.sshCommand "ssh -i ~/.ssh/deploy_key"
+        git remote set-url origin git@github.com:${GITHUB_REPOSITORY}.git
+        
         # Get version from git tag
         VERSION=$(git describe --tags --abbrev=0)
         VERSION=${VERSION#v}  # Remove 'v' prefix if present
@@ -76,8 +87,20 @@ jobs:
         poetry config repositories.testpypi https://test.pypi.org/legacy/
         poetry config pypi-token.testpypi ${{ secrets.TEST_PYPI_TOKEN }}
     
+    - name: Configure SSH
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/deploy_key
+        chmod 600 ~/.ssh/deploy_key
+        ssh-keyscan github.com >> ~/.ssh/known_hosts
+    
     - name: Update versions
       run: |
+        # Configure git to use SSH
+        git config --local core.sshCommand "ssh -i ~/.ssh/deploy_key"
+        git remote set-url origin git@github.com:${GITHUB_REPOSITORY}.git
+        
+        # Get version from git tag
         VERSION=$(git describe --tags --abbrev=0)
         VERSION=${VERSION#v}
         poetry version $VERSION
