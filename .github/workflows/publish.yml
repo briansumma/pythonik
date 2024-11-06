@@ -3,6 +3,13 @@ name: Publish to PyPI
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      publish_test:
+        description: 'Publish to TestPyPI'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   publish:
@@ -44,3 +51,34 @@ jobs:
       run: |
         poetry build
         poetry publish
+
+  publish-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || inputs.publish_test == true  # Make job optional
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.9"
+    
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      
+    - name: Configure Poetry
+      run: |
+        poetry config repositories.testpypi https://test.pypi.org/legacy/
+        poetry config pypi-token.testpypi ${{ secrets.TEST_PYPI_TOKEN }}
+    
+    - name: Update versions
+      run: |
+        VERSION=$(git describe --tags --abbrev=0)
+        VERSION=${VERSION#v}
+        poetry version $VERSION
+        echo "__version__ = \"$VERSION\"" > pythonik/__init__.py
+    
+    - name: Build and publish to TestPyPI
+      run: |
+        poetry build
+        poetry publish -r testpypi
