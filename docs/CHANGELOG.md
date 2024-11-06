@@ -1,5 +1,13 @@
 # Changelog
 
+## 2024-11-06 "No Time Like the Prune-sent" - version 0.6.2
+
+### Added
+- Add DELETE endpoint for asset file entries (/v1/assets/{asset_id}/files/{file_id}/)
+
+### Changed
+- Improved code examples in README.md
+
 ## 2024-11-05 "PyPi Public Release" - version 0.6.1
 
 ### Changed
