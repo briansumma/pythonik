@@ -32,10 +32,21 @@ To retrieve an asset from Iconik, use the following code:
 
 ```python
 from pythonik.client import PythonikClient
+from pythonik.models.assets.assets import Asset
+from pythonik.models.base import Response
 
-client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=5)
-asset = client.assets().get(asset_id)
-print(asset)
+app_id = secrets.get_secret("app_id")
+auth_token = secrets.get_secret("auth_token")
+asset_id = secrets.get_secret("asset_id")
+
+client: PythonikClient = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=10)
+
+
+res: Response = client.assets().get(asset_id)
+data: Asset = res.data
+data_as_dict = data.model_dump()
+data_as_json = data.model_dump_json()
+
 ```
 
 ### Get Metadata from a View
@@ -44,13 +55,23 @@ To get metadata for an asset from a specific view, use the following code:
 
 ```python
 from pythonik.client import PythonikClient
+from pythonik.models.assets.metadata import ViewMetadata
+from pythonik.models.base import Response
 
-asset_id = '123'
-view_id = '456'
+app_id = secrets.get_secret("app_id")
+auth_token = secrets.get_secret("auth_token")
 
-client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=5)
-metadata = client.metadata().get_asset_metadata(asset_id, view_id)
-print(metadata)
+asset_id = 'a31sd2asdf123jasdfq134'
+view_id = 'a12sl34s56asdf123jhas2'
+
+client: PythonikClient = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=5)
+
+default_model = ViewMetadata()
+# intercept_404 intercepts 404 errors if no metadata is found in view and returns a ViewMetadata model you provide so you can handle the error gracefully
+res: Response = client.metadata().get_asset_metadata(asset_id, view_id, intercept_404=default_model)
+data: ViewMetadata = res.data
+data_as_dict = data.model_dump()
+data_as_json = data.model_dump_json()
 ```
 
 Checkout the [API reference](./docs/API_REFERENCE.md) and [advanced usage guide](./docs/ADVANCED_USAGE.md) to see all you can do with Pythonik.
