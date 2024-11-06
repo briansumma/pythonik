@@ -42,10 +42,16 @@ GET_STORAGE_PATH = "storages/{}/"
 GET_STORAGES_PATH = "storages/"
 GET_ASSET_KEYFRAME = "assets/{}/keyframes/{}/"
 GET_ASSET_KEYFRAMES = "assets/{}/keyframes/"
+GET_ASSETS_FILE_PATH = "assets/{}/files/{}/"
 
 
 class FilesSpec(Spec):
     server = "API/files/"
+
+    def delete_asset_file(self, asset_id: str, file_id: str) -> Response:
+        """Delete asset's file entry (Not the actual file)"""
+        response = self._delete(GET_ASSETS_FILE_PATH.format(asset_id, file_id))
+        return self.parse_response(response, model=None)
 
     def delete_asset_keyframe(self, asset_id: str, keyframe_id: str):
         response = self._delete(GET_ASSET_KEYFRAME.format(asset_id, keyframe_id))
