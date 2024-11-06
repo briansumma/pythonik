@@ -30,6 +30,7 @@ from pythonik.specs.files import (
     GET_ASSETS_FORMAT_PATH,
     GET_ASSETS_FORMATS_PATH,
     GET_ASSETS_FILE_SET_PATH,
+    GET_ASSETS_FILE_PATH,
     GET_ASSET_PROXIES_MULTIPART_URL_PATH,
 )
 from pythonik.tests.utils import (
@@ -512,3 +513,19 @@ def test_get_storages():
         m.get(mock_address, json=data)
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         client.files().get_storages()
+
+
+def test_delete_asset_file():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_id = str(uuid.uuid4())
+
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_FILE_PATH.format(asset_id, file_id)
+        )
+
+        m.delete(mock_address)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().delete_asset_file(asset_id, file_id)
