@@ -4,6 +4,13 @@ on:
   push:
     tags:
       - '*'
+  workflow_call:
+    inputs:
+      publish_test:
+        description: 'Whether to publish to test PyPI instead of main PyPI'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   release:
@@ -83,5 +90,5 @@ jobs:
     needs: release
     uses: ./.github/workflows/publish.yml
     with:
-      publish_test: false  # Explicitly set to false to publish to main PyPI
+      publish_test: ${{ inputs.publish_test }}  # Will use the default if not provided
     secrets: inherit
