@@ -1,5 +1,17 @@
 # Changelog
 
+## 2024-11-07 "rm -rf" - version 0.6.3
+
+### Added
+- Add DELETE endpoint for asset file sets (/v1/assets/{asset_id}/file_sets/{file_set_id}/)
+- Add delete_asset_file_set method with dual response handling:
+  - 200: Returns FileSet model when file set is marked as deleted
+  - 204: Returns empty response when immediate deletion occurs
+  - Includes status code conditional logic and optional keep_source parameter support
+
+### Changed
+- Fix file path variable names and add tests
+
 ## 2024-11-06 "No Time Like the Prune-sent" - version 0.6.2
 
 ### Added
