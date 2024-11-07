@@ -76,15 +76,10 @@ data_as_json = data.model_dump_json()
 
 Checkout the [API reference](./docs/API_REFERENCE.md) and [advanced usage guide](./docs/ADVANCED_USAGE.md) to see all you can do with Pythonik.
 
-## Publishing to PyPI (for maintainers) (Coming Soon)
+## Publishing to PyPI (for maintainers) 
 
-To publish a new version to PyPI:
+To publish a new version to PyPI please see the [release how-to guide](./docs/RELEASE_HOW_TO.md).
 
-1. Create and push a tag on the default branch (main):
-   ```bash
-   git tag {tag}
-   git push --tags
-   ```
 
 ## Using Poetry
 
