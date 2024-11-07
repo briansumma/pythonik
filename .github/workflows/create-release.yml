@@ -90,5 +90,5 @@ jobs:
     needs: release
     uses: ./.github/workflows/publish.yml
     with:
-      publish_test: ${{ inputs.publish_test }} # Will use the default if not provided
+      publish_test: "${{inputs.publish_test}}"
     secrets: inherit
