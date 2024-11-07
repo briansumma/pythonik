@@ -43,6 +43,8 @@ GET_STORAGES_PATH = "storages/"
 GET_ASSET_KEYFRAME = "assets/{}/keyframes/{}/"
 GET_ASSET_KEYFRAMES = "assets/{}/keyframes/"
 GET_ASSETS_FILE_PATH = "assets/{}/files/{}/"
+DELETE_ASSETS_FILE_SET_PATH = "assets/{}/file_sets/{}/"
+DELETE_ASSETS_FILE_PATH = "assets/{}/files/{}/"
 
 
 class FilesSpec(Spec):
@@ -60,7 +62,7 @@ class FilesSpec(Spec):
         Returns:
             Response with no data model
         """
-        response = self._delete(GET_ASSETS_FILE_PATH.format(asset_id, file_id))
+        response = self._delete(DELETE_ASSETS_FILE_PATH.format(asset_id, file_id))
         return self.parse_response(response, model=None)
 
     def delete_asset_file_set(
@@ -79,7 +81,7 @@ class FilesSpec(Spec):
         """
         params = {"keep_source": keep_source} if keep_source else None
         response = self._delete(
-            GET_ASSETS_FILE_SET_PATH.format(asset_id, file_set_id),
+            DELETE_ASSETS_FILE_SET_PATH.format(asset_id, file_set_id),
             params=params
         )
         
@@ -483,30 +485,3 @@ class FilesSpec(Spec):
         """
         resp = self._get(GET_STORAGES_PATH, **kwargs)
         return self.parse_response(resp, Storages)
-
-    def delete_asset_file_set(
-        self, asset_id: str, file_set_id: str, keep_source: bool = False
-    ) -> Response:
-        """Delete asset's file set, file entries, and actual files
-        
-        Args:
-            asset_id: The ID of the asset
-            file_set_id: The ID of the file set to delete
-            keep_source: If true, keep source objects
-            
-        Returns:
-            Response with FileSet model if status code is 200 (file set marked as deleted)
-            Response with no data model if status code is 204 (immediate deletion)
-        """
-        params = {"keep_source": keep_source} if keep_source else None
-        response = self._delete(
-            GET_ASSETS_FILE_SET_PATH.format(asset_id, file_set_id),
-            params=params
-        )
-        
-        # If status is 204, return response with no model
-        if response.status_code == 204:
-            return self.parse_response(response, model=None)
-            
-        # If status is 200, return response with FileSet model
-        return self.parse_response(response, FileSet)
