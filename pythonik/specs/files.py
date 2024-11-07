@@ -43,31 +43,114 @@ GET_STORAGES_PATH = "storages/"
 GET_ASSET_KEYFRAME = "assets/{}/keyframes/{}/"
 GET_ASSET_KEYFRAMES = "assets/{}/keyframes/"
 GET_ASSETS_FILE_PATH = "assets/{}/files/{}/"
+DELETE_ASSETS_FILE_SET_PATH = "assets/{}/file_sets/{}/"
+DELETE_ASSETS_FILE_PATH = "assets/{}/files/{}/"
 
 
 class FilesSpec(Spec):
     server = "API/files/"
 
+    
+
     def delete_asset_file(self, asset_id: str, file_id: str) -> Response:
-        """Delete asset's file entry (Not the actual file)"""
-        response = self._delete(GET_ASSETS_FILE_PATH.format(asset_id, file_id))
+        """Delete a specific file from an asset
+        
+        Args:
+            asset_id: The ID of the asset
+            file_id: The ID of the file to delete
+            
+        Returns:
+            Response with no data model
+        """
+        response = self._delete(DELETE_ASSETS_FILE_PATH.format(asset_id, file_id))
         return self.parse_response(response, model=None)
+
+    def delete_asset_file_set(
+        self, asset_id: str, file_set_id: str, keep_source: bool = False
+    ) -> Response:
+        """Delete asset's file set, file entries, and actual files
+        
+        Args:
+            asset_id: The ID of the asset
+            file_set_id: The ID of the file set to delete
+            keep_source: If true, keep source objects
+            
+        Returns:
+            Response with FileSet model if status code is 200 (file set marked as deleted)
+            Response with no data model if status code is 204 (immediate deletion)
+        """
+        params = {"keep_source": keep_source} if keep_source else None
+        response = self._delete(
+            DELETE_ASSETS_FILE_SET_PATH.format(asset_id, file_set_id),
+            params=params
+        )
+        
+        # If status is 204, return response with no model
+        if response.status_code == 204:
+            return self.parse_response(response, model=None)
+            
+        # If status is possibly 200, return response with FileSet model
+        return self.parse_response(response, FileSet)
+
 
     def delete_asset_keyframe(self, asset_id: str, keyframe_id: str):
         response = self._delete(GET_ASSET_KEYFRAME.format(asset_id, keyframe_id))
         return self.parse_response(response, model=None)
 
+
+    def get_asset_file(self, asset_id: str, file_id: str, **kwargs) -> Response:
+        """Get metadata for a specific file associated with an asset
+        
+        Args:
+            asset_id: The ID of the asset
+            file_id: The ID of the file to retrieve
+            **kwargs: Additional arguments to pass to the request
+            
+        Returns:
+            Response with File model
+        """
+        resp = self._get(GET_ASSETS_FILE_PATH.format(asset_id, file_id), **kwargs)
+        return self.parse_response(resp, File)
+
     def get_asset_keyframe(self, asset_id: str, keyframe_id: str) -> Response:
+        """Get a specific keyframe for an asset
+        
+        Args:
+            asset_id: The ID of the asset
+            keyframe_id: The ID of the keyframe to retrieve
+            
+        Returns:
+            Response with Keyframe model
+        """
         response = self._get(GET_ASSET_KEYFRAME.format(asset_id, keyframe_id))
         return self.parse_response(response, Keyframe)
 
     def get_asset_keyframes(self, asset_id: str) -> Keyframes:
+        """Get all keyframes for an asset
+        
+        Args:
+            asset_id: The ID of the asset
+            
+        Returns:
+            Response containing list of Keyframes
+        """
         response = self._get(GET_ASSET_KEYFRAMES.format(asset_id))
         return self.parse_response(response, Keyframes)
 
     def create_asset_keyframe(
         self, asset_id: str, body: Keyframe, exclude_defaults=True, **kwargs
     ) -> Response:
+        """Create a new keyframe for an asset
+        
+        Args:
+            asset_id: The ID of the asset
+            body: Keyframe object containing the keyframe data
+            exclude_defaults: If True, exclude default values from the request
+            **kwargs: Additional arguments to pass to the request
+            
+        Returns:
+            Response with created Keyframe model
+        """
         response = self._post(
             GET_ASSET_KEYFRAMES.format(asset_id),
             json=body.model_dump(exclude_defaults=exclude_defaults),
@@ -326,37 +409,79 @@ class FilesSpec(Spec):
         return self.parse_response(response, FileSet)
 
     def get_asset_filesets(self, asset_id: str, **kwargs) -> Response:
-        """Get all asset's file sets"""
+        """Get all file sets associated with an asset
+        
+        Args:
+            asset_id: The ID of the asset
+            **kwargs: Additional arguments to pass to the request
+            
+        Returns:
+            Response containing list of FileSets
+        """
         resp = self._get(GET_ASSETS_FILE_SET_PATH.format(asset_id), **kwargs)
-
         return self.parse_response(resp, FileSets)
 
     def get_asset_formats(self, asset_id: str, **kwargs) -> Response:
-        """Get all asset's formats"""
+        """Get all formats associated with an asset
+        
+        Args:
+            asset_id: The ID of the asset
+            **kwargs: Additional arguments to pass to the request
+            
+        Returns:
+            Response containing list of Formats
+        """
         resp = self._get(GET_ASSETS_FORMATS_PATH.format(asset_id), **kwargs)
-
         return self.parse_response(resp, Formats)
 
     def get_asset_format(self, asset_id: str, format_id: str, **kwargs) -> Response:
-        """Get asset format"""
+        """Get a specific format for an asset
+        
+        Args:
+            asset_id: The ID of the asset
+            format_id: The ID of the format to retrieve
+            **kwargs: Additional arguments to pass to the request
+            
+        Returns:
+            Response with Format model
+        """
         resp = self._get(GET_ASSETS_FORMAT_PATH.format(asset_id, format_id), **kwargs)
-
         return self.parse_response(resp, Format)
 
     def get_asset_files(self, asset_id: str, **kwargs) -> Response:
-        """Get asset files"""
+        """Get all files associated with an asset
+        
+        Args:
+            asset_id: The ID of the asset
+            **kwargs: Additional arguments to pass to the request
+            
+        Returns:
+            Response containing list of Files
+        """
         resp = self._get(GET_ASSETS_FILES_PATH.format(asset_id), **kwargs)
-
         return self.parse_response(resp, Files)
 
     def get_storage(self, storage_id: str, **kwargs):
-        """Get storage meta"""
+        """Get metadata for a specific storage
+        
+        Args:
+            storage_id: The ID of the storage to retrieve
+            **kwargs: Additional arguments to pass to the request
+            
+        Returns:
+            Response with Storage model
+        """
         resp = self._get(GET_STORAGE_PATH.format(storage_id), **kwargs)
-
         return self.parse_response(resp, Storage)
 
     def get_storages(self, **kwargs):
-        """Get storage meta"""
+        """Get metadata for all available storages
+        
+        Args:
+            **kwargs: Additional arguments to pass to the request
+            
+        Returns:
+            Response containing list of Storages
+        """
         resp = self._get(GET_STORAGES_PATH, **kwargs)
-
         return self.parse_response(resp, Storages)

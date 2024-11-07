@@ -10,6 +10,7 @@ from pythonik.models.files.keyframe import Keyframe, Keyframes, Resolution
 from pythonik.models.files.file import (
     Files,
     FileSets,
+    FileSet,
     FileCreate,
     FileSetCreate,
     UploadUrlResponse,
@@ -22,6 +23,7 @@ from pythonik.specs.files import (
     GET_ASSET_KEYFRAMES,
     FilesSpec,
     GET_STORAGE_PATH,
+    DELETE_ASSETS_FILE_SET_PATH,
     GET_STORAGES_PATH,
     GET_ASSET_KEYFRAME,
     GET_ASSET_PROXY_PATH,
@@ -30,7 +32,7 @@ from pythonik.specs.files import (
     GET_ASSETS_FORMAT_PATH,
     GET_ASSETS_FORMATS_PATH,
     GET_ASSETS_FILE_SET_PATH,
-    GET_ASSETS_FILE_PATH,
+    DELETE_ASSETS_FILE_PATH,
     GET_ASSET_PROXIES_MULTIPART_URL_PATH,
 )
 from pythonik.tests.utils import (
@@ -523,9 +525,60 @@ def test_delete_asset_file():
         file_id = str(uuid.uuid4())
 
         mock_address = FilesSpec.gen_url(
-            GET_ASSETS_FILE_PATH.format(asset_id, file_id)
+            DELETE_ASSETS_FILE_PATH.format(asset_id, file_id)
         )
 
         m.delete(mock_address)
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         client.files().delete_asset_file(asset_id, file_id)
+
+def test_delete_asset_file_set_immediate():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_set_id = str(uuid.uuid4())
+
+        mock_address = FilesSpec.gen_url(
+            DELETE_ASSETS_FILE_SET_PATH.format(asset_id, file_set_id)
+        )
+
+        # Mock 204 response for immediate deletion
+        m.delete(mock_address, status_code=204)
+        
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().delete_asset_file_set(asset_id, file_set_id)
+
+def test_delete_asset_file_set_marked():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_set_id = str(uuid.uuid4())
+
+        model = FileSet(id=file_set_id, status="deleted")
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            DELETE_ASSETS_FILE_SET_PATH.format(asset_id, file_set_id)
+        )
+
+        # Mock 200 response with FileSet data
+        m.delete(mock_address, json=data, status_code=200)
+        
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().delete_asset_file_set(asset_id, file_set_id)
+
+def test_delete_asset_file_set_keep_source():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_set_id = str(uuid.uuid4())
+
+        mock_address = FilesSpec.gen_url(
+            DELETE_ASSETS_FILE_SET_PATH.format(asset_id, file_set_id)
+        )
+
+        # Mock 204 response
+        m.delete(mock_address, status_code=204)
+        
