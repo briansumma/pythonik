@@ -2,30 +2,30 @@ name: Version Check
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - 'pyproject.toml'
-      - 'pythonik/__init__.py'
+      - "pyproject.toml"
+      - "pythonik/__init__.py"
 
 jobs:
   check-version:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.9"
-        
-    - name: Install Poetry
-      uses: snok/install-poetry@v1
-      
-    - name: Check versions match
-      run: |
-        VERSION_TOML=$(poetry version -s)
-        VERSION_INIT=$(python -c "import pythonik; print(pythonik.__version__)")
-        if [ "$VERSION_TOML" != "$VERSION_INIT" ]; then
-          echo "Version mismatch: pyproject.toml ($VERSION_TOML) != __init__.py ($VERSION_INIT)"
-          exit 1
-        fi 
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Check versions match
+        run: |
+          VERSION_TOML=$(poetry version -s)
+          VERSION_INIT=$(python -c "import pythonik; print(pythonik.__version__)")
+          if [ "$VERSION_TOML" != "$VERSION_INIT" ]; then
+            echo "Version mismatch: pyproject.toml ($VERSION_TOML) != __init__.py ($VERSION_INIT)"
+            exit 1
+          fi
