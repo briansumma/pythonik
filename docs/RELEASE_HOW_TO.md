@@ -22,7 +22,7 @@ To create an automated release and automatically publish to PyPI for the Pythoni
      ```
 
 3. **Tag the Commit:**
-   - Tag the commit including or afteryour changelog update. This tag will trigger the release workflow. Pythonik uses semantic versioning. Please see the [semver.org](https://semver.org/) website for more information.
+   - Tag the commit including or after your changelog update. This tag will trigger the release workflow. Pythonik uses semantic versioning. Please see the [semver.org](https://semver.org/) website for more information.
    - Use the following command to tag your commit:
      ```bash
      git tag 8.8.8 
