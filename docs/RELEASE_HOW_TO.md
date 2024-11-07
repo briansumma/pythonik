@@ -1,5 +1,6 @@
 To create an automated release and automatically publish to PyPI for the Pythonik project, follow these steps to ensure the process is smooth and automated:
 
+
 ### Step-by-Step Guide to Creating a Release
 
 1. **Update the Changelog:**
@@ -21,14 +22,14 @@ To create an automated release and automatically publish to PyPI for the Pythoni
      ```
 
 3. **Tag the Commit:**
-   - Tag the commit including or afteryour changelog update. This tag will trigger the release workflow.
+   - Tag the commit including or afteryour changelog update. This tag will trigger the release workflow. Pythonik uses semantic versioning. Please see the [semver.org](https://semver.org/) website for more information.
    - Use the following command to tag your commit:
      ```bash
-     git tag 8.8.8 "Release version 8.8.8"
+     git tag 8.8.8 
      ```
    - Push the tag to the repository:
      ```bash
-     git push origin 8.8.8
+     git push --tags
      ```
 
 4. **Automated Release Process:**
