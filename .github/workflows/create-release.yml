@@ -89,5 +89,5 @@ jobs:
     needs: release
     uses: ./.github/workflows/publish.yml
     with:
-      publish_test: ${{ bool(inputs.publish_test) }}
+      publish_test: ${{ inputs.publish_test == 'true' }}
     secrets: inherit
