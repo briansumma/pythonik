@@ -1,5 +1,25 @@
 # Changelog
 
+## 2024-11-08 "Croissant" - version 0.7.0
+
+### Added
+- Add asset version creation endpoints:
+  - Create new versions of existing assets (/v1/assets/{asset_id}/versions/)
+  - Create versions from other assets (/v1/assets/{asset_id}/versions/from/assets/{source_asset_id}/)
+- Add comprehensive version models:
+  - `AssetVersionCreate` for basic version creation
+  - `AssetVersionFromAssetCreate` for cross-asset version creation
+  - `AssetVersionResponse` for version creation responses
+- Add support for version creation with:
+  - Metadata copying
+  - Segment copying with type filtering
+  - Source version specification
+- Add proper handling of 200+ status codes for async version operations
+
+### Changed
+- Update AssetSpec to include version-related endpoints and models
+- Improve type hints and documentation for version creation methods
+
 ## 2024-11-07 "rm -rf" - version 0.6.3
 
 ### Added
