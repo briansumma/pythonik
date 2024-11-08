@@ -1,10 +1,22 @@
 [tool.poetry]
-name = "pythonik"
-# version will be should be updated in ci/cd before build
-version = "0.5.1"
+name = "nsa-pythonik"
+version = "0.7.0"
 description = "Python SDK for Iconik's API"
 authors = ["brant <brant@northshoreautomation.com>"]
 readme = "README.md"
+license = "MIT"
+repository = "https://github.com/NorthShoreAutomation/pythonik"
+homepage = "https://github.com/NorthShoreAutomation/pythonik"
+keywords = ["iconik", "api", "sdk", "media"]
+packages = [
+    { include = "pythonik" }
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Programming Language :: Python :: 3.9",
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"

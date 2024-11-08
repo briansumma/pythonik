@@ -18,6 +18,7 @@ from pythonik.specs.metadata import (
     ASSET_METADATA_FROM_VIEW_PATH,
     UPDATE_ASSET_METADATA,
     MetadataSpec,
+    ASSET_OBJECT_VIEW_PATH,
 )
 
 
@@ -159,3 +160,38 @@ def test_update_asset_metadata():
         m.put(mock_address, json=response_model.model_dump())
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         client.metadata().update_asset_metadata(asset_id, view_id, mutate_model)
+
+
+def test_put_segment_view_metadata():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        segment_id = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+        
+        # Create test payload
+        payload = {
+            "metadata_values": {
+                "field1": {
+                    "field_values": [{"value": "123"}]
+                }
+            }
+        }
+
+        mutate_model = UpdateMetadata.model_validate(payload)
+        response_model = UpdateMetadataResponse(
+            metadata_values=mutate_model.metadata_values.model_dump()
+        )
+
+        # Mock the endpoint using the ASSET_OBJECT_VIEW_PATH
+        mock_address = MetadataSpec.gen_url(
+            ASSET_OBJECT_VIEW_PATH.format(asset_id, "segments", segment_id, view_id)
+        )
+        m.put(mock_address, json=response_model.model_dump())
+
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.metadata().put_segment_view_metadata(
+            asset_id, segment_id, view_id, mutate_model
+        )

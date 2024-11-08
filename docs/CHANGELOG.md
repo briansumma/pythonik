@@ -1,5 +1,38 @@
 # Changelog
 
+## 2024-11-07 "rm -rf" - version 0.6.3
+
+### Added
+- Add DELETE endpoint for asset file sets (/v1/assets/{asset_id}/file_sets/{file_set_id}/)
+- Add delete_asset_file_set method with dual response handling:
+  - 200: Returns FileSet model when file set is marked as deleted
+  - 204: Returns empty response when immediate deletion occurs
+  - Includes status code conditional logic and optional keep_source parameter support
+
+### Changed
+- Fix file path variable names and add tests
+
+## 2024-11-06 "No Time Like the Prune-sent" - version 0.6.2
+
+### Added
+- Add DELETE endpoint for asset file entries (/v1/assets/{asset_id}/files/{file_id}/)
+
+### Changed
+- Improved code examples in README.md
+
+## 2024-11-05 "PyPi Public Release" - version 0.6.1
+
+### Changed
+- Updated package distribution name to `nsa-pythonik` for PyPI publishing
+- Updated installation instructions in README.md
+- Note: Internal imports remain unchanged, still using `from pythonik import ...`
+
+## 2024-11-05 "Public Metamorphosis" - version 0.6.0
+
+### Added
+
+- Add ability to update sub-object metadata for segments (Brant Goddard)
+
 ## 2024-09-09
 
 - Merge branch 'feature/proxy-placeholder-workflow' into 'main' (Brant Goddard)

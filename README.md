@@ -13,10 +13,15 @@ manage Iconik assets and metadata within their applications.
 
 ## Installation
 
-Install the Pythonik SDK using pip:
+You can install Pythonik directly from PyPI:
 
 ```bash
-pip install pythonik
+pip install nsa-pythonik
+```
+
+If you're using Poetry:
+```bash
+poetry add nsa-pythonik
 ```
 
 ## Usage
@@ -27,10 +32,21 @@ To retrieve an asset from Iconik, use the following code:
 
 ```python
 from pythonik.client import PythonikClient
+from pythonik.models.assets.assets import Asset
+from pythonik.models.base import Response
 
-client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=5)
-asset = client.assets().get(asset_id)
-print(asset)
+app_id = secrets.get_secret("app_id")
+auth_token = secrets.get_secret("auth_token")
+asset_id = secrets.get_secret("asset_id")
+
+client: PythonikClient = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=10)
+
+
+res: Response = client.assets().get(asset_id)
+data: Asset = res.data
+data_as_dict = data.model_dump()
+data_as_json = data.model_dump_json()
+
 ```
 
 ### Get Metadata from a View
@@ -39,52 +55,31 @@ To get metadata for an asset from a specific view, use the following code:
 
 ```python
 from pythonik.client import PythonikClient
+from pythonik.models.assets.metadata import ViewMetadata
+from pythonik.models.base import Response
 
-asset_id = '123'
-view_id = '456'
+app_id = secrets.get_secret("app_id")
+auth_token = secrets.get_secret("auth_token")
 
-client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=5)
-metadata = client.metadata().get_asset_metadata(asset_id, view_id)
-print(metadata)
+asset_id = 'a31sd2asdf123jasdfq134'
+view_id = 'a12sl34s56asdf123jhas2'
+
+client: PythonikClient = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=5)
+
+default_model = ViewMetadata()
+# intercept_404 intercepts 404 errors if no metadata is found in view and returns a ViewMetadata model you provide so you can handle the error gracefully
+res: Response = client.metadata().get_asset_metadata(asset_id, view_id, intercept_404=default_model)
+data: ViewMetadata = res.data
+data_as_dict = data.model_dump()
+data_as_json = data.model_dump_json()
 ```
 
 Checkout the [API reference](./docs/API_REFERENCE.md) and [advanced usage guide](./docs/ADVANCED_USAGE.md) to see all you can do with Pythonik.
 
-## Publishing to NSA Internal PyPI GitLab Package Registry
+## Publishing to PyPI (for maintainers) 
 
-The CI/CD pipeline will automatically build and add a new version as a PyPI package to the package registry for this project.
+To publish a new version to PyPI please see the [release how-to guide](./docs/RELEASE_HOW_TO.md).
 
-To manually build and publish a new PyPI package:
-
-1. Create and push a tag on the default branch (main):
-   ```bash
-   git tag {tag}
-   git push
-   ```
-
-## Installing from NSA Internal PyPI GitLab Package Registry
-
-To install the package in another project using Poetry:
-
-1. Add the GitLab source with a priority of supplemental:
-
-   ```bash
-   poetry source add --priority=supplemental gitlab https://gitlab.com/api/v4/projects/51363622/packages/pypi/simple
-   ```
-
-2. Configure authentication:
-
-   ```bash
-   # your GitLab username and access token
-   poetry config http-basic.gitlab <username> <password>
-   ```
-
-3. Install the package:
-   ```bash
-   poetry add --source gitlab pythonik
-   ```
-
-Note: If using a personal access token for authentication, it needs the `api` scope. If using a deploy token, set the scope to `read_package_registry`.
 
 ## Using Poetry
 

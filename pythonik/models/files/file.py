@@ -104,7 +104,7 @@ class FileSetCreate(FileSet):
     format_id: str
     name: str
     storage_id: str
-    base_dir: str = None
+    base_dir: str = ""
     component_ids: list = []
 
 

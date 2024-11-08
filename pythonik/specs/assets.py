@@ -1,5 +1,6 @@
 from pythonik.models.assets.assets import Asset, AssetCreate
 from pythonik.models.assets.segments import SegmentBody, SegmentResponse
+from pythonik.models.assets.versions import AssetVersionCreate, AssetVersionResponse, AssetVersionFromAssetCreate
 from pythonik.models.base import Response
 from pythonik.specs.base import Spec
 
@@ -7,6 +8,8 @@ BASE = "assets"
 GET_URL = BASE + "/{}/"
 SEGMENT_URL = BASE + "/{}/segments/"
 SEGMENT_URL_UPDATE = SEGMENT_URL + "{}/"
+VERSIONS_URL = BASE + "/{}/versions/"
+VERSIONS_FROM_ASSET_URL = BASE + "/{}/versions/from/assets/{}/"
 
 
 class AssetSpec(Spec):
@@ -122,3 +125,70 @@ class AssetSpec(Spec):
         )
 
         return self.parse_response(resp, SegmentResponse)
+
+    def create_version(
+        self, 
+        asset_id: str, 
+        body: AssetVersionCreate, 
+        exclude_defaults=True, 
+        **kwargs
+    ) -> Response:
+        """
+        Create a new version of an asset
+        
+        Args:
+            asset_id: The ID of the asset to create a version for
+            body: Version creation parameters
+            exclude_defaults: If True, exclude default values from request
+            **kwargs: Additional arguments to pass to the request
+            
+        Returns:
+            Response(model=AssetVersionResponse)
+            
+        Required roles:
+            - can_write_versions
+        """
+        response = self._post(
+            VERSIONS_URL.format(asset_id),
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
+        )
+        return self.parse_response(response, AssetVersionResponse)
+
+    def create_version_from_asset(
+        self,
+        asset_id: str,
+        source_asset_id: str,
+        body: AssetVersionFromAssetCreate,
+        exclude_defaults=True,
+        **kwargs
+    ) -> Response:
+        """
+        Create a new version of an asset from another asset
+        
+        Args:
+            asset_id: The ID of the asset to create a version for
+            source_asset_id: The ID of the source asset to create version from
+            body: Version creation parameters
+            exclude_defaults: If True, exclude default values from request
+            **kwargs: Additional arguments to pass to the request
+            
+        Returns:
+            Response with no data model (202 status code)
+            
+        Required roles:
+            - can_write_versions
+            
+        Raises:
+            - 400: Bad request
+            - 401: Token is invalid
+            - 404: Source or destination asset does not exist
+            - 409: The asset is being transcoded and cannot be set as a new version
+        """
+        response = self._post(
+            VERSIONS_FROM_ASSET_URL.format(asset_id, source_asset_id),
+            json=body.model_dump(exclude_defaults=exclude_defaults),
+            **kwargs
+        )
+        # Since this returns 202 with no content, we don't need a response model
+        return self.parse_response(response, model=None)
