@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum, StrEnum
-from typing import List, Optional
+from enum import Enum
+from typing import List
 
 from pydantic import BaseModel, field_serializer, Field
 
-from pythonik.models.assets.assets import Asset
-from pythonik.models.base import ArchiveStatus, Status, UserInfo, PaginatedResponse
+from pythonik.models.base import Status, PaginatedResponse
 from pythonik.models.files.keyframe import Keyframe
 
 
@@ -53,11 +52,6 @@ class Collection(BaseModel):
         if dt:
             return dt.isoformat()
         return None
-
-    @field_serializer("custom_order_status", "status")
-    @classmethod
-    def enum_to_str(cls, order_status: CustomOrderStatus):
-        return order_status.value
 
 
 class CollectionContentInfo(BaseModel):
