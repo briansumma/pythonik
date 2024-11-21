@@ -1,5 +1,14 @@
 # Changelog
 
+## 2024-11-15 "Deprecation Emancipation" - version 1.0.1
+
+### Changed
+- Deprecated `get_asset_file_sets()` in favor of `get_asset_file_set_files()`
+- Renamed `GET_ASSETS_FILE_SET_PATH` to `GET_ASSETS_FILE_SETS_PATH` for better URL path consistency
+- Updated related test cases to match new method names
+
+Note: Previous functionality remains available but will display deprecation warnings
+
 ## 2024-11-15 "filesets, more like files am i right? No? cool... cool... " - version 1.0.0
 
 ### Changed
