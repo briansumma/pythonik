@@ -1,5 +1,14 @@
 # Changelog
 
+## 2024-11-15 "filesets, more like files am i right? No? cool... cool... " - version 1.0.0
+
+### Changed
+- Renamed `GET_ASSETS_FILE_SET_PATH` to `GET_ASSETS_FILE_SETS_PATH` for better URL path consistency
+- Renamed `get_asset_file_sets()` method to `get_asset_file_set_files()` to better reflect its purpose
+- BACKWARDS INCOMPATIBLE CHANGE: `get_asset_file_sets()` is removed, use `get_asset_file_set_files()` instead
+- Simplified docstring for file set retrieval endpoint
+- Updated related test cases to match new method names
+
 ## 2024-11-14 "You want some, you lose some" - version 0.9.0
 
 ### Added
