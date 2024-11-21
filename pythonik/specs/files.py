@@ -38,7 +38,7 @@ GET_ASSETS_FORMATS_PATH = "assets/{}/formats/"
 GET_ASSETS_FORMAT_PATH = "assets/{}/formats/{}/"
 GET_ASSETS_FORMAT_COMPONENTS_PATH = "assets/{}/formats/{}/components"
 GET_ASSETS_FILES_PATH = "assets/{}/files/"
-GET_ASSETS_FILE_SET_PATH = "assets/{}/file_sets/"
+GET_ASSETS_FILE_SETS_PATH = "assets/{}/file_sets/"
 GET_ASSETS_FILE_SET_FILES_PATH = "assets/{}/file_sets/{}/files/"
 GET_STORAGE_PATH = "storages/{}/"
 GET_STORAGES_PATH = "storages/"
@@ -52,30 +52,6 @@ DELETE_ASSETS_FILE_PATH = "assets/{}/files/{}/"
 class FilesSpec(Spec):
     server = "API/files/"
 
-    def get_asset_file_sets(self, asset_id: str, file_sets_id: str, **kwargs) -> Response:
-        """
-        Retrieve file sets for a specific asset
-
-        Args:
-            asset_id: ID of the asset
-            file_sets_id: ID of the file set to retrieve
-            kwargs: additional kwargs passed to the request
-        
-        Returns:
-            Response(model=FileSetsFilesResponse)
-        
-        Required roles:
-            - can_read_files
-        
-        Raises:
-            - 401 Token is invalid
-            - 404 FileSets for this asset don't exist
-        """
-        response = self._get(
-            GET_ASSETS_FILE_SET_FILES_PATH.format(asset_id, file_sets_id),
-            **kwargs
-        )
-        return self.parse_response(response, FileSetsFilesResponse)
 
     def create_asset_format_component(
         self,
@@ -173,6 +149,13 @@ class FilesSpec(Spec):
         """
         resp = self._get(GET_ASSETS_FILE_PATH.format(asset_id, file_id), **kwargs)
         return self.parse_response(resp, File)
+
+    def get_asset_file_set_files(self, asset_id: str, file_sets_id: str, **kwargs) -> Response:
+        """
+        Retrieve files for a specific file set
+        """
+        response = self._get(GET_ASSETS_FILE_SET_FILES_PATH.format(asset_id, file_sets_id), **kwargs)
+        return self.parse_response(response, FileSetsFilesResponse)
 
     def get_asset_keyframe(self, asset_id: str, keyframe_id: str) -> Response:
         """Get a specific keyframe for an asset
@@ -464,7 +447,7 @@ class FilesSpec(Spec):
         Returns: Response(model=FileSet)
         """
         response = self._post(
-            GET_ASSETS_FILE_SET_PATH.format(asset_id),
+            GET_ASSETS_FILE_SETS_PATH.format(asset_id),
             json=body.model_dump(exclude_defaults=exclude_defaults),
             **kwargs,
         )
@@ -480,7 +463,7 @@ class FilesSpec(Spec):
         Returns:
             Response containing list of FileSets
         """
-        resp = self._get(GET_ASSETS_FILE_SET_PATH.format(asset_id), **kwargs)
+        resp = self._get(GET_ASSETS_FILE_SETS_PATH.format(asset_id), **kwargs)
         return self.parse_response(resp, FileSets)
 
     def get_asset_formats(self, asset_id: str, **kwargs) -> Response:
