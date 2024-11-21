@@ -32,7 +32,7 @@ from pythonik.specs.files import (
     GET_ASSETS_FORMAT_PATH,
     DELETE_ASSETS_FILE_PATH,
     GET_ASSETS_FORMATS_PATH,
-    GET_ASSETS_FILE_SET_PATH,
+    GET_ASSETS_FILE_SETS_PATH,
     DELETE_ASSETS_FILE_SET_PATH,
     GET_ASSETS_FILE_SET_FILES_PATH,
     GET_ASSETS_FORMAT_COMPONENTS_PATH,
@@ -84,7 +84,7 @@ def test_get_asset_file_sets():
         m.get(mock_address, json=data)
 
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
-        client.files().get_asset_file_sets(asset_id, file_sets_id)
+        client.files().get_asset_file_set_files(asset_id, file_sets_id)
 
 
 def test_get_proxy_by_proxy_id():
@@ -478,7 +478,7 @@ def test_create_asset_format():
         client.files().create_asset_format(asset_id, body=model)
 
 
-def test_create_asset_fileset():
+def test_create_asset_file_sets():
     with requests_mock.Mocker() as m:
         app_id = str(uuid.uuid4())
         auth_token = str(uuid.uuid4())
@@ -491,7 +491,27 @@ def test_create_asset_fileset():
         )
         data = model.model_dump()
 
-        mock_address = FilesSpec.gen_url(GET_ASSETS_FILE_SET_PATH.format(asset_id))
+        mock_address = FilesSpec.gen_url(GET_ASSETS_FILE_SETS_PATH.format(asset_id))
+        m.post(mock_address, json=data)
+
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().create_asset_file_sets(asset_id, body=model)
+
+
+def test_create_asset_filesets_deprecated():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+
+        model = FileSetCreate(
+            name=str(uuid.uuid4()),
+            format_id=str(uuid.uuid4()),
+            storage_id=str(uuid.uuid4()),
+        )
+        data = model.model_dump()
+
+        mock_address = FilesSpec.gen_url(GET_ASSETS_FILE_SETS_PATH.format(asset_id))
         m.post(mock_address, json=data)
 
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
@@ -506,7 +526,7 @@ def test_get_asset_filesets():
 
         model = FileSets()
         data = model.model_dump()
-        mock_address = FilesSpec.gen_url(GET_ASSETS_FILE_SET_PATH.format(asset_id))
+        mock_address = FilesSpec.gen_url(GET_ASSETS_FILE_SETS_PATH.format(asset_id))
         m.get(mock_address, json=data)
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         params = {"per_page": 20}
