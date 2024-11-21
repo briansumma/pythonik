@@ -478,7 +478,27 @@ def test_create_asset_format():
         client.files().create_asset_format(asset_id, body=model)
 
 
-def test_create_asset_fileset():
+def test_create_asset_file_sets():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+
+        model = FileSetCreate(
+            name=str(uuid.uuid4()),
+            format_id=str(uuid.uuid4()),
+            storage_id=str(uuid.uuid4()),
+        )
+        data = model.model_dump()
+
+        mock_address = FilesSpec.gen_url(GET_ASSETS_FILE_SETS_PATH.format(asset_id))
+        m.post(mock_address, json=data)
+
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().create_asset_file_sets(asset_id, body=model)
+
+
+def test_create_asset_filesets_deprecated():
     with requests_mock.Mocker() as m:
         app_id = str(uuid.uuid4())
         auth_token = str(uuid.uuid4())

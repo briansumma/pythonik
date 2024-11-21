@@ -1,5 +1,7 @@
 from urllib.parse import urlparse
 from xml.dom.minidom import parseString
+from functools import wraps
+import warnings
 
 import requests
 
@@ -440,6 +442,16 @@ class FilesSpec(Spec):
         return self.parse_response(response, File)
 
     def create_asset_filesets(
+        self, asset_id: str, body: FileSetCreate, exclude_defaults=True, **kwargs
+    ) -> Response:
+        warnings.warn(
+            "'create_asset_filesets' is deprecated. Use 'create_asset_file_sets' instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+        return self.create_asset_file_sets(asset_id, body, exclude_defaults, **kwargs)
+
+    def create_asset_file_sets(
         self, asset_id: str, body: FileSetCreate, exclude_defaults=True, **kwargs
     ) -> Response:
         """
