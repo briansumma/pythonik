@@ -1,5 +1,15 @@
 # Changelog
 
+## 2024-11-25 "Exclusion Delusion" - version 1.0.2
+
+### Fixed
+- Remove default values from FileCreate model to prevent serialization issues with `model_dump(exclude_defaults=True)`
+- Fields `type` and `status` are now required parameters without defaults
+- Updated tests to explicitly set these required fields
+
+### Technical Details
+Worked around a Pydantic behavior where fields with default values would be excluded from serialization when using `model_dump(exclude_defaults=True)`, even when explicitly set.
+
 ## 2024-11-15 "Deprecation Emancipation" - version 1.0.1
 
 ### Changed
