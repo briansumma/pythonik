@@ -76,9 +76,9 @@ class FileCreate(File):
     name: str
     original_name: str
     size: int
-    type: str = FileType.FILE
+    type: str 
     directory_path: str = ""
-    status: str = FileStatus.CLOSED
+    status: str 
 
 
 class FileSet(BaseModel):
