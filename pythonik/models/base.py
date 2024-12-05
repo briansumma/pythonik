@@ -12,6 +12,9 @@ class Response(BaseModel):
     data: Any
     # data: Optional[BaseModel] = None
 
+class ObjectType(str, Enum):
+    ASSETS = "assets"
+    COLLECTIONS = "collections"
 
 class Status(str, Enum):
     ACTIVE = "ACTIVE"

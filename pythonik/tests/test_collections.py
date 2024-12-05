@@ -1,19 +1,22 @@
 import uuid
 import requests_mock
 
-from pythonik.models.base import Status
+from pythonik.models.base import Status, ObjectType
 from pythonik.client import PythonikClient
 from pythonik.models.assets.collections import (
     Collection,
     CollectionContents,
     CustomOrderStatus,
     CollectionContentInfo,
+    Content,
+    AddContentResponse,
 )
 from pythonik.specs.collection import (
     BASE,
     GET_URL,
     GET_INFO,
     GET_CONTENTS,
+    POST_CONTENT,
     CollectionSpec,
 )
 
@@ -95,3 +98,31 @@ def test_delete_collection():
 
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         client.collections().delete(collection_id)
+
+
+def test_add_content():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        collection_id = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+
+        # Create test content object
+        content = Content(
+            object_id=asset_id,
+            object_type=ObjectType.ASSETS.value,
+        )
+
+        # Create expected response model
+        model = AddContentResponse()
+
+        # Mock the POST request
+        mock_address = CollectionSpec.gen_url(POST_CONTENT.format(collection_id))
+        m.post(mock_address, json=model.model_dump(), status_code=201)
+
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        response = client.collections().add_content(collection_id, body=content)
+
+        # Verify response
+        assert response.data == model

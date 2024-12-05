@@ -8,6 +8,7 @@ from pydantic import BaseModel, field_serializer, Field
 
 from pythonik.models.base import Status, PaginatedResponse
 from pythonik.models.files.keyframe import Keyframe
+from pythonik.models.base import ObjectType
 
 
 class CustomOrderStatus(str, Enum):
@@ -53,6 +54,12 @@ class Collection(BaseModel):
             return dt.isoformat()
         return None
 
+class Content(BaseModel):
+    object_id: str 
+    object_type: ObjectType
+
+class AddContentResponse(BaseModel):
+    pass
 
 class CollectionContentInfo(BaseModel):
     assets_count: int
