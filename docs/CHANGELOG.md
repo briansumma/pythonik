@@ -1,5 +1,15 @@
 # Changelog
 
+## 2024-12-05 "Content Contentment" - version 1.1.0
+
+### Added
+- Add `add_content()` method to collections API for adding assets to collections
+- Add `AddContentResponse` model for handling collection content addition responses
+- Add tests for collection content addition functionality
+
+### Changed
+- Update collection content handling to use proper object type enums
+
 ## 2024-11-25 "Exclusion Delusion" - version 1.0.2
 
 ### Fixed
