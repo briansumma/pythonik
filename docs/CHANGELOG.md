@@ -1,5 +1,18 @@
 # Changelog
 
+## 2024-12-10 "Metadata Mastery" - version 1.1.1
+
+### Added
+- Add `put_metadata_direct()` method for fast, admin-level metadata updates
+- Add comprehensive test suite for metadata direct updates including error cases (400, 401, 403, 404)
+- Add documentation for direct metadata operations in `METADATA.md`
+
+### Changed
+- Improved docstring for `put_metadata_direct()` to clarify admin-only access and error cases
+
+### Technical Details
+Introduced a new admin-level API endpoint for direct metadata updates that bypasses view validation for improved performance. This method should be used with caution as it can modify metadata even if the target object doesn't exist. 
+
 ## 2024-12-05 "Content Contentment" - version 1.1.0
 
 ### Added

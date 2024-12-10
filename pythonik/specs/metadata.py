@@ -6,11 +6,13 @@ from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadataResponse,
 )
 from pythonik.specs.base import Spec
-from typing import Literal
+from typing import Literal, Dict, Any
 
 ASSET_METADATA_FROM_VIEW_PATH = "assets/{}/views/{}"
 UPDATE_ASSET_METADATA = "assets/{}/views/{}/"
 ASSET_OBJECT_VIEW_PATH = "assets/{}/{}/{}/views/{}/"
+PUT_METADATA_DIRECT_PATH = "{}/{}/"
+
 
 ObjectType = Literal["segments"]
 
@@ -54,6 +56,37 @@ class MetadataSpec(Spec):
         """Given an asset's view id, update metadata in asset's view"""
         resp = self._put(
             UPDATE_ASSET_METADATA.format(asset_id, view_id), json=metadata.model_dump()
+        )
+
+        return self.parse_response(resp, UpdateMetadataResponse)
+    
+    def put_metadata_direct(self, object_type: str, object_id: str, metadata: UpdateMetadata) -> Response:
+        """Edit metadata values directly without a view.
+
+        Args:
+            object_type (str): The type of object to update metadata for
+            object_id (str): The unique identifier of the object
+            metadata (UpdateMetadata): Metadata values to update
+
+        Returns:
+            Response[UpdateMetadataResponse]
+
+        Required roles:
+            - admin_access
+
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+            - 403 Forbidden (non-admin user)
+            - 404 Object not found
+
+        Note:
+            Use with caution. This method bypasses standard validation checks for speed,
+            and will write to the database even if the object_id doesn't exist. Admin
+            access required as this is a potentially dangerous operation.
+        """
+        resp = self._put(
+            PUT_METADATA_DIRECT_PATH.format(object_type, object_id), json=metadata.model_dump()
         )
 
         return self.parse_response(resp, UpdateMetadataResponse)
