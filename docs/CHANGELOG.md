@@ -1,6 +1,6 @@
 # Changelog
 
-## 2024-12-10 "Metadata Mastery" - version 1.1.1
+## 2024-12-10 "Metadata Mastery" - version 1.2.0
 
 ### Added
 - Add `put_metadata_direct()` method for fast, admin-level metadata updates
