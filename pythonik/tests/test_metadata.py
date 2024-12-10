@@ -362,3 +362,32 @@ def test_put_metadata_direct_malformed():
         # Verify response
         assert not response.response.ok
         assert response.response.status_code == 400
+
+
+def test_put_metadata_direct_forbidden():
+    """Test direct metadata update with non-admin user."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())  # Valid token but non-admin user
+        object_type = ObjectType.ASSETS.value
+        object_id = str(uuid.uuid4())
+
+        # Create test metadata
+        metadata = UpdateMetadata.model_validate({"metadata_values": {}})
+
+        # Mock the PUT request to return 403
+        mock_address = MetadataSpec.gen_url(
+            PUT_METADATA_DIRECT_PATH.format(object_type, object_id)
+        )
+        m.put(mock_address, status_code=403, json={
+            "error": "Forbidden",
+            "message": "Admin access required for direct metadata updates"
+        })
+
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        response = client.metadata().put_metadata_direct(object_type, object_id, metadata)
+
+        # Verify response
+        assert not response.response.ok
+        assert response.response.status_code == 403

@@ -77,6 +77,7 @@ class MetadataSpec(Spec):
         Raises:
             - 400 Bad request
             - 401 Token is invalid
+            - 403 Forbidden (non-admin user)
             - 404 Object not found
 
         Note:
