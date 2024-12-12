@@ -2,6 +2,7 @@ from urllib.parse import urlparse
 from xml.dom.minidom import parseString
 from functools import wraps
 import warnings
+from typing import Union, Dict, Any
 
 import requests
 
@@ -54,13 +55,12 @@ DELETE_ASSETS_FILE_PATH = "assets/{}/files/{}/"
 class FilesSpec(Spec):
     server = "API/files/"
 
-
     def create_asset_format_component(
         self,
         asset_id: str,
         format_id: str,
-        body: Component,
-        exclude_defaults=True,
+        body: Union[Component, Dict[str, Any]],
+        exclude_defaults: bool = True,
         **kwargs,
     ) -> Response:
         """
@@ -69,9 +69,9 @@ class FilesSpec(Spec):
         Args:
             asset_id: ID of the asset
             format_id: ID for the format
-            body: component creation parameters
-            exclude_defaults: If True, exclude default values from request
-            kwargs: additional kwargs passed to the request
+            body: Component creation parameters, either as Component model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
 
         Returns:
             Response(model=Formats)
@@ -84,29 +84,30 @@ class FilesSpec(Spec):
             401 Token is invalid
             404 Formats for this asset don't exist
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
             GET_ASSETS_FORMAT_COMPONENTS_PATH.format(asset_id, format_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs,
         )
         return self.parse_response(response, Formats)
-    
 
-    def delete_asset_file(self, asset_id: str, file_id: str) -> Response:
+    def delete_asset_file(self, asset_id: str, file_id: str, **kwargs) -> Response:
         """Delete a specific file from an asset
         
         Args:
             asset_id: The ID of the asset
             file_id: The ID of the file to delete
+            **kwargs: Additional kwargs to pass to the request
             
         Returns:
             Response with no data model
         """
-        response = self._delete(DELETE_ASSETS_FILE_PATH.format(asset_id, file_id))
+        response = self._delete(DELETE_ASSETS_FILE_PATH.format(asset_id, file_id), **kwargs)
         return self.parse_response(response, model=None)
 
     def delete_asset_file_set(
-        self, asset_id: str, file_set_id: str, keep_source: bool = False
+        self, asset_id: str, file_set_id: str, keep_source: bool = False, **kwargs
     ) -> Response:
         """Delete asset's file set, file entries, and actual files
         
@@ -122,7 +123,8 @@ class FilesSpec(Spec):
         params = {"keep_source": keep_source} if keep_source else None
         response = self._delete(
             DELETE_ASSETS_FILE_SET_PATH.format(asset_id, file_set_id),
-            params=params
+            params=params,
+            **kwargs
         )
         
         # If status is 204, return response with no model
@@ -132,9 +134,8 @@ class FilesSpec(Spec):
         # If status is possibly 200, return response with FileSet model
         return self.parse_response(response, FileSet)
 
-
-    def delete_asset_keyframe(self, asset_id: str, keyframe_id: str):
-        response = self._delete(GET_ASSET_KEYFRAME.format(asset_id, keyframe_id))
+    def delete_asset_keyframe(self, asset_id: str, keyframe_id: str, **kwargs):
+        response = self._delete(GET_ASSET_KEYFRAME.format(asset_id, keyframe_id), **kwargs)
         return self.parse_response(response, model=None)
 
 
@@ -159,7 +160,7 @@ class FilesSpec(Spec):
         response = self._get(GET_ASSETS_FILE_SET_FILES_PATH.format(asset_id, file_sets_id), **kwargs)
         return self.parse_response(response, FileSetsFilesResponse)
 
-    def get_asset_keyframe(self, asset_id: str, keyframe_id: str) -> Response:
+    def get_asset_keyframe(self, asset_id: str, keyframe_id: str, **kwargs) -> Response:
         """Get a specific keyframe for an asset
         
         Args:
@@ -169,10 +170,10 @@ class FilesSpec(Spec):
         Returns:
             Response with Keyframe model
         """
-        response = self._get(GET_ASSET_KEYFRAME.format(asset_id, keyframe_id))
+        response = self._get(GET_ASSET_KEYFRAME.format(asset_id, keyframe_id), **kwargs)
         return self.parse_response(response, Keyframe)
 
-    def get_asset_keyframes(self, asset_id: str) -> Keyframes:
+    def get_asset_keyframes(self, asset_id: str, **kwargs) -> Keyframes:
         """Get all keyframes for an asset
         
         Args:
@@ -181,62 +182,65 @@ class FilesSpec(Spec):
         Returns:
             Response containing list of Keyframes
         """
-        response = self._get(GET_ASSET_KEYFRAMES.format(asset_id))
+        response = self._get(GET_ASSET_KEYFRAMES.format(asset_id), **kwargs)
         return self.parse_response(response, Keyframes)
 
     def create_asset_keyframe(
-        self, asset_id: str, body: Keyframe, exclude_defaults=True, **kwargs
+        self, asset_id: str, body: Union[Keyframe, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
     ) -> Response:
         """Create a new keyframe for an asset
         
         Args:
             asset_id: The ID of the asset
-            body: Keyframe object containing the keyframe data
-            exclude_defaults: If True, exclude default values from the request
+            body: Keyframe object containing the keyframe data, either as Keyframe model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
             **kwargs: Additional arguments to pass to the request
             
         Returns:
             Response with created Keyframe model
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
             GET_ASSET_KEYFRAMES.format(asset_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs,
         )
         return self.parse_response(response, Keyframe)
 
-    def get_asset_proxy(self, asset_id: str, proxy_id: str) -> Response:
+    def get_asset_proxy(self, asset_id: str, proxy_id: str, **kwargs) -> Response:
         """Get asset's proxy
         Returns: Response(model=Proxy)
         """
 
-        resp = self._get(GET_ASSET_PROXY_PATH.format(asset_id, proxy_id))
+        resp = self._get(GET_ASSET_PROXY_PATH.format(asset_id, proxy_id), **kwargs)
 
         return self.parse_response(resp, Proxy)
 
     def update_asset_proxy(
-        self, asset_id: str, proxy_id: str, body: Proxy, exclude_defaults=True, **kwargs
+        self, asset_id: str, proxy_id: str, body: Union[Proxy, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
     ) -> Response:
         """
         Update asset's proxy
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._patch(
             GET_ASSET_PROXY_PATH.format(asset_id, proxy_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs,
         )
         return self.parse_response(response, Proxy)
 
     def create_asset_proxy(
-        self, asset_id: str, body: Proxy, exclude_defaults=True, **kwargs
+        self, asset_id: str, body: Union[Proxy, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
     ) -> Response:
         """
         Create proxy and associate to asset
         Returns: Response(model=Proxy)
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
             GET_ASSET_PROXIES_PATH.format(asset_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs,
         )
         return self.parse_response(response, Proxy)
@@ -245,14 +249,15 @@ class FilesSpec(Spec):
         self,
         asset_id: str,
         keyframe_id: str,
-        body: Keyframe,
-        exclude_defaults=True,
+        body: Union[Keyframe, Dict[str, Any]],
+        exclude_defaults: bool = True,
         **kwargs,
     ) -> Response:
         "Partially update an asset keyframe using PATCH"
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._patch(
             GET_ASSET_KEYFRAME.format(asset_id, keyframe_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs,
         )
         return self.parse_response(response, Keyframe)
@@ -261,14 +266,15 @@ class FilesSpec(Spec):
         self,
         asset_id: str,
         keyframe_id: str,
-        body: Keyframe,
-        exclude_defaults=True,
+        body: Union[Keyframe, Dict[str, Any]],
+        exclude_defaults: bool = True,
         **kwargs,
     ) -> Response:
         "Update an asset keyframe using POST"
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
             GET_ASSET_KEYFRAME.format(asset_id, keyframe_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs,
         )
         return self.parse_response(response, Keyframe)
@@ -351,7 +357,7 @@ class FilesSpec(Spec):
             supported_methods = [StorageMethod.S3, StorageMethod.GCS]
             raise UnexpectedStorageMethodForProxy(
                 f"Unexpected storage method: {proxy.storage_method}."
-                f" Pythonik supports {supported_methods}."
+                f" pythonik supports {supported_methods}."
             )
 
         upload_url_response = requests.post(upload_url, headers=headers)
@@ -371,13 +377,14 @@ class FilesSpec(Spec):
             supported_methods = [StorageMethod.S3, StorageMethod.GCS]
             raise UnexpectedStorageMethodForProxy(
                 f"Unexpected storage method: {proxy.storage_method}."
-                f" Pythonik supports {supported_methods}."
+                f" pythonik supports {supported_methods}."
             )
 
         return PythonikResponse(response=upload_url_response, data=upload_id)
 
     def get_s3_presigned_url(
-        self, asset_id: str, proxy_id: str, upload_id: str, part_number: int
+        self, asset_id: str, proxy_id: str, upload_id: str, part_number: int,
+        **kwargs
     ) -> PythonikResponse:
         """
         Get a singed part URL to upload a proxy.
@@ -390,6 +397,7 @@ class FilesSpec(Spec):
         response = self._get(
             path=GET_ASSET_PROXIES_MULTIPART_URL_PATH.format(asset_id, proxy_id),
             params={"upload_id": upload_id, "parts_num": part_number},
+            **kwargs
         )
 
         if not response.ok:
@@ -398,51 +406,54 @@ class FilesSpec(Spec):
         return self.parse_response(response, S3MultipartUploadResponse)
 
     def get_s3_complete_url(
-        self, asset_id: str, proxy_id: str, upload_id: str
+        self, asset_id: str, proxy_id: str, upload_id: str, **kwargs
     ) -> PythonikResponse:
         response = self._get(
             GET_ASSET_PROXIES_MULTIPART_COMPLETE_URL_PATH.format(asset_id, proxy_id),
             params={"upload_id": upload_id, "type": "complete_url"},
+            **kwargs
         )
         if not response.ok:
             return PythonikResponse(response=response, data=None)
         return PythonikResponse(response=response, data=response.json()["complete_url"])
 
-    def get_asset_proxies(self, asset_id: str):
-        resp = self._get(GET_ASSET_PROXIES_PATH.format(asset_id))
+    def get_asset_proxies(self, asset_id: str, **kwargs) -> PythonikResponse:
+        resp = self._get(GET_ASSET_PROXIES_PATH.format(asset_id), **kwargs)
 
         return self.parse_response(resp, Proxies)
 
     def create_asset_format(
-        self, asset_id: str, body: FormatCreate, exclude_defaults=True, **kwargs
+        self, asset_id: str, body: Union[FormatCreate, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
     ) -> Response:
         """
         Create format and associate it to asset
         Returns: Response(model=Format)
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
             GET_ASSETS_FORMATS_PATH.format(asset_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs,
         )
         return self.parse_response(response, Format)
 
     def create_asset_file(
-        self, asset_id: str, body: FileCreate, exclude_defaults=True, **kwargs
+        self, asset_id: str, body: Union[FileCreate, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
     ) -> Response:
         """
         Create file and associate to asset
         Returns: Response(model=File)
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
             GET_ASSETS_FILES_PATH.format(asset_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs,
         )
         return self.parse_response(response, File)
 
     def create_asset_filesets(
-        self, asset_id: str, body: FileSetCreate, exclude_defaults=True, **kwargs
+        self, asset_id: str, body: Union[FileSetCreate, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
     ) -> Response:
         warnings.warn(
             "'create_asset_filesets' is deprecated. Use 'create_asset_file_sets' instead.",
@@ -452,15 +463,16 @@ class FilesSpec(Spec):
         return self.create_asset_file_sets(asset_id, body, exclude_defaults, **kwargs)
 
     def create_asset_file_sets(
-        self, asset_id: str, body: FileSetCreate, exclude_defaults=True, **kwargs
+        self, asset_id: str, body: Union[FileSetCreate, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
     ) -> Response:
         """
         Create file sets and associate it to asset
         Returns: Response(model=FileSet)
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
             GET_ASSETS_FILE_SETS_PATH.format(asset_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs,
         )
         return self.parse_response(response, FileSet)
