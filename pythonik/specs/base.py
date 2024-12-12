@@ -1,35 +1,54 @@
 from urllib.parse import urljoin
+from typing import Union, Type, Dict, Any, Optional
 
 from pydantic import BaseModel
 from requests import Request, Response, Session
 
 from pythonik.models.base import Response as PythonikResponse
 
-
 class Spec:
     server: str = ""
     api_version = "v1"
-    base_url = f"https://app.iconik.io"
+    base_url = "https://app.iconik.io"
 
     def __init__(self, session: Session, timeout: int = 3):
         self.session = session
         self.timeout = timeout
 
     @staticmethod
-    def parse_response(response: Response, model: BaseModel) -> PythonikResponse:
+    def _prepare_model_data(data: Union[BaseModel, Dict[str, Any]], exclude_defaults: bool = True) -> Dict[str, Any]:
+        """
+        Prepare data for request, handling both Pydantic models and dicts.
+        
+        Args:
+            data: Either a Pydantic model instance or a dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            
+        Returns:
+            Dict ready to be sent in request
+        """
+        if isinstance(data, BaseModel):
+            return data.model_dump(exclude_defaults=exclude_defaults)
+        return data
+
+    @staticmethod
+    def parse_response(response: Response, model: Optional[Type[BaseModel]] = None) -> PythonikResponse:
         """
         Return an ErrorResponse object if the response error code is >=400, an instance of "model", or the status code
+
+        Args:
+            response: The HTTP response
+            model: The Pydantic model class to parse the response into
         """
         # try to populate the model
         if response.ok:
             print(response.text)
             if model:
                 data = response.json()
-                model = model.model_validate(data)
+                model_instance = model.model_validate(data)
+                return PythonikResponse(response=response, data=model_instance)
 
-        # else we just let the dev decide what to do
-        # can call resp.raise_for_status
-        return PythonikResponse(response=response, data=model)
+        return PythonikResponse(response=response, data=None)
 
     @classmethod
     def gen_url(cls, path):

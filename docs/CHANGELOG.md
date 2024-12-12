@@ -1,5 +1,19 @@
 # Changelog
 
+## 2024-12-12 "Standardize" - version 1.3.0
+
+### Changed
+- Refactor specs to improve type hints and standardize method signatures
+- Add `Union[Model, Dict[str, Any]]` type hints to allow both Pydantic models and raw dicts
+- Introduce `_prepare_model_data` helper method to standardize model/dict handling
+- Improve docstrings with consistent Args/Returns sections
+- Add `**kwargs` propagation to all API methods
+- Make `exclude_defaults` parameter consistently typed as `bool`
+- Standardize error handling and response parsing
+
+### Technical Details
+This update focuses on refactoring the codebase to enhance type safety and consistency across method signatures, improving both maintainability and readability. The changes provide greater flexibility by allowing developers to either pre-instantiate Pydantic models or pass raw dictionaries directly to API methods, streamlining integration patterns based on their specific needs.
+
 ## 2024-12-10 "Metadata Mastery" - version 1.2.0
 
 ### Added

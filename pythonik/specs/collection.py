@@ -1,3 +1,5 @@
+from typing import Union, Dict, Any
+
 from pythonik.specs.base import Spec
 from pythonik.models.base import Response
 from pythonik.models.assets.collections import (
@@ -18,12 +20,13 @@ POST_CONTENT = GET_CONTENTS
 class CollectionSpec(Spec):
     server = "API/assets/"
 
-    def delete(self, collection_id: str) -> Response:
+    def delete(self, collection_id: str, **kwargs) -> Response:
         """
         Delete a collection
 
         Args:
             collection_id: The ID of the collection to delete
+            **kwargs: Additional kwargs to pass to the request
 
         Returns:
             Response with no data model (202 status code)
@@ -36,15 +39,16 @@ class CollectionSpec(Spec):
             - 401 Token is invalid
             - 404 Collection does not exist
         """
-        resp = self._delete(GET_URL.format(collection_id))
+        resp = self._delete(GET_URL.format(collection_id), **kwargs)
         return self.parse_response(resp, None)
 
-    def get(self, collection_id: str) -> Response:
+    def get(self, collection_id: str, **kwargs) -> Response:
         """
         Retrieve a specific collection by ID
 
         Args:
             collection_id: The ID of the collection to retrieve
+            **kwargs: Additional kwargs to pass to the request
 
         Returns:
             Response(model=Collection)
@@ -57,15 +61,16 @@ class CollectionSpec(Spec):
             - 401 Token is invalid
             - 404 Collection does not exist
         """
-        resp = self._get(GET_URL.format(collection_id))
+        resp = self._get(GET_URL.format(collection_id), **kwargs)
         return self.parse_response(resp, Collection)
 
-    def get_info(self, collection_id: str) -> Response:
+    def get_info(self, collection_id: str, **kwargs) -> Response:
         """
         Returns all sub-collections and assets count for a specific collection
 
         Args:
             collection_id: The ID of the collection to retrieve
+            **kwargs: Additional kwargs to pass to the request
 
         Response:
             Response(model=CollectionContentInfo)
@@ -77,7 +82,7 @@ class CollectionSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        resp = self._get(GET_INFO.format(collection_id))
+        resp = self._get(GET_INFO.format(collection_id), **kwargs)
         return self.parse_response(resp, CollectionContentInfo)
 
     def get_contents(self, collection_id: str, **kwargs) -> Response:
@@ -86,7 +91,7 @@ class CollectionSpec(Spec):
 
         Args:
             collection_id: The ID of the collection
-            kwargs: additional kwargs passed to the request
+            **kwargs: Additional kwargs to pass to the request
 
         Returns:
             Response(model=CollectionContents)
@@ -102,14 +107,19 @@ class CollectionSpec(Spec):
         resp = self._get(GET_CONTENTS.format(collection_id), **kwargs)
         return self.parse_response(resp, CollectionContents)
 
-    def create(self, body: Collection, exclude_defaults=True, **kwargs) -> Response:
+    def create(
+        self,
+        body: Union[Collection, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
+    ) -> Response:
         """
         Create a new collection
 
         Args:
-            body: collection creation parameters
-            exclude_defaults: If True, exclude default values from request
-            kwargs: additional kwargs passed to the request
+            body: Collection creation parameters, either as Collection model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
         
         Returns:
             Response(model=Collection)
@@ -121,22 +131,24 @@ class CollectionSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        response = self._post(
-            BASE, json=body.model_dump(exclude_defaults=exclude_defaults), **kwargs
-        )
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
+        response = self._post(BASE, json=json_data, **kwargs)
         return self.parse_response(response, Collection)
     
     def add_content(
-        self, collection_id: str, body: Content, exclude_defaults=True, **kwargs
-    ):
+        self,
+        collection_id: str,
+        body: Union[Content, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
+    ) -> Response:
         """Add an object to a collection.
 
-
         Args:
-            collection_id (str): The ID of the collection to add content to
-            body (Content): The content object containing object_id and object_type
-            exclude_defaults (bool, optional): Whether to exclude default values from the request. Defaults to True.
-            **kwargs: Additional keyword arguments to pass to the request
+            collection_id: The ID of the collection to add content to
+            body: The content object containing object_id and object_type, either as Content model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
 
         Returns:
             Response[Collection]: The updated collection object
@@ -147,10 +159,10 @@ class CollectionSpec(Spec):
             401: Token is invalid
             404: Collection not found
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
             POST_CONTENT.format(collection_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs,
         )
-        print(f"response: {response.json()}")
         return self.parse_response(response, AddContentResponse)

@@ -1,3 +1,5 @@
+from typing import Union, Dict, Any
+
 from pythonik.models.assets.assets import Asset, AssetCreate, BulkDelete
 from pythonik.models.assets.segments import SegmentBody, SegmentResponse
 from pythonik.models.assets.versions import (
@@ -37,9 +39,12 @@ class AssetSpec(Spec):
         """
         return self._collection_spec
 
-    def permanently_delete(self):
+    def permanently_delete(self, **kwargs) -> Response:
         """
         Purge all assets and collections from the delete queue (Permanently delete)
+
+        Args:
+            **kwargs: Additional kwargs to pass to the request
 
         Returns:
             Response with no data model (202 status code)
@@ -52,14 +57,14 @@ class AssetSpec(Spec):
             401 Invalid token
             403 User does not have permission
         """
-        response = self._post(PURGE_ALL_URL)
+        response = self._post(PURGE_ALL_URL, **kwargs)
         return self.parse_response(response, model=None)
 
     def bulk_delete(
         self,
-        body: BulkDelete,
+        body: Union[BulkDelete, Dict[str, Any]],
         permanently_delete=False,
-        exclude_defaults=True,
+        exclude_defaults: bool = True,
         **kwargs
     ) -> Response:
         """
@@ -68,11 +73,11 @@ class AssetSpec(Spec):
         permanently deleting.
 
         Args:
-            body: bulk delete parameters
+            body: Bulk delete parameters, either as BulkDelete model or dict
             permanently_delete: If True, Purge all assets and collections from
-            delete queue (Permanently delete)
-            exclude_defaults: If True, exclude default values from request
-            kwargs: additional kwargs passed to the request
+                delete queue (Permanently delete)
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
 
         Returns:
             Response with no data model (202 status code)
@@ -89,57 +94,96 @@ class AssetSpec(Spec):
             401 Invalid token
             403 User does not have permission
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
             BULK_DELETE_URL,
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs
         )
         if permanently_delete:
-            response  = self.permanently_delete().response
+            response = self.permanently_delete().response
         return self.parse_response(response, model=None)
 
     def partial_update_asset(
-        self, asset_id: str, body: Asset, exclude_defaults=True, **kwargs
+        self,
+        asset_id: str,
+        body: Union[Asset, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
     ) -> Response:
-        """Partially update an asset using PATCH"""
+        """Partially update an asset using PATCH
+        
+        Args:
+            asset_id: The asset ID to update
+            body: Asset data to update, either as Asset model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+        """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._patch(
             GET_URL.format(asset_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs
         )
         return self.parse_response(response, Asset)
 
-    def get(self, asset_id: str) -> Response:
+    def get(self, asset_id: str, **kwargs) -> Response:
         """
         Get an iconik asset by id
+        
+        Args:
+            asset_id: The asset ID to get
+            **kwargs: Additional kwargs to pass to the request
+            
         Returns: Response(model=Asset)
         """
-
-        resp = self._get(GET_URL.format(asset_id))
-
+        resp = self._get(GET_URL.format(asset_id), **kwargs)
         return self.parse_response(resp, Asset)
 
-    def create(self, body: AssetCreate, exclude_defaults=True, **kwargs) -> Response:
+    def create(
+        self,
+        body: Union[AssetCreate, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
+    ) -> Response:
         """
         Create a new asset
+        
+        Args:
+            body: Asset creation parameters, either as AssetCreate model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
         Returns: Response(model=Asset)
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
-            BASE, json=body.model_dump(exclude_defaults=exclude_defaults), **kwargs
+            BASE,
+            json=json_data,
+            **kwargs
         )
         return self.parse_response(response, Asset)
 
     def create_segment(
-        self, asset_id: str, body: SegmentBody, exclude_defaults=True, **kwargs
+        self,
+        asset_id: str,
+        body: Union[SegmentBody, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
     ) -> Response:
         """
         Create a segment on an asset, such as a comment
-        Returns: Response(model=SegmentResponse)
+        
+        Args:
+            asset_id: The asset ID to create segment for
+            body: Segment data, either as SegmentBody model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
         """
-
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         resp = self._post(
             SEGMENT_URL.format(asset_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs
         )
 
@@ -149,31 +193,28 @@ class AssetSpec(Spec):
         self,
         asset_id: str,
         segment_id: str,
-        body: SegmentBody,
-        exclude_defaults=True,
+        body: Union[SegmentBody, Dict[str, Any]],
+        exclude_defaults: bool = True,
         **kwargs
     ) -> Response:
         """
-        Update a segment on an asset, such as a comment, using PUT
-        Returns: Response(model=SegmentResponse)
+        Update a segment on an asset
+        
+        Args:
+            asset_id: The asset ID to update segment for
+            segment_id: The segment ID to update
+            body: Segment data, either as SegmentBody model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
 
-        PUT
-
-        Full Update: PUT is used to update a resource by replacing it with the new data provided in the request.
-        It usually requires sending the complete representation of the resource.
-
-        Idempotent: If you perform the same PUT request multiple times,
-        the result will be the same. It will replace the resource with the same data every time.
-
-        Complete Resource: Typically, a PUT request contains the entire resource.
-        If any fields are omitted in the request, those fields are typically reset to their default values or removed.
-
-
+        Note:
+            Full Representation: A PUT request requires a complete representation of the segment.
+            If you want to update only specific fields, use partial_update_segment instead.
         """
-
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         resp = self._put(
             SEGMENT_URL_UPDATE.format(asset_id, segment_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs
         )
 
@@ -183,53 +224,58 @@ class AssetSpec(Spec):
         self,
         asset_id: str,
         segment_id: str,
-        body: SegmentBody,
-        exclude_defaults=True,
+        body: Union[SegmentBody, Dict[str, Any]],
+        exclude_defaults: bool = True,
         **kwargs
     ) -> Response:
         """
-        Partially Update a segment on an asset, such as a comment, using PATCH
-        Returns: Response(model=SegmentResponse)
+        Partially update a segment on an asset
+        
+        Args:
+            asset_id: The asset ID to update segment for
+            segment_id: The segment ID to update
+            body: Segment data, either as SegmentBody model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
 
-        PATCH
-            Partial Update: PATCH is used for partial updates. It allows you to send only the fields that need to be updated,
-            leaving the rest of the resource unchanged.
-
-            Not Necessarily Idempotent: While PATCH can be idempotent, it's not guaranteed to be. Multiple identical PATCH requests could result in different states
-            if the updates depend on the current state of the resource.
-
+        Note:
             Sparse Representation: A PATCH request typically contains only the fields that need to be modified.
         """
-
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         resp = self._patch(
             SEGMENT_URL_UPDATE.format(asset_id, segment_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs
         )
 
         return self.parse_response(resp, SegmentResponse)
 
     def create_version(
-        self, asset_id: str, body: AssetVersionCreate, exclude_defaults=True, **kwargs
+        self,
+        asset_id: str,
+        body: Union[AssetVersionCreate, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
     ) -> Response:
         """
         Create a new version of an asset
-
+        
         Args:
             asset_id: The ID of the asset to create a version for
-            body: Version creation parameters
-            exclude_defaults: If True, exclude default values from request
-            **kwargs: Additional arguments to pass to the request
+            body: Version creation parameters, either as AssetVersionCreate model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
 
         Returns:
-            Response(model=AssetVersionResponse)
+            Response[AssetVersionResponse]
 
         Required roles:
             - can_write_versions
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
             VERSIONS_URL.format(asset_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs
         )
         return self.parse_response(response, AssetVersionResponse)
@@ -238,19 +284,19 @@ class AssetSpec(Spec):
         self,
         asset_id: str,
         source_asset_id: str,
-        body: AssetVersionFromAssetCreate,
-        exclude_defaults=True,
+        body: Union[AssetVersionFromAssetCreate, Dict[str, Any]],
+        exclude_defaults: bool = True,
         **kwargs
     ) -> Response:
         """
         Create a new version of an asset from another asset
-
+        
         Args:
             asset_id: The ID of the asset to create a version for
             source_asset_id: The ID of the source asset to create version from
-            body: Version creation parameters
-            exclude_defaults: If True, exclude default values from request
-            **kwargs: Additional arguments to pass to the request
+            body: Version creation parameters, either as AssetVersionFromAssetCreate model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
 
         Returns:
             Response with no data model (202 status code)
@@ -260,14 +306,16 @@ class AssetSpec(Spec):
 
         Raises:
             - 400: Bad request
-            - 401: Token is invalid
+            - 401: Invalid token
+            - 403: User does not have permission
             - 404: Source or destination asset does not exist
             - 409: The asset is being transcoded and cannot be set as a new version
         """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         response = self._post(
             VERSIONS_FROM_ASSET_URL.format(asset_id, source_asset_id),
-            json=body.model_dump(exclude_defaults=exclude_defaults),
+            json=json_data,
             **kwargs
         )
         # Since this returns 202 with no content, we don't need a response model
-        return self.parse_response(response, model=None)
+        return self.parse_response(response, None)
