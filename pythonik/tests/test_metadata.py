@@ -867,3 +867,201 @@ def test_update_view_partial():
         assert result.data.name == view.name
         assert result.data.description == "Original description"  # Unchanged
         assert len(result.data.view_fields) == 1  # Original fields unchanged
+
+
+def test_replace_view():
+    """Test replacing a view."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+        
+        # Create replacement view data
+        view = CreateViewRequest(
+            name="Replaced View",
+            description="A completely new view",
+            view_fields=[
+                ViewField(
+                    name="new_field",
+                    label="New Field",
+                    required=True,
+                    field_type="string",
+                    options=[
+                        ViewOption(label="New Option 1", value="new1"),
+                        ViewOption(label="New Option 2", value="new2")
+                    ]
+                )
+            ]
+        )
+        
+        # Create expected response
+        response = ViewResponse(
+            id=view_id,
+            name=view.name,
+            description=view.description,
+            date_created="2024-12-20T18:40:03.279Z",
+            date_modified="2024-12-20T19:28:42.213Z",  # Note: modified time updated
+            view_fields=view.view_fields
+        )
+        
+        # Mock the API call
+        mock_address = MetadataSpec.gen_url(UPDATE_VIEW_PATH.format(view_id=view_id))
+        m.put(mock_address, json=response.model_dump())
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().replace_view(view_id, view)
+        
+        # Verify response
+        assert result.response.ok
+        assert result.data.id == view_id
+        assert result.data.name == view.name
+        assert result.data.description == view.description
+        assert len(result.data.view_fields) == len(view.view_fields)
+        assert result.data.view_fields[0].name == view.view_fields[0].name
+        assert result.data.view_fields[0].label == view.view_fields[0].label
+
+
+def test_replace_view_with_dict():
+    """Test replacing a view using a dictionary."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+        
+        # Create replacement view data as dict
+        view = {
+            "name": "Replaced View",
+            "description": "A completely new view",
+            "view_fields": [
+                {
+                    "name": "new_field",
+                    "label": "New Field",
+                    "required": True,
+                    "field_type": "string",
+                    "options": [
+                        {"label": "New Option 1", "value": "new1"},
+                        {"label": "New Option 2", "value": "new2"}
+                    ]
+                }
+            ]
+        }
+        
+        # Create expected response
+        response = ViewResponse(
+            id=view_id,
+            name=view["name"],
+            description=view["description"],
+            date_created="2024-12-20T18:40:03.279Z",
+            date_modified="2024-12-20T19:28:42.213Z",  # Note: modified time updated
+            view_fields=[ViewField(**field) for field in view["view_fields"]]
+        )
+        
+        # Mock the API call
+        mock_address = MetadataSpec.gen_url(UPDATE_VIEW_PATH.format(view_id=view_id))
+        m.put(mock_address, json=response.model_dump())
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().replace_view(view_id, view)
+        
+        # Verify response
+        assert result.response.ok
+        assert result.data.id == view_id
+        assert result.data.name == view["name"]
+        assert result.data.description == view["description"]
+        assert len(result.data.view_fields) == len(view["view_fields"])
+        assert result.data.view_fields[0].name == view["view_fields"][0]["name"]
+        assert result.data.view_fields[0].label == view["view_fields"][0]["label"]
+
+
+def test_replace_view_not_found():
+    """Test replacing a non-existent view."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = "non_existent_id"
+        
+        view = CreateViewRequest(
+            name="Replaced View",
+            description="A completely new view",
+            view_fields=[
+                ViewField(
+                    name="new_field",
+                    label="New Field",
+                    required=True
+                )
+            ]
+        )
+        
+        # Mock the API call with 404 response
+        mock_address = MetadataSpec.gen_url(UPDATE_VIEW_PATH.format(view_id=view_id))
+        m.put(mock_address, status_code=404, json={"error": "View not found"})
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().replace_view(view_id, view)
+        
+        # Verify response
+        assert not result.response.ok
+        assert result.response.status_code == 404
+        assert result.data is None
+
+
+def test_replace_view_unauthorized():
+    """Test replacing a view with invalid token."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = "invalid_token"
+        view_id = str(uuid.uuid4())
+        
+        view = CreateViewRequest(
+            name="Replaced View",
+            description="A completely new view",
+            view_fields=[
+                ViewField(
+                    name="new_field",
+                    label="New Field",
+                    required=True
+                )
+            ]
+        )
+        
+        # Mock the API call with 401 response
+        mock_address = MetadataSpec.gen_url(UPDATE_VIEW_PATH.format(view_id=view_id))
+        m.put(mock_address, status_code=401, json={"error": "Invalid token"})
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().replace_view(view_id, view)
+        
+        # Verify response
+        assert not result.response.ok
+        assert result.response.status_code == 401
+        assert result.data is None
+
+
+def test_replace_view_bad_request():
+    """Test replacing a view with invalid data."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+        
+        # Create invalid request (missing required fields) as dict
+        view = {
+            "name": "Replaced View"  # Missing required view_fields
+        }
+        
+        # Mock the API call with 400 response
+        mock_address = MetadataSpec.gen_url(UPDATE_VIEW_PATH.format(view_id=view_id))
+        m.put(mock_address, status_code=400, json={"error": "Missing required fields"})
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().replace_view(view_id, view)
+        
+        # Verify response
+        assert not result.response.ok
+        assert result.response.status_code == 400
+        assert result.data is None

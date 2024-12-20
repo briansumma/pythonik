@@ -283,6 +283,39 @@ class MetadataSpec(Spec):
         resp = self._patch(UPDATE_VIEW_PATH.format(view_id=view_id), json=json_data, **kwargs)
         return self.parse_response(resp, ViewResponse)
 
+    def replace_view(
+        self,
+        view_id: str,
+        view: Union[CreateViewRequest, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
+    ) -> Response:
+        """Replace an existing view in Iconik with a new one.
+        
+        Unlike update_view which allows partial updates, this method requires all fields
+        to be specified as it completely replaces the view.
+        
+        Args:
+            view_id: ID of the view to replace
+            view: The complete new view data, either as CreateViewRequest model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_write_metadata_views
+            
+        Returns:
+            Response: The replaced view
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+            - 404 Metadata view doesn't exist
+        """
+        json_data = self._prepare_model_data(view, exclude_defaults=exclude_defaults)
+        resp = self._put(UPDATE_VIEW_PATH.format(view_id=view_id), json=json_data, **kwargs)
+        return self.parse_response(resp, ViewResponse)
+
     def get_views(self, **kwargs) -> Response:
         """List all views defined in the system.
         
