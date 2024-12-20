@@ -16,7 +16,7 @@
 - Add comprehensive test coverage for all view operations
 
 ### Technical Details
-This update introduces complete metadata view management capabilities, allowing programmatic control over view creation, modification, and deletion. The implementation supports both Pydantic models and raw dictionaries as inputs, maintaining consistency with existing API patterns. All operations include proper error handling and role-based access control.
+This update introduces complete metadata view management capabilities, allowing programmatic control over view creation, modification, and deletion. The implementation supports both Pydantic models and raw dictionaries as inputs, maintaining consistency with existing API patterns. 
 
 ## 2024-12-12 "Standardize" - version 1.3.0
 
