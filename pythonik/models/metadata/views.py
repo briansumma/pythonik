@@ -62,6 +62,13 @@ class CreateViewRequest(BaseModel):
     view_fields: List[ViewField]
 
 
+class UpdateViewRequest(BaseModel):
+    """Request model for updating a view."""
+    name: Optional[str] = None
+    description: Optional[str] = None
+    view_fields: Optional[List[ViewField]] = None
+
+
 class View(BaseModel):
     id: str
     name: str

@@ -1,13 +1,14 @@
 from loguru import logger
 from pythonik.models.base import Response
-from pythonik.models.metadata.views import ViewMetadata, CreateViewRequest
-from pythonik.models.metadata.view_responses import ViewResponse
+from pythonik.models.metadata.views import ViewMetadata, CreateViewRequest, UpdateViewRequest
+from pythonik.models.metadata.view_responses import ViewResponse, ViewListResponse
+from pythonik.models.metadata.view_responses import ViewListResponse
 from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadata,
     UpdateMetadataResponse,
 )
 from pythonik.specs.base import Spec
-from typing import Literal, Union, Dict, Any
+from typing import Literal, Union, Dict, Any, List
 
 
 # Asset metadata paths
@@ -17,9 +18,9 @@ ASSET_OBJECT_VIEW_PATH = "assets/{}/{}/{}/views/{}/"
 PUT_METADATA_DIRECT_PATH = "{}/{}/"
 
 # View paths
-VIEWS_BASE = "views"
-CREATE_VIEW_PATH = VIEWS_BASE + "/"
-GET_VIEW_PATH = VIEWS_BASE + "/{}/"
+VIEWS_BASE = "/v1/views/"
+CREATE_VIEW_PATH = VIEWS_BASE
+GET_VIEW_PATH = VIEWS_BASE + "{view_id}/"
 UPDATE_VIEW_PATH = GET_VIEW_PATH
 DELETE_VIEW_PATH = GET_VIEW_PATH
 
@@ -251,3 +252,52 @@ class MetadataSpec(Spec):
         json_data = self._prepare_model_data(view, exclude_defaults=exclude_defaults)
         resp = self._post(CREATE_VIEW_PATH, json=json_data, **kwargs)
         return self.parse_response(resp, ViewResponse)
+
+    def update_view(
+        self,
+        view_id: str,
+        view: Union[UpdateViewRequest, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
+    ) -> Response:
+        """Update an existing view in Iconik.
+        
+        Args:
+            view_id: ID of the view to update
+            view: The view updates, either as UpdateViewRequest model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_write_metadata_views
+            
+        Returns:
+            Response: The updated view
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+            - 404 Metadata view doesn't exist
+        """
+        json_data = self._prepare_model_data(view, exclude_defaults=exclude_defaults)
+        resp = self._patch(UPDATE_VIEW_PATH.format(view_id=view_id), json=json_data, **kwargs)
+        return self.parse_response(resp, ViewResponse)
+
+    def get_views(self, **kwargs) -> Response:
+        """List all views defined in the system.
+        
+        Args:
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_read_metadata_views
+            
+        Returns:
+            Response: List of metadata views
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+        """
+        resp = self._get(VIEWS_BASE, **kwargs)
+        return self.parse_response(resp, ViewListResponse)
