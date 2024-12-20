@@ -27,7 +27,8 @@ from pythonik.specs.metadata import (
     PUT_METADATA_DIRECT_PATH,
     CREATE_VIEW_PATH,
     VIEWS_BASE,
-    UPDATE_VIEW_PATH
+    UPDATE_VIEW_PATH,
+    DELETE_VIEW_PATH
 )
 
 
@@ -1060,6 +1061,90 @@ def test_replace_view_bad_request():
         # Make the request
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         result = client.metadata().replace_view(view_id, view)
+        
+        # Verify response
+        assert not result.response.ok
+        assert result.response.status_code == 400
+        assert result.data is None
+
+
+def test_delete_view():
+    """Test deleting a view."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+        
+        # Mock the API call
+        mock_address = MetadataSpec.gen_url(DELETE_VIEW_PATH.format(view_id=view_id))
+        m.delete(mock_address, status_code=204)
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().delete_view(view_id)
+        
+        # Verify response
+        assert result.response.ok
+        assert result.response.status_code == 204
+        assert result.data is None
+
+
+def test_delete_view_not_found():
+    """Test deleting a non-existent view."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = "non_existent_id"
+        
+        # Mock the API call with 404 response
+        mock_address = MetadataSpec.gen_url(DELETE_VIEW_PATH.format(view_id=view_id))
+        m.delete(mock_address, status_code=404, json={"error": "View not found"})
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().delete_view(view_id)
+        
+        # Verify response
+        assert not result.response.ok
+        assert result.response.status_code == 404
+        assert result.data is None
+
+
+def test_delete_view_unauthorized():
+    """Test deleting a view with invalid token."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = "invalid_token"
+        view_id = str(uuid.uuid4())
+        
+        # Mock the API call with 401 response
+        mock_address = MetadataSpec.gen_url(DELETE_VIEW_PATH.format(view_id=view_id))
+        m.delete(mock_address, status_code=401, json={"error": "Invalid token"})
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().delete_view(view_id)
+        
+        # Verify response
+        assert not result.response.ok
+        assert result.response.status_code == 401
+        assert result.data is None
+
+
+def test_delete_view_bad_request():
+    """Test deleting a view with invalid request."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = "invalid!id@#$"  # Invalid ID format
+        
+        # Mock the API call with 400 response
+        mock_address = MetadataSpec.gen_url(DELETE_VIEW_PATH.format(view_id=view_id))
+        m.delete(mock_address, status_code=400, json={"error": "Invalid view ID format"})
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().delete_view(view_id)
         
         # Verify response
         assert not result.response.ok

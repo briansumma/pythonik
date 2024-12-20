@@ -334,3 +334,24 @@ class MetadataSpec(Spec):
         """
         resp = self._get(VIEWS_BASE, **kwargs)
         return self.parse_response(resp, ViewListResponse)
+
+    def delete_view(self, view_id: str, **kwargs) -> Response:
+        """Delete a view from Iconik.
+        
+        Args:
+            view_id: ID of the view to delete
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_delete_metadata_views
+            
+        Returns:
+            Response: Empty response with 204 status code
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+            - 404 Metadata view doesn't exist
+        """
+        resp = self._delete(DELETE_VIEW_PATH.format(view_id=view_id), **kwargs)
+        return self.parse_response(resp, None)
