@@ -1,17 +1,27 @@
 from loguru import logger
 from pythonik.models.base import Response
-from pythonik.models.metadata.views import ViewMetadata
+from pythonik.models.metadata.views import ViewMetadata, CreateViewRequest, UpdateViewRequest
+from pythonik.models.metadata.view_responses import ViewResponse, ViewListResponse
 from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadata,
     UpdateMetadataResponse,
 )
 from pythonik.specs.base import Spec
-from typing import Literal, Union, Dict, Any
+from typing import Literal, Union, Dict, Any, List
 
+
+# Asset metadata paths
 ASSET_METADATA_FROM_VIEW_PATH = "assets/{}/views/{}"
 UPDATE_ASSET_METADATA = "assets/{}/views/{}/"
 ASSET_OBJECT_VIEW_PATH = "assets/{}/{}/{}/views/{}/"
 PUT_METADATA_DIRECT_PATH = "{}/{}/"
+
+# View paths
+VIEWS_BASE = "/v1/views/"
+CREATE_VIEW_PATH = VIEWS_BASE
+GET_VIEW_PATH = VIEWS_BASE + "{view_id}/"
+UPDATE_VIEW_PATH = GET_VIEW_PATH
+DELETE_VIEW_PATH = GET_VIEW_PATH
 
 
 ObjectType = Literal["segments"]
@@ -214,3 +224,164 @@ class MetadataSpec(Spec):
             exclude_defaults=exclude_defaults,
             **kwargs
         )
+
+    def create_view(
+        self,
+        view: Union[CreateViewRequest, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
+    ) -> Response:
+        """Create a new view in Iconik.
+        
+        Args:
+            view: The view to create, either as CreateViewRequest model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_write_metadata_views
+            
+        Returns:
+            Response: The created view
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+        """
+        json_data = self._prepare_model_data(view, exclude_defaults=exclude_defaults)
+        resp = self._post(CREATE_VIEW_PATH, json=json_data, **kwargs)
+        return self.parse_response(resp, ViewResponse)
+
+    def update_view(
+        self,
+        view_id: str,
+        view: Union[UpdateViewRequest, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
+    ) -> Response:
+        """Update an existing view in Iconik.
+        
+        Args:
+            view_id: ID of the view to update
+            view: The view updates, either as UpdateViewRequest model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_write_metadata_views
+            
+        Returns:
+            Response: The updated view
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+            - 404 Metadata view doesn't exist
+        """
+        json_data = self._prepare_model_data(view, exclude_defaults=exclude_defaults)
+        resp = self._patch(UPDATE_VIEW_PATH.format(view_id=view_id), json=json_data, **kwargs)
+        return self.parse_response(resp, ViewResponse)
+
+    def replace_view(
+        self,
+        view_id: str,
+        view: Union[CreateViewRequest, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
+    ) -> Response:
+        """Replace an existing view in Iconik with a new one.
+        
+        Unlike update_view which allows partial updates, this method requires all fields
+        to be specified as it completely replaces the view.
+        
+        Args:
+            view_id: ID of the view to replace
+            view: The complete new view data, either as CreateViewRequest model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_write_metadata_views
+            
+        Returns:
+            Response: The replaced view
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+            - 404 Metadata view doesn't exist
+        """
+        json_data = self._prepare_model_data(view, exclude_defaults=exclude_defaults)
+        resp = self._put(UPDATE_VIEW_PATH.format(view_id=view_id), json=json_data, **kwargs)
+        return self.parse_response(resp, ViewResponse)
+
+    def get_views(self, **kwargs) -> Response:
+        """List all views defined in the system.
+        
+        Args:
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_read_metadata_views
+            
+        Returns:
+            Response: List of metadata views
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+        """
+        resp = self._get(VIEWS_BASE, **kwargs)
+        return self.parse_response(resp, ViewListResponse)
+
+    def get_view(
+        self,
+        view_id: str,
+        merge_fields: bool = None,
+        **kwargs
+    ) -> Response:
+        """Get a specific view from Iconik.
+        
+        Args:
+            view_id: ID of the view to retrieve
+            merge_fields: Optional boolean to control field merging
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_read_metadata_views
+            
+        Returns:
+            Response: The requested view
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+            - 404 Metadata view doesn't exist
+        """
+        params = {}
+        if merge_fields is not None:
+            params["merge_fields"] = merge_fields
+            
+        resp = self._get(GET_VIEW_PATH.format(view_id=view_id), params=params, **kwargs)
+        return self.parse_response(resp, ViewResponse)
+
+    def delete_view(self, view_id: str, **kwargs) -> Response:
+        """Delete a view from Iconik.
+        
+        Args:
+            view_id: ID of the view to delete
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_delete_metadata_views
+            
+        Returns:
+            Response: Empty response with 204 status code
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+            - 404 Metadata view doesn't exist
+        """
+        resp = self._delete(DELETE_VIEW_PATH.format(view_id=view_id), **kwargs)
+        return self.parse_response(resp, None)
