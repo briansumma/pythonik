@@ -2,7 +2,6 @@ from loguru import logger
 from pythonik.models.base import Response
 from pythonik.models.metadata.views import ViewMetadata, CreateViewRequest, UpdateViewRequest
 from pythonik.models.metadata.view_responses import ViewResponse, ViewListResponse
-from pythonik.models.metadata.view_responses import ViewListResponse
 from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadata,
     UpdateMetadataResponse,
@@ -334,6 +333,37 @@ class MetadataSpec(Spec):
         """
         resp = self._get(VIEWS_BASE, **kwargs)
         return self.parse_response(resp, ViewListResponse)
+
+    def get_view(
+        self,
+        view_id: str,
+        merge_fields: bool = None,
+        **kwargs
+    ) -> Response:
+        """Get a specific view from Iconik.
+        
+        Args:
+            view_id: ID of the view to retrieve
+            merge_fields: Optional boolean to control field merging
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_read_metadata_views
+            
+        Returns:
+            Response: The requested view
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+            - 404 Metadata view doesn't exist
+        """
+        params = {}
+        if merge_fields is not None:
+            params["merge_fields"] = merge_fields
+            
+        resp = self._get(GET_VIEW_PATH.format(view_id=view_id), params=params, **kwargs)
+        return self.parse_response(resp, ViewResponse)
 
     def delete_view(self, view_id: str, **kwargs) -> Response:
         """Delete a view from Iconik.

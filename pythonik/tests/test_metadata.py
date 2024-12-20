@@ -28,7 +28,8 @@ from pythonik.specs.metadata import (
     CREATE_VIEW_PATH,
     VIEWS_BASE,
     UPDATE_VIEW_PATH,
-    DELETE_VIEW_PATH
+    DELETE_VIEW_PATH,
+    GET_VIEW_PATH
 )
 
 
@@ -1150,3 +1151,137 @@ def test_delete_view_bad_request():
         assert not result.response.ok
         assert result.response.status_code == 400
         assert result.data is None
+
+
+def test_get_view():
+    """Test getting a specific view."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+        
+        # Create expected response
+        view = ViewResponse(
+            id=view_id,
+            name="Test View",
+            description="A test view",
+            date_created="2024-12-20T18:40:03.279Z",
+            date_modified="2024-12-20T18:40:03.279Z",
+            view_fields=[
+                ViewField(
+                    name="field1",
+                    label="Field 1",
+                    required=True,
+                    field_type="string",
+                    options=[
+                        ViewOption(label="Option 1", value="opt1"),
+                        ViewOption(label="Option 2", value="opt2")
+                    ]
+                )
+            ]
+        )
+        
+        # Mock the API call
+        mock_address = MetadataSpec.gen_url(GET_VIEW_PATH.format(view_id=view_id))
+        m.get(mock_address, json=view.model_dump())
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().get_view(view_id)
+        
+        # Verify response
+        assert result.response.ok
+        assert result.data.id == view_id
+        assert result.data.name == view.name
+        assert result.data.description == view.description
+        assert len(result.data.view_fields) == len(view.view_fields)
+        assert result.data.view_fields[0].name == view.view_fields[0].name
+        assert len(result.data.view_fields[0].options) == len(view.view_fields[0].options)
+
+
+def test_get_view_not_found():
+    """Test getting a non-existent view."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = "non_existent_id"
+        
+        # Mock the API call
+        mock_address = MetadataSpec.gen_url(GET_VIEW_PATH.format(view_id=view_id))
+        m.get(mock_address, status_code=404, json={"error": "View not found"})
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().get_view(view_id)
+        
+        # Verify response
+        assert not result.response.ok
+        assert result.response.status_code == 404
+        assert result.data is None
+
+
+def test_get_view_unauthorized():
+    """Test getting a view with invalid token."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = "invalid_token"
+        view_id = str(uuid.uuid4())
+        
+        # Mock the API call
+        mock_address = MetadataSpec.gen_url(GET_VIEW_PATH.format(view_id=view_id))
+        m.get(mock_address, status_code=401, json={"error": "Unauthorized"})
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().get_view(view_id)
+        
+        # Verify response
+        assert not result.response.ok
+        assert result.response.status_code == 401
+        assert result.data is None
+
+
+def test_get_view_with_merge_fields():
+    """Test getting a view with merge_fields parameter."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+        
+        # Create expected response
+        view = ViewResponse(
+            id=view_id,
+            name="Test View",
+            description="A test view",
+            date_created="2024-12-20T18:40:03.279Z",
+            date_modified="2024-12-20T18:40:03.279Z",
+            view_fields=[
+                ViewField(
+                    name="field1",
+                    label="Field 1",
+                    required=True,
+                    field_type="string",
+                    options=[
+                        ViewOption(label="Option 1", value="opt1"),
+                        ViewOption(label="Option 2", value="opt2")
+                    ]
+                )
+            ]
+        )
+        
+        # Mock the API call with merge_fields parameter
+        mock_address = MetadataSpec.gen_url(GET_VIEW_PATH.format(view_id=view_id))
+        m.get(f"{mock_address}?merge_fields=true", json=view.model_dump())
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().get_view(view_id, merge_fields=True)
+        
+        # Verify response
+        assert result.response.ok
+        assert result.data.id == view_id
+        assert result.data.name == view.name
+        assert result.data.description == view.description
+        assert len(result.data.view_fields) == len(view.view_fields)
+        assert result.data.view_fields[0].name == view.view_fields[0].name
+        assert len(result.data.view_fields[0].options) == len(view.view_fields[0].options)
