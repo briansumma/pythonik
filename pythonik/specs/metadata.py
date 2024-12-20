@@ -1,6 +1,7 @@
 from loguru import logger
 from pythonik.models.base import Response
-from pythonik.models.metadata.views import ViewMetadata
+from pythonik.models.metadata.views import ViewMetadata, CreateViewRequest
+from pythonik.models.metadata.view_responses import ViewResponse
 from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadata,
     UpdateMetadataResponse,
@@ -8,10 +9,19 @@ from pythonik.models.mutation.metadata.mutate import (
 from pythonik.specs.base import Spec
 from typing import Literal, Union, Dict, Any
 
+
+# Asset metadata paths
 ASSET_METADATA_FROM_VIEW_PATH = "assets/{}/views/{}"
 UPDATE_ASSET_METADATA = "assets/{}/views/{}/"
 ASSET_OBJECT_VIEW_PATH = "assets/{}/{}/{}/views/{}/"
 PUT_METADATA_DIRECT_PATH = "{}/{}/"
+
+# View paths
+VIEWS_BASE = "views"
+CREATE_VIEW_PATH = VIEWS_BASE + "/"
+GET_VIEW_PATH = VIEWS_BASE + "/{}/"
+UPDATE_VIEW_PATH = GET_VIEW_PATH
+DELETE_VIEW_PATH = GET_VIEW_PATH
 
 
 ObjectType = Literal["segments"]
@@ -214,3 +224,30 @@ class MetadataSpec(Spec):
             exclude_defaults=exclude_defaults,
             **kwargs
         )
+
+    def create_view(
+        self,
+        view: Union[CreateViewRequest, Dict[str, Any]],
+        exclude_defaults: bool = True,
+        **kwargs
+    ) -> Response:
+        """Create a new view in Iconik.
+        
+        Args:
+            view: The view to create, either as CreateViewRequest model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Required roles:
+            - can_write_metadata_views
+            
+        Returns:
+            Response: The created view
+            
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+        """
+        json_data = self._prepare_model_data(view, exclude_defaults=exclude_defaults)
+        resp = self._post(CREATE_VIEW_PATH, json=json_data, **kwargs)
+        return self.parse_response(resp, ViewResponse)

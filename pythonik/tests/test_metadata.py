@@ -9,17 +9,22 @@ from pythonik.models.metadata.views import (
     FieldValues,
     MetadataValues,
     ViewMetadata,
+    CreateViewRequest,
+    ViewField,
+    ViewOption
 )
 from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadata,
     UpdateMetadataResponse,
 )
+from pythonik.models.metadata.view_responses import ViewResponse
 from pythonik.specs.metadata import (
     ASSET_METADATA_FROM_VIEW_PATH,
     UPDATE_ASSET_METADATA,
     MetadataSpec,
     ASSET_OBJECT_VIEW_PATH,
-    PUT_METADATA_DIRECT_PATH
+    PUT_METADATA_DIRECT_PATH,
+    CREATE_VIEW_PATH
 )
 
 
@@ -391,3 +396,165 @@ def test_put_metadata_direct_forbidden():
         # Verify response
         assert not response.response.ok
         assert response.response.status_code == 403
+
+
+def test_create_view():
+    """Test creating a new view."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+        
+        # Create request data
+        view = CreateViewRequest(
+            name="Test View",
+            description="A test view",
+            view_fields=[
+                ViewField(
+                    name="field1",
+                    label="Field 1",
+                    required=True,
+                    field_type="string",
+                    options=[
+                        ViewOption(label="Option 1", value="opt1"),
+                        ViewOption(label="Option 2", value="opt2")
+                    ]
+                )
+            ]
+        )
+        
+        # Create expected response
+        response = ViewResponse(
+            id=view_id,
+            name=view.name,
+            description=view.description,
+            date_created="2024-12-20T18:40:03.279Z",
+            date_modified="2024-12-20T18:40:03.279Z",
+            view_fields=view.view_fields
+        )
+        
+        # Mock the API call
+        mock_address = MetadataSpec.gen_url(CREATE_VIEW_PATH)
+        m.post(mock_address, json=response.model_dump())
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().create_view(view)
+        
+        # Verify response
+        assert result.response.ok
+        assert result.data.id == view_id
+        assert result.data.name == view.name
+        assert result.data.description == view.description
+        assert len(result.data.view_fields) == len(view.view_fields)
+        assert result.data.view_fields[0].name == view.view_fields[0].name
+
+
+def test_create_view_with_dict():
+    """Test creating a new view using a dictionary."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        view_id = str(uuid.uuid4())
+        
+        # Create request data as dict
+        view = {
+            "name": "Test View",
+            "description": "A test view",
+            "view_fields": [
+                {
+                    "name": "field1",
+                    "label": "Field 1",
+                    "required": True,
+                    "field_type": "string",
+                    "options": [
+                        {"label": "Option 1", "value": "opt1"},
+                        {"label": "Option 2", "value": "opt2"}
+                    ]
+                }
+            ]
+        }
+        
+        # Create expected response
+        response = ViewResponse(
+            id=view_id,
+            name=view["name"],
+            description=view["description"],
+            date_created="2024-12-20T18:40:03.279Z",
+            date_modified="2024-12-20T18:40:03.279Z",
+            view_fields=[ViewField(**field) for field in view["view_fields"]]
+        )
+        
+        # Mock the API call
+        mock_address = MetadataSpec.gen_url(CREATE_VIEW_PATH)
+        m.post(mock_address, json=response.model_dump())
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().create_view(view)
+        
+        # Verify response
+        assert result.response.ok
+        assert result.data.id == view_id
+        assert result.data.name == view["name"]
+        assert result.data.description == view["description"]
+        assert len(result.data.view_fields) == len(view["view_fields"])
+        assert result.data.view_fields[0].name == view["view_fields"][0]["name"]
+
+
+def test_create_view_bad_request():
+    """Test creating a view with invalid data."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        
+        # Create invalid request (missing required fields)
+        view = CreateViewRequest(
+            name="Test View",
+            view_fields=[]  # Invalid: view_fields cannot be empty
+        )
+        
+        # Mock the API call with 400 response
+        mock_address = MetadataSpec.gen_url(CREATE_VIEW_PATH)
+        m.post(mock_address, status_code=400, json={"error": "Invalid view_fields"})
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().create_view(view)
+        
+        # Verify response
+        assert not result.response.ok
+        assert result.response.status_code == 400
+        assert result.data is None
+
+
+def test_create_view_unauthorized():
+    """Test creating a view with invalid token."""
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = "invalid_token"
+        
+        view = CreateViewRequest(
+            name="Test View",
+            description="A test view",
+            view_fields=[
+                ViewField(
+                    name="field1",
+                    label="Field 1",
+                    required=True
+                )
+            ]
+        )
+        
+        # Mock the API call with 401 response
+        mock_address = MetadataSpec.gen_url(CREATE_VIEW_PATH)
+        m.post(mock_address, status_code=401, json={"error": "Invalid token"})
+        
+        # Make the request
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        result = client.metadata().create_view(view)
+        
+        # Verify response
+        assert not result.response.ok
+        assert result.response.status_code == 401
+        assert result.data is None
