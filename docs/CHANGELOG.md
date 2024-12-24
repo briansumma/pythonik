@@ -1,5 +1,18 @@
 # Changelog
 
+## 2024-12-24 "Alternative Environments" - version 1.5.0
+
+### Added
+- Add configurable base URL support:
+  - New `base_url` parameter in `PythonikClient` constructor
+  - Support for AWS Iconik deployments
+  - Support for custom Iconik deployments
+- Propagate base URL through all spec classes
+- Add documentation for connecting to different Iconik environments
+
+### Technical Details
+This update enables connecting to different Iconik environments by making the base URL configurable. The implementation maintains consistent client behavior across all API operations while allowing flexibility in the target environment. This is particularly useful for AWS Iconik deployments.
+
 ## 2024-12-20 "View Management" - version 1.4.0
 
 ### Added

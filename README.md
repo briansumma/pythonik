@@ -74,6 +74,25 @@ data_as_dict = data.model_dump()
 data_as_json = data.model_dump_json()
 ```
 
+### Connecting to Different Iconik Environments
+
+By default, Pythonik connects to the standard Iconik environment (`https://app.iconik.io`). To connect to a different Iconik environment, you can specify the base URL when initializing the client:
+
+```python
+from pythonik.client import PythonikClient
+
+client = PythonikClient(
+    app_id=app_id,
+    auth_token=auth_token,
+    timeout=10,
+    base_url="https://your-custom-iconik-instance.com"
+)
+```
+
+This is useful when working with:
+- AWS Iconik deployments
+- Custom Iconik deployments (assuming this is possible)
+
 Checkout the [API reference](./docs/API_REFERENCE.md) and [advanced usage guide](./docs/ADVANCED_USAGE.md) to see all you can do with Pythonik.
 
 ## Publishing to PyPI (for maintainers) 
