@@ -16,8 +16,9 @@ class PythonikClient:
     Iconik Client
     """
 
-    def __init__(self, app_id: str, auth_token: str, timeout: int):
+    def __init__(self, app_id: str, auth_token: str, timeout: int, base_url: str  = "https://app.iconik.io" ):
         self.session = Session()
+        self.base_url = base_url
         retry_strategy = Retry(
             total=4,  # Maximum number of retries
             backoff_factor=3,
@@ -33,19 +34,19 @@ class PythonikClient:
         self.timeout = timeout
 
     def collections(self):
-        return CollectionSpec(self.session, self.timeout)
+        return CollectionSpec(self.session, self.timeout, self.base_url)
 
     def assets(self):
-        return AssetSpec(self.session, self.timeout)
+        return AssetSpec(self.session, self.timeout, self.base_url)
 
     def files(self):
-        return FilesSpec(self.session, self.timeout)
+        return FilesSpec(self.session, self.timeout, self.base_url)
 
     def metadata(self):
-        return MetadataSpec(self.session, self.timeout)
+        return MetadataSpec(self.session, self.timeout, self.base_url)
 
     def search(self):
-        return SearchSpec(self.session, self.timeout)
+        return SearchSpec(self.session, self.timeout, self.base_url)
 
     def jobs(self):
-        return JobSpec(self.session, self.timeout)
+        return JobSpec(self.session, self.timeout, self.base_url)

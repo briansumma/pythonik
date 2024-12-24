@@ -25,9 +25,9 @@ PURGE_ALL_URL = DELETE_QUEUE + "/purge/all/"
 class AssetSpec(Spec):
     server = "API/assets/"
 
-    def __init__(self, session, timeout=3):
-        super().__init__(session, timeout)
+    def __init__(self, session, timeout=3, base_url: str ="https://app.iconik.io"):
         self._collection_spec = CollectionSpec(session=session, timeout=timeout)
+        return super().__init__(session, timeout, base_url)
 
     @property
     def collections(self) -> CollectionSpec:

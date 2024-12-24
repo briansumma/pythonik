@@ -8,13 +8,19 @@ from pythonik.models.base import Response as PythonikResponse
 
 class Spec:
     server: str = ""
-    api_version = "v1"
-    base_url = "https://app.iconik.io"
+    api_version: str = "v1"
+    base_url: str = "https://app.iconik.io"
 
-    def __init__(self, session: Session, timeout: int = 3):
+    @classmethod
+    def set_class_attribute(cls, name, value):
+        setattr(cls, name, value)
+
+    def __init__(self, session: Session, timeout: int = 3, base_url: str = "https://app.iconik.io"):
         self.session = session
         self.timeout = timeout
-
+        self.set_class_attribute("base_url", base_url)
+    
+        
     @staticmethod
     def _prepare_model_data(data: Union[BaseModel, Dict[str, Any]], exclude_defaults: bool = True) -> Dict[str, Any]:
         """
