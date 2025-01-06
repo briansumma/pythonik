@@ -210,3 +210,19 @@ def test_create_version_from_asset():
         client.assets().create_version_from_asset(
             asset_id=asset_id, source_asset_id=source_asset_id, body=model
         )
+
+
+def test_delete_asset():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+
+        mock_address = AssetSpec.gen_url(GET_URL.format(asset_id))
+        m.delete(mock_address, status_code=204)
+
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.assets().delete(asset_id)
+
+        assert m.call_count == 1
+        assert m.last_request.method == "DELETE"

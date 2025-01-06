@@ -319,3 +319,26 @@ class AssetSpec(Spec):
         )
         # Since this returns 202 with no content, we don't need a response model
         return self.parse_response(response, None)
+
+    def delete(self, asset_id: str, **kwargs) -> Response:
+        """
+        Delete a particular asset by id
+
+        Args:
+            asset_id: ID of the asset to delete
+            **kwargs: Additional kwargs to pass to the request
+
+        Returns:
+            Response with no data model (204 status code)
+
+        Required roles:
+            - can_delete_assets
+
+        Raises:
+            400 Bad request
+            401 Token is invalid
+            403 Forbidden
+            404 Asset does not exist
+        """
+        response = self._delete(GET_URL.format(asset_id), **kwargs)
+        return self.parse_response(response, model=None)
