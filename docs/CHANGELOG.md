@@ -1,5 +1,17 @@
 # Changelog
 
+## 2025-01-05 "Asset Management" - version 1.6.0
+
+### Added
+- Add single asset deletion endpoint:
+  - New `delete()` method in `AssetSpec` class
+  - Support for DELETE /v1/assets/{asset_id}/ endpoint
+  - Role-based access control (requires can_delete_assets)
+- Add test coverage for asset deletion operations
+
+### Technical Details
+This update adds support for deleting individual assets via the Iconik API. The implementation follows REST best practices with proper status code handling and role-based access control. This complements the existing bulk deletion functionality.
+
 ## 2024-12-24 "Alternative Environments" - version 1.5.0
 
 ### Added
