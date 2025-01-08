@@ -39,6 +39,9 @@ from pythonik.specs.files import (
     GET_ASSETS_FORMAT_COMPONENTS_PATH,
     GET_ASSET_PROXIES_MULTIPART_URL_PATH,
     GET_ASSETS_FILE_PATH,
+    GET_ASSETS_VERSION_FILE_SETS_PATH,
+    GET_ASSETS_VERSION_FORMATS_PATH,
+    GET_ASSETS_VERSION_FILES_PATH,
 )
 from pythonik.tests.utils import (
     generate_mock_gcs_upload_url,
@@ -783,3 +786,79 @@ def test_partial_update_asset_file():
         m.patch(mock_address, json=data)
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         client.files().partial_update_asset_file(asset_id, file_id, body=model)
+
+
+def test_get_asset_file_sets_by_version():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        version_id = str(uuid.uuid4())
+
+        data = {
+            "objects": [],
+            "total": 0,
+            "page": 1,
+            "pages": 1,
+            "per_page": 50
+        }
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_VERSION_FILE_SETS_PATH.format(asset_id, version_id)
+        )
+
+        m.get(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().get_asset_file_sets_by_version(
+            asset_id, version_id, per_page=50, last_id="last", file_count=True
+        )
+
+
+def test_get_asset_formats_by_version():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        version_id = str(uuid.uuid4())
+
+        data = {
+            "objects": [],
+            "total": 0,
+            "page": 1,
+            "pages": 1,
+            "per_page": 50
+        }
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_VERSION_FORMATS_PATH.format(asset_id, version_id)
+        )
+
+        m.get(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().get_asset_formats_by_version(
+            asset_id, version_id, per_page=50, last_id="last"
+        )
+
+
+def test_get_asset_files_by_version():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        version_id = str(uuid.uuid4())
+
+        data = {
+            "objects": [],
+            "total": 0,
+            "page": 1,
+            "pages": 1,
+            "per_page": 50
+        }
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_VERSION_FILES_PATH.format(asset_id, version_id)
+        )
+
+        m.get(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().get_asset_files_by_version(
+            asset_id, version_id, per_page=50, last_id="last",
+            generate_signed_url=False, content_disposition="attachment"
+        )

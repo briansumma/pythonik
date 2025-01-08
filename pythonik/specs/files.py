@@ -50,6 +50,9 @@ GET_ASSET_KEYFRAMES = "assets/{}/keyframes/"
 GET_ASSETS_FILE_PATH = "assets/{}/files/{}/"
 DELETE_ASSETS_FILE_SET_PATH = "assets/{}/file_sets/{}/"
 DELETE_ASSETS_FILE_PATH = "assets/{}/files/{}/"
+GET_ASSETS_VERSION_FILE_SETS_PATH = "assets/{}/versions/{}/file_sets/"
+GET_ASSETS_VERSION_FILES_PATH = "assets/{}/versions/{}/files/"
+GET_ASSETS_VERSION_FORMATS_PATH = "assets/{}/versions/{}/formats/"
 
 
 class FilesSpec(Spec):
@@ -477,6 +480,45 @@ class FilesSpec(Spec):
         )
         return self.parse_response(response, FileSet)
 
+    def get_asset_file_sets_by_version(
+        self, asset_id: str, version_id: str, per_page: int = None, last_id: str = None, file_count: bool = None, **kwargs
+    ) -> Response:
+        """
+        Get all asset's file sets by version
+        
+        Args:
+            asset_id: ID of the asset
+            version_id: ID of the version
+            per_page: The number of items for each page
+            last_id: ID of a last file set on previous page
+            file_count: Set to true if you need a total amount of files in a file set
+            **kwargs: Additional kwargs to pass to the request
+            
+        Returns:
+            Response(model=FileSets)
+            
+        Required roles:
+            - can_read_files
+            
+        Raises:
+            401 Token is invalid
+            404 FileSets for this asset don't exist
+        """
+        params = {}
+        if per_page is not None:
+            params["per_page"] = per_page
+        if last_id is not None:
+            params["last_id"] = last_id
+        if file_count is not None:
+            params["file_count"] = file_count
+
+        response = self._get(
+            GET_ASSETS_VERSION_FILE_SETS_PATH.format(asset_id, version_id),
+            params=params,
+            **kwargs,
+        )
+        return self.parse_response(response, FileSets)
+
     def get_asset_filesets(self, asset_id: str, **kwargs) -> Response:
         """Get all file sets associated with an asset
         
@@ -746,3 +788,82 @@ class FilesSpec(Spec):
             **kwargs,
         )
         return self.parse_response(response, File)
+
+    def get_asset_formats_by_version(
+        self, asset_id: str, version_id: str, per_page: int = None, last_id: str = None, **kwargs
+    ) -> Response:
+        """
+        Get all asset's formats by version
+        
+        Args:
+            asset_id: ID of the asset
+            version_id: ID of the version
+            per_page: The number of items for each page
+            last_id: ID of a last format on previous page
+            **kwargs: Additional kwargs to pass to the request
+            
+        Returns:
+            Response(model=Formats)
+            
+        Required roles:
+            - can_read_formats
+            
+        Raises:
+            401 Token is invalid
+            404 Formats for this asset don't exist
+        """
+        params = {}
+        if per_page is not None:
+            params["per_page"] = per_page
+        if last_id is not None:
+            params["last_id"] = last_id
+
+        response = self._get(
+            GET_ASSETS_VERSION_FORMATS_PATH.format(asset_id, version_id),
+            params=params,
+            **kwargs,
+        )
+        return self.parse_response(response, Formats)
+
+    def get_asset_files_by_version(
+        self, asset_id: str, version_id: str, per_page: int = None, last_id: str = None, 
+        generate_signed_url: bool = None, content_disposition: str = None, **kwargs
+    ) -> Response:
+        """
+        Get all asset's files by version
+        
+        Args:
+            asset_id: ID of the asset
+            version_id: ID of the version
+            per_page: The number of items for each page
+            last_id: ID of a last file on previous page
+            generate_signed_url: Set to False if you do not need a URL, will slow things down otherwise
+            content_disposition: Set to attachment if you want a download link. Note that this will not create a download in asset history
+            **kwargs: Additional kwargs to pass to the request
+            
+        Returns:
+            Response(model=Files)
+            
+        Required roles:
+            - can_read_files
+            
+        Raises:
+            401 Token is invalid
+            404 Files for this asset don't exist
+        """
+        params = {}
+        if per_page is not None:
+            params["per_page"] = per_page
+        if last_id is not None:
+            params["last_id"] = last_id
+        if generate_signed_url is not None:
+            params["generate_signed_url"] = generate_signed_url
+        if content_disposition is not None:
+            params["content_disposition"] = content_disposition
+
+        response = self._get(
+            GET_ASSETS_VERSION_FILES_PATH.format(asset_id, version_id),
+            params=params,
+            **kwargs,
+        )
+        return self.parse_response(response, Files)
