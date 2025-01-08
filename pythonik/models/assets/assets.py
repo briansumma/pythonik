@@ -55,6 +55,7 @@ class Version(BaseModel):
     is_online: Optional[bool] = None
     status: Optional[str] = ""
     transcribe_status: Optional[str] = ""
+    version_number: Optional[int] = None
 
 
 class Asset(BaseModel):
