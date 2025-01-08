@@ -1,5 +1,26 @@
 # Changelog
 
+## 2025-01-10 "File & Format Management" - version 1.7.0
+
+### Added
+- Add comprehensive file and file set management endpoints:
+  - `update_asset_file()`: Full update of asset files via PUT
+  - `partial_update_asset_file()`: Partial update of asset files via PATCH
+  - `update_asset_file_set()`: Full update of file sets via PUT
+  - `partial_update_asset_file_set()`: Partial update of file sets via PATCH
+- Add asset format management endpoints:
+  - `update_asset_format()`: Full update of formats via PUT
+  - `partial_update_asset_format()`: Partial update of formats via PATCH
+- Add support for:
+  - FileCreate, FileSetCreate, and FormatCreate model inputs
+  - Raw dictionary inputs
+  - Configurable default value exclusion
+  - Role-based access validation
+- Add comprehensive test coverage for all file and format operations
+
+### Technical Details
+This update completes both the file and format management capabilities by adding update operations for files, file sets, and formats. The implementation maintains consistency with existing patterns, supporting both model and dictionary inputs while ensuring proper role validation and error handling.
+
 ## 2025-01-05 "Asset Management" - version 1.6.0
 
 ### Added
