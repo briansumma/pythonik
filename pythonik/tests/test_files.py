@@ -38,6 +38,7 @@ from pythonik.specs.files import (
     GET_ASSETS_FILE_SET_FILES_PATH,
     GET_ASSETS_FORMAT_COMPONENTS_PATH,
     GET_ASSET_PROXIES_MULTIPART_URL_PATH,
+    GET_ASSETS_FILE_PATH,
 )
 from pythonik.tests.utils import (
     generate_mock_gcs_upload_url,
@@ -682,3 +683,103 @@ def test_partial_update_asset_format():
         m.patch(mock_address, json=data)
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         client.files().partial_update_asset_format(asset_id, format_id, body=model)
+
+
+def test_update_asset_file_set():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_set_id = str(uuid.uuid4())
+
+        model = FileSetCreate(
+            name="test_file_set",
+            status="ACTIVE",
+            storage_id="test_storage",
+            format_id="test_format"
+        )
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_FILE_SETS_PATH.format(asset_id, file_set_id)
+        )
+
+        m.put(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().update_asset_file_set(asset_id, file_set_id, body=model)
+
+
+def test_partial_update_asset_file_set():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_set_id = str(uuid.uuid4())
+
+        model = FileSetCreate(
+            name="test_file_set",
+            status="ACTIVE",
+            storage_id="test_storage",
+            format_id="test_format"
+        )
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_FILE_SETS_PATH.format(asset_id, file_set_id)
+        )
+
+        m.patch(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().partial_update_asset_file_set(asset_id, file_set_id, body=model)
+
+
+def test_update_asset_file():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_id = str(uuid.uuid4())
+
+        model = FileCreate(
+            name="test_file.txt",
+            original_name="original_test_file.txt",
+            file_set_id="test_file_set",
+            storage_id="test_storage",
+            format_id="test_format",
+            size=1024,
+            type=FileType.FILE,
+            status=FileStatus.CLOSED
+        )
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_FILE_PATH.format(asset_id, file_id)
+        )
+
+        m.put(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().update_asset_file(asset_id, file_id, body=model)
+
+
+def test_partial_update_asset_file():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_id = str(uuid.uuid4())
+
+        model = FileCreate(
+            name="test_file.txt",
+            original_name="original_test_file.txt",
+            file_set_id="test_file_set",
+            storage_id="test_storage",
+            format_id="test_format",
+            size=1024,
+            type=FileType.FILE,
+            status=FileStatus.CLOSED
+        )
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_FILE_PATH.format(asset_id, file_id)
+        )
+
+        m.patch(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().partial_update_asset_file(asset_id, file_id, body=model)
