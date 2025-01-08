@@ -1,5 +1,22 @@
 # Changelog
 
+## 2025-01-08 "Version-Specific Access" - version 1.8.0
+
+### Added
+- Add version-specific file, file set, and format endpoints:
+  - `get_asset_files_by_version()`: Get files for a specific version
+  - `get_asset_file_sets_by_version()`: Get file sets for a specific version
+  - `get_asset_formats_by_version()`: Get formats for a specific version
+- Add support for:
+  - Pagination with `per_page` and `last_id`
+  - Optional `file_count` for file sets
+  - Optional URL generation control with `generate_signed_url`
+  - Download link configuration with `content_disposition`
+  - Role-based access validation (can_read_files/can_read_formats)
+
+### Technical Details
+This update adds comprehensive support for accessing files, file sets, and formats by version ID. The implementation provides granular control over URL generation and download behavior while maintaining proper role validation and error handling.
+
 ## 2025-01-10 "Missing Model Attribute" - version 1.7.1
 
 ### Changed
