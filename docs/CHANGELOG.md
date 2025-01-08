@@ -4,6 +4,7 @@
 
 ### Changed
 - add version_number to Version model
+- update changelog
 
 ## 2025-01-10 "File & Format Management" - version 1.7.0
 
