@@ -3,7 +3,9 @@
 ## 2025-01-10 "Missing Model Attribute" - version 1.7.1
 
 ### Changed
+
 - add version_number to Version model
+
 
 ## 2025-01-10 "File & Format Management" - version 1.7.0
 
