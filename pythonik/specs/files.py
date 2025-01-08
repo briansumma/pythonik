@@ -554,3 +554,195 @@ class FilesSpec(Spec):
         """
         resp = self._get(GET_STORAGES_PATH, **kwargs)
         return self.parse_response(resp, Storages)
+
+    def update_asset_format(
+        self, asset_id: str, format_id: str, body: Union[FormatCreate, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
+    ) -> Response:
+        """
+        Update format information for an asset using PUT
+        
+        Args:
+            asset_id: ID of the asset
+            format_id: ID of the format to update
+            body: Format update parameters, either as FormatCreate model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Returns:
+            Response(model=Format)
+            
+        Required roles:
+            - can_write_formats
+            
+        Raises:
+            400 Bad request
+            401 Token is invalid
+            404 Format for this asset doesn't exist
+        """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
+        response = self._put(
+            GET_ASSETS_FORMAT_PATH.format(asset_id, format_id),
+            json=json_data,
+            **kwargs,
+        )
+        return self.parse_response(response, Format)
+
+    def partial_update_asset_format(
+        self, asset_id: str, format_id: str, body: Union[FormatCreate, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
+    ) -> Response:
+        """
+        Partially update format information for an asset using PATCH
+        
+        Args:
+            asset_id: ID of the asset
+            format_id: ID of the format to update
+            body: Format update parameters, either as FormatCreate model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Returns:
+            Response(model=Format)
+            
+        Required roles:
+            - can_write_formats
+            
+        Raises:
+            400 Bad request
+            401 Token is invalid
+            404 Format for this asset doesn't exist
+        """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
+        response = self._patch(
+            GET_ASSETS_FORMAT_PATH.format(asset_id, format_id),
+            json=json_data,
+            **kwargs,
+        )
+        return self.parse_response(response, Format)
+
+    def update_asset_file_set(
+        self, asset_id: str, file_set_id: str, body: Union[FileSetCreate, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
+    ) -> Response:
+        """
+        Update file set information for an asset using PUT
+        
+        Args:
+            asset_id: ID of the asset
+            file_set_id: ID of the file set to update
+            body: File set update parameters, either as FileSetCreate model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Returns:
+            Response(model=FileSet)
+            
+        Required roles:
+            - can_write_files
+            
+        Raises:
+            400 Bad request
+            401 Token is invalid
+            404 File set for this asset doesn't exist
+        """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
+        response = self._put(
+            GET_ASSETS_FILE_SETS_PATH.format(asset_id, file_set_id),
+            json=json_data,
+            **kwargs,
+        )
+        return self.parse_response(response, FileSet)
+
+    def partial_update_asset_file_set(
+        self, asset_id: str, file_set_id: str, body: Union[FileSetCreate, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
+    ) -> Response:
+        """
+        Partially update file set information for an asset using PATCH
+        
+        Args:
+            asset_id: ID of the asset
+            file_set_id: ID of the file set to update
+            body: File set update parameters, either as FileSetCreate model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Returns:
+            Response(model=FileSet)
+            
+        Required roles:
+            - can_write_files
+            
+        Raises:
+            400 Bad request
+            401 Token is invalid
+            404 File set for this asset doesn't exist
+        """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
+        response = self._patch(
+            GET_ASSETS_FILE_SETS_PATH.format(asset_id, file_set_id),
+            json=json_data,
+            **kwargs,
+        )
+        return self.parse_response(response, FileSet)
+
+    def update_asset_file(
+        self, asset_id: str, file_id: str, body: Union[FileCreate, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
+    ) -> Response:
+        """
+        Update file information for an asset using PUT
+        
+        Args:
+            asset_id: ID of the asset
+            file_id: ID of the file to update
+            body: File update parameters, either as FileCreate model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Returns:
+            Response(model=File)
+            
+        Required roles:
+            - can_write_files
+            
+        Raises:
+            400 Bad request
+            401 Token is invalid
+            404 File for this asset doesn't exist
+        """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
+        response = self._put(
+            GET_ASSETS_FILE_PATH.format(asset_id, file_id),
+            json=json_data,
+            **kwargs,
+        )
+        return self.parse_response(response, File)
+
+    def partial_update_asset_file(
+        self, asset_id: str, file_id: str, body: Union[FileCreate, Dict[str, Any]], exclude_defaults: bool = True, **kwargs
+    ) -> Response:
+        """
+        Partially update file information for an asset using PATCH
+        
+        Args:
+            asset_id: ID of the asset
+            file_id: ID of the file to update
+            body: File update parameters, either as FileCreate model or dict
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models
+            **kwargs: Additional kwargs to pass to the request
+            
+        Returns:
+            Response(model=File)
+            
+        Required roles:
+            - can_write_files
+            
+        Raises:
+            400 Bad request
+            401 Token is invalid
+            404 File for this asset doesn't exist
+        """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
+        response = self._patch(
+            GET_ASSETS_FILE_PATH.format(asset_id, file_id),
+            json=json_data,
+            **kwargs,
+        )
+        return self.parse_response(response, File)

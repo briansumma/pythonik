@@ -38,6 +38,7 @@ from pythonik.specs.files import (
     GET_ASSETS_FILE_SET_FILES_PATH,
     GET_ASSETS_FORMAT_COMPONENTS_PATH,
     GET_ASSET_PROXIES_MULTIPART_URL_PATH,
+    GET_ASSETS_FILE_PATH,
 )
 from pythonik.tests.utils import (
     generate_mock_gcs_upload_url,
@@ -648,27 +649,137 @@ def test_delete_asset_file_set_keep_source():
         m.delete(mock_address, status_code=204)
 
 
-# def test_file_create_serialization_behavior():
-#     file_data = FileCreate(
-#         file_set_id="fs123",
-#         format_id="fmt456",
-#         storage_id="stor789",
-#         name="test_file.txt",
-#         original_name="original_test_file.txt",
-#         size=1024,
-#         type=FileType.FILE.value,  # This has a default value
-#         directory_path="/path/to/dir",
-#         status=FileStatus.CLOSED.value  # This has a default value
-#     )
+def test_update_asset_format():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        format_id = str(uuid.uuid4())
 
-#     # With exclude_defaults=True
-#     data_exclude_defaults = file_data.model_dump(exclude_defaults=True)
-#     # Fields with defaults will be excluded even if explicitly set
-#     # assert "type" not in data_exclude_defaults
-#     assert "status" not in data_exclude_defaults
+        model = FormatCreate(name="test_format", status="ACTIVE")
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_FORMAT_PATH.format(asset_id, format_id)
+        )
 
-#     # With exclude_unset=True
-#     data_exclude_unset = file_data.model_dump(exclude_unset=True)
-#     # Fields that were explicitly set will be included, even if they match defaults
-#     assert "type" in data_exclude_unset
-#     assert "status" in data_exclude_unset
+        m.put(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().update_asset_format(asset_id, format_id, body=model)
+
+
+def test_partial_update_asset_format():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        format_id = str(uuid.uuid4())
+
+        model = FormatCreate(name="test_format", status="ACTIVE")
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_FORMAT_PATH.format(asset_id, format_id)
+        )
+
+        m.patch(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().partial_update_asset_format(asset_id, format_id, body=model)
+
+
+def test_update_asset_file_set():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_set_id = str(uuid.uuid4())
+
+        model = FileSetCreate(
+            name="test_file_set",
+            status="ACTIVE",
+            storage_id="test_storage",
+            format_id="test_format"
+        )
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_FILE_SETS_PATH.format(asset_id, file_set_id)
+        )
+
+        m.put(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().update_asset_file_set(asset_id, file_set_id, body=model)
+
+
+def test_partial_update_asset_file_set():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_set_id = str(uuid.uuid4())
+
+        model = FileSetCreate(
+            name="test_file_set",
+            status="ACTIVE",
+            storage_id="test_storage",
+            format_id="test_format"
+        )
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_FILE_SETS_PATH.format(asset_id, file_set_id)
+        )
+
+        m.patch(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().partial_update_asset_file_set(asset_id, file_set_id, body=model)
+
+
+def test_update_asset_file():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_id = str(uuid.uuid4())
+
+        model = FileCreate(
+            name="test_file.txt",
+            original_name="original_test_file.txt",
+            file_set_id="test_file_set",
+            storage_id="test_storage",
+            format_id="test_format",
+            size=1024,
+            type=FileType.FILE,
+            status=FileStatus.CLOSED
+        )
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_FILE_PATH.format(asset_id, file_id)
+        )
+
+        m.put(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().update_asset_file(asset_id, file_id, body=model)
+
+
+def test_partial_update_asset_file():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        file_id = str(uuid.uuid4())
+
+        model = FileCreate(
+            name="test_file.txt",
+            original_name="original_test_file.txt",
+            file_set_id="test_file_set",
+            storage_id="test_storage",
+            format_id="test_format",
+            size=1024,
+            type=FileType.FILE,
+            status=FileStatus.CLOSED
+        )
+        data = model.model_dump()
+        mock_address = FilesSpec.gen_url(
+            GET_ASSETS_FILE_PATH.format(asset_id, file_id)
+        )
+
+        m.patch(mock_address, json=data)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+        client.files().partial_update_asset_file(asset_id, file_id, body=model)
