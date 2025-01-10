@@ -1,5 +1,12 @@
 # Changelog
 
+## 2025-01-10 "BugFix" - version 1.9.2
+
+### Fixed
+- Fixed response model handling for version endpoints to use AssetVersionResponse:
+  - `partial_update_version()`
+  - `update_version()`
+
 ## 2025-01-10 "Version Management" - version 1.9.1
 
 ### Fixed

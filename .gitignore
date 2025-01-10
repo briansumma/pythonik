@@ -159,5 +159,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
+# Integration tests
+pythonik/tests/test_*_integration.py
+
 # Misc.
 IGNORE

@@ -366,7 +366,7 @@ class AssetSpec(Spec):
             VERSION_URL.format(asset_id, version_id),
             json=self._prepare_model_data(body)
         )
-        return self.parse_response(response, AssetVersion)
+        return self.parse_response(response, AssetVersionResponse)
 
     def update_version(
         self,
@@ -387,7 +387,7 @@ class AssetSpec(Spec):
             VERSION_URL.format(asset_id, version_id),
             json=self._prepare_model_data(body)
         )
-        return self.parse_response(response, AssetVersion)
+        return self.parse_response(response, AssetVersionResponse)
 
     def promote_version(
         self,
