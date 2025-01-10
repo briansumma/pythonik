@@ -1,5 +1,5 @@
 import uuid
-
+import datetime
 import requests_mock
 
 from pythonik.client import PythonikClient
@@ -13,6 +13,7 @@ from pythonik.models.assets.versions import (
     AssetVersionCreate,
     AssetVersionResponse,
     AssetVersionFromAssetCreate,
+    AssetVersion
 )
 from pythonik.models.assets.segments import SegmentBody, SegmentResponse
 from pythonik.specs.assets import (
@@ -21,6 +22,9 @@ from pythonik.specs.assets import (
     AssetSpec,
     SEGMENT_URL,
     VERSIONS_URL,
+    VERSION_URL,
+    VERSION_PROMOTE_URL,
+    VERSION_OLD_URL,
     PURGE_ALL_URL,
     BULK_DELETE_URL,
     SEGMENT_URL_UPDATE,
@@ -226,3 +230,140 @@ def test_delete_asset():
 
         assert m.call_count == 1
         assert m.last_request.method == "DELETE"
+
+
+def test_partial_update_version():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        version_id = str(uuid.uuid4())
+
+        model = AssetVersion(
+            analyze_status="N/A",
+            archive_status="NOT_ARCHIVED",
+            created_by_user="string",
+            created_by_user_info={},
+            face_recognition_status="N/A",
+            has_unconfirmed_persons=True,
+            date_created=datetime.datetime.now().isoformat(),
+            id=str(uuid.uuid4()),
+            is_online=True,
+            person_ids=["string"],
+            status="ACTIVE",
+            transcribe_status="N/A",
+            version_number=0
+        )
+        mock_address = AssetSpec.gen_url(VERSION_URL.format(asset_id, version_id))
+
+        m.patch(mock_address, json=model.model_dump())
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+
+        client.assets().partial_update_version(
+            asset_id=asset_id,
+            version_id=version_id,
+            body=model
+        )
+
+
+def test_update_version():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        version_id = str(uuid.uuid4())
+
+        model = AssetVersion(
+            analyze_status="N/A",
+            archive_status="NOT_ARCHIVED",
+            created_by_user="string",
+            created_by_user_info={},
+            face_recognition_status="N/A",
+            has_unconfirmed_persons=True,
+            date_created=datetime.datetime.now().isoformat(),
+            id=str(uuid.uuid4()),
+            is_online=True,
+            person_ids=["string"],
+            status="ACTIVE",
+            transcribe_status="N/A",
+            version_number=0
+        )
+        mock_address = AssetSpec.gen_url(VERSION_URL.format(asset_id, version_id))
+
+        m.put(mock_address, json=model.model_dump())
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+
+        client.assets().update_version(
+            asset_id=asset_id,
+            version_id=version_id,
+            body=model
+        )
+
+
+def test_promote_version():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        version_id = str(uuid.uuid4())
+
+        mock_address = AssetSpec.gen_url(VERSION_PROMOTE_URL.format(asset_id, version_id))
+
+        m.put(mock_address, status_code=204)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+
+        client.assets().promote_version(
+            asset_id=asset_id,
+            version_id=version_id
+        )
+
+
+def test_delete_old_versions():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+
+        mock_address = AssetSpec.gen_url(VERSION_OLD_URL.format(asset_id))
+
+        m.delete(mock_address, status_code=204)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+
+        client.assets().delete_old_versions(asset_id=asset_id)
+
+
+def test_delete_version():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        version_id = str(uuid.uuid4())
+
+        mock_address = AssetSpec.gen_url(VERSION_URL.format(asset_id, version_id))
+
+        m.delete(mock_address, status_code=204)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+
+        client.assets().delete_version(
+            asset_id=asset_id,
+            version_id=version_id
+        )
+
+
+def test_delete_version_hard():
+    with requests_mock.Mocker() as m:
+        app_id = str(uuid.uuid4())
+        auth_token = str(uuid.uuid4())
+        asset_id = str(uuid.uuid4())
+        version_id = str(uuid.uuid4())
+
+        mock_address = AssetSpec.gen_url(VERSION_URL.format(asset_id, version_id))
+
+        m.delete(mock_address, status_code=204)
+        client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
+
+        client.assets().delete_version(
+            asset_id=asset_id,
+            version_id=version_id,
+            hard_delete=True
+        )

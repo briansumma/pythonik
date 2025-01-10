@@ -1,5 +1,20 @@
 # Changelog
 
+## 2025-01-10 "Mersion" - version 1.9.0
+
+### Added
+- Add version update endpoints:
+  - `partial_update_version()`: Partially update an asset version using PATCH
+  - `update_version()`: Update an asset version using PUT
+  - `promote_version()`: Promote a version to latest
+- Add IN_PROGRESS status to Status enum
+- Improve version model flexibility:
+  - Make created_by_user_info and version_number optional
+  - Change date_created to string type for better serialization
+
+### Technical Details
+This update enhances version management capabilities by adding endpoints for updating and promoting versions. The changes also improve model flexibility by making certain fields optional and using string-based date serialization for better compatibility.
+
 ## 2025-01-08 "Version-Specific Access" - version 1.8.0
 
 ### Added

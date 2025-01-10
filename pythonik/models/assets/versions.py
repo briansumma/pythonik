@@ -13,8 +13,8 @@ class AssetVersion(BaseModel):
     analyze_status: str
     archive_status: ArchiveStatus
     created_by_user: str
-    created_by_user_info: UserInfo
-    date_created: datetime
+    created_by_user_info: Optional[UserInfo] = None
+    date_created: str
     face_recognition_status: str
     has_unconfirmed_persons: bool
     id: str
@@ -22,7 +22,7 @@ class AssetVersion(BaseModel):
     person_ids: List[str]
     status: Status
     transcribe_status: str
-    version_number: int
+    version_number: Optional[int] = None
 
 class AssetVersionResponse(BaseModel):
     asset_id: str
