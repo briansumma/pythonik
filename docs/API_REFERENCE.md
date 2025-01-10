@@ -59,6 +59,10 @@ print(asset.id)
 5. [Metadata](#metadata)
    - [get_asset_metadata](#get_asset_metadata)
    - [update_asset_metadata](#update_asset_metadata)
+6. [Version Management](#version-management)
+   - [Update a Version](#update-a-version)
+   - [Promote a Version](#promote-a-version)
+   - [Delete Versions](#delete-versions)
 
 ## Assets
 
@@ -132,47 +136,6 @@ partial_update_data = {
 body = SegmentBody(**partial_update_data)
 partially_updated_segment = client.assets().partial_update_segment(asset_id="1234567890abcdef", segment_id="seg123456", body=body)
 ```
-
-<!-- ## CollectionSpec
-
-`CollectionSpec` provides methods for interacting with collections Iconik.
-
-### get
-
-Retrieves an Iconik collection by its ID.
-
-```python
-collection = CollectionSpec().get(collection_id="coll987654")
-```
-
-### create
-
-Creates a new Iconik collection.
-
-```python
-collection_data = {
-    "name": "My New Collection",
-    "description": "This is a sample collection",
-    "metadata": {
-        "project": "Project A"
-    }
-}
-collection = CollectionSpec().create(collection_data)
-```
-
-### update
-
-Updates an existing Iconik collection.
-
-```python
-update_data = {
-    "name": "Updated Collection Name",
-    "metadata": {
-        "status": "In Progress"
-    }
-}
-updated_collection = CollectionSpec().update(collection_id="coll987654", collection_data=update_data)
-``` -->
 
 ## Jobs
 
@@ -439,3 +402,100 @@ metadata = client.metadata().update_asset_metadata(
     asset_id="2c5ac73d-0860-42b9-91f3-44a361441143",
     view_id="51099c0f-9586-416e-ae47-e653fbc9a71f", metadata=body)
 ```
+
+## Version Management
+
+The Pythonik client provides several endpoints for managing asset versions:
+
+### Update a Version
+
+You can update an asset version using either a full update (PUT) or partial update (PATCH):
+
+```python
+from pythonik.client import PythonikClient
+from pythonik.models.assets.versions import AssetVersion
+from pythonik.models.base import Status
+
+# Initialize client
+client = PythonikClient(app_id="your_app_id", auth_token="your_auth_token")
+
+# Create version data
+version_data = AssetVersion(
+    analyze_status="N/A",
+    archive_status="NOT_ARCHIVED",
+    created_by_user="user123",
+    face_recognition_status="N/A",
+    has_unconfirmed_persons=False,
+    id="version_id",
+    is_online=True,
+    person_ids=[],
+    status=Status.IN_PROGRESS,
+    transcribe_status="N/A"
+)
+
+# Full update - replaces all fields
+updated_version = client.assets().update_version(
+    asset_id="asset123",
+    version_id="version456",
+    body=version_data
+)
+
+# Partial update - only updates specified fields
+partial_version = AssetVersion(
+    status=Status.ACTIVE,
+    is_online=True
+)
+updated_version = client.assets().partial_update_version(
+    asset_id="asset123",
+    version_id="version456",
+    body=partial_version
+)
+```
+
+### Promote a Version
+
+You can promote a specific version to be the latest version of an asset:
+
+```python
+client.assets().promote_version(
+    asset_id="asset123",
+    version_id="version456"
+)
+```
+
+### Delete Versions
+
+You have several options for deleting versions:
+
+```python
+# Delete a specific version
+client.assets().delete_version(
+    asset_id="asset123",
+    version_id="version456"
+)
+
+# Hard delete a version (completely remove it)
+client.assets().delete_version(
+    asset_id="asset123",
+    version_id="version456",
+    hard_delete=True
+)
+
+# Delete all versions except the latest one
+client.assets().delete_old_versions(
+    asset_id="asset123"
+)
+```
+
+### Required Permissions
+
+- `can_write_versions`: Required for update and promote operations
+- `can_delete_versions`: Required for delete operations
+
+### Error Handling
+
+All version management endpoints may raise the following errors:
+- 400 Bad Request: Invalid request data
+- 401 Unauthorized: Invalid authentication token
+- 403 Forbidden: Missing required permissions
+- 404 Not Found: Asset or version not found
