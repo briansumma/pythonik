@@ -1,5 +1,12 @@
 # Changelog
 
+## 2025-01-10 "Version Management" - version 1.9.1
+
+### Fixed
+- Fixed return types for version endpoints to correctly return Response objects:
+  - `partial_update_version()`
+  - `update_version()`
+
 ## 2025-01-10 "Mersion" - version 1.9.0
 
 ### Added

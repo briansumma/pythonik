@@ -434,22 +434,24 @@ version_data = AssetVersion(
 )
 
 # Full update - replaces all fields
-updated_version = client.assets().update_version(
+response = client.assets().update_version(
     asset_id="asset123",
     version_id="version456",
     body=version_data
 )
+updated_version = response.data
 
 # Partial update - only updates specified fields
 partial_version = AssetVersion(
     status=Status.ACTIVE,
     is_online=True
 )
-updated_version = client.assets().partial_update_version(
+response = client.assets().partial_update_version(
     asset_id="asset123",
     version_id="version456",
     body=partial_version
 )
+updated_version = response.data
 ```
 
 ### Promote a Version
