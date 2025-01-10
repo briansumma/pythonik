@@ -254,9 +254,14 @@ def test_partial_update_version():
             transcribe_status="N/A",
             version_number=0
         )
+        response = AssetVersionResponse(
+            asset_id=asset_id,
+            system_domain_id=str(uuid.uuid4()),
+            versions=[model]
+        )
         mock_address = AssetSpec.gen_url(VERSION_URL.format(asset_id, version_id))
 
-        m.patch(mock_address, json=model.model_dump())
+        m.patch(mock_address, json=response.model_dump())
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
 
         client.assets().partial_update_version(
@@ -288,9 +293,14 @@ def test_update_version():
             transcribe_status="N/A",
             version_number=0
         )
+        response = AssetVersionResponse(
+            asset_id=asset_id,
+            system_domain_id=str(uuid.uuid4()),
+            versions=[model]
+        )
         mock_address = AssetSpec.gen_url(VERSION_URL.format(asset_id, version_id))
 
-        m.put(mock_address, json=model.model_dump())
+        m.put(mock_address, json=response.model_dump())
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
 
         client.assets().update_version(

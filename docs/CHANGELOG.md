@@ -1,5 +1,11 @@
 # Changelog
 
+## 2025-01-10 "Test Updates" - version 1.9.3
+
+### Fixed
+- Updated unit tests for version endpoints to correctly mock AssetVersionResponse model
+- Fixed test assertions to match API response structure
+
 ## 2025-01-10 "BugFix" - version 1.9.2
 
 ### Fixed
