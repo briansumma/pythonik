@@ -6,6 +6,7 @@ from pythonik.models.assets.versions import (
     AssetVersionCreate,
     AssetVersionResponse,
     AssetVersionFromAssetCreate,
+    AssetVersion
 )
 from pythonik.models.base import Response
 from pythonik.specs.base import Spec
@@ -17,6 +18,9 @@ GET_URL = BASE + "/{}/"
 SEGMENT_URL = BASE + "/{}/segments/"
 SEGMENT_URL_UPDATE = SEGMENT_URL + "{}/"
 VERSIONS_URL = BASE + "/{}/versions/"
+VERSION_URL = VERSIONS_URL + "{}/"
+VERSION_PROMOTE_URL = VERSION_URL + "promote/"
+VERSION_OLD_URL = VERSIONS_URL + "old/"
 VERSIONS_FROM_ASSET_URL = BASE + "/{}/versions/from/assets/{}/"
 BULK_DELETE_URL = DELETE_QUEUE + "/bulk/"
 PURGE_ALL_URL = DELETE_QUEUE + "/purge/all/"
@@ -342,3 +346,142 @@ class AssetSpec(Spec):
         """
         response = self._delete(GET_URL.format(asset_id), **kwargs)
         return self.parse_response(response, model=None)
+
+    def partial_update_version(
+        self,
+        asset_id: str,
+        version_id: str,
+        body: AssetVersion,
+        **kwargs
+    ) -> AssetVersion:
+        """
+        Partially update an asset version.
+
+        Args:
+            asset_id: The ID of the asset
+            version_id: The ID of the version
+            body: The version data to update
+        """
+        response = self._patch(
+            VERSION_URL.format(asset_id, version_id),
+            json=self._prepare_model_data(body)
+        )
+        return self.parse_response(response, AssetVersion)
+
+    def update_version(
+        self,
+        asset_id: str,
+        version_id: str,
+        body: AssetVersion,
+        **kwargs
+    ) -> AssetVersion:
+        """
+        Update an asset version.
+
+        Args:
+            asset_id: The ID of the asset
+            version_id: The ID of the version
+            body: The version data to update
+        """
+        response = self._put(
+            VERSION_URL.format(asset_id, version_id),
+            json=self._prepare_model_data(body)
+        )
+        return self.parse_response(response, AssetVersion)
+
+    def promote_version(
+        self,
+        asset_id: str,
+        version_id: str,
+        **kwargs
+    ) -> Response:
+        """
+        Promote a particular asset version to latest version
+        
+        Args:
+            asset_id: The asset ID to promote version for
+            version_id: The version ID to promote
+            **kwargs: Additional kwargs to pass to the request
+
+        Returns:
+            Response with no data model (204 status code)
+
+        Required roles:
+            - can_write_versions
+
+        Raises:
+            400 Bad request
+            401 Token is invalid
+            404 Asset does not exist
+        """
+        response = self._put(
+            VERSION_PROMOTE_URL.format(asset_id, version_id),
+            **kwargs
+        )
+        return self.parse_response(response, None)
+
+    def delete_old_versions(
+        self,
+        asset_id: str,
+        **kwargs
+    ) -> Response:
+        """
+        Delete all asset versions except the latest one
+        
+        Args:
+            asset_id: The asset ID to delete old versions for
+            **kwargs: Additional kwargs to pass to the request
+
+        Returns:
+            Response with no data model (204 status code)
+
+        Required roles:
+            - can_delete_versions
+
+        Raises:
+            400 Bad request
+            401 Token is invalid
+            403 Forbidden
+            404 Asset does not exist
+        """
+        response = self._delete(
+            VERSION_OLD_URL.format(asset_id),
+            **kwargs
+        )
+        return self.parse_response(response, None)
+
+    def delete_version(
+        self,
+        asset_id: str,
+        version_id: str,
+        hard_delete: bool = False,
+        **kwargs
+    ) -> Response:
+        """
+        Delete a particular asset version by id
+        
+        Args:
+            asset_id: The asset ID to delete version from
+            version_id: The version ID to delete
+            hard_delete: If True, completely remove the version
+            **kwargs: Additional kwargs to pass to the request
+
+        Returns:
+            Response with no data model (204 status code)
+
+        Required roles:
+            - can_delete_versions
+
+        Raises:
+            400 Bad request
+            401 Token is invalid
+            403 Forbidden
+            404 Asset does not exist
+        """
+        params = {"hard_delete": hard_delete} if hard_delete else None
+        response = self._delete(
+            VERSION_URL.format(asset_id, version_id),
+            params=params,
+            **kwargs
+        )
+        return self.parse_response(response, None)

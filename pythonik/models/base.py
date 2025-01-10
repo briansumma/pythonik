@@ -17,6 +17,7 @@ class ObjectType(str, Enum):
     COLLECTIONS = "collections"
 
 class Status(str, Enum):
+    IN_PROGRESS = "IN_PROGRESS"
     ACTIVE = "ACTIVE"
     HIDDEN = "HIDDEN"
     DELETED = "DELETED"
