@@ -353,7 +353,7 @@ class AssetSpec(Spec):
         version_id: str,
         body: AssetVersion,
         **kwargs
-    ) -> AssetVersion:
+    ) -> Response:
         """
         Partially update an asset version.
 
@@ -374,7 +374,7 @@ class AssetSpec(Spec):
         version_id: str,
         body: AssetVersion,
         **kwargs
-    ) -> AssetVersion:
+    ) -> Response:
         """
         Update an asset version.
 
