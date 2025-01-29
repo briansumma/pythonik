@@ -1,5 +1,11 @@
 # Changelog
 
+## 2025-01-29 "URL Formation Fix" - version 1.9.4
+
+### Fixed
+- Fixed URL formation in MetadataSpec to correctly handle base URLs by removing hardcoded API version
+- Updated tests to verify correct URL patterns with alternate base URLs
+
 ## 2025-01-10 "Test Updates" - version 1.9.3
 
 ### Fixed
