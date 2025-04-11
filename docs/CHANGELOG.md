@@ -1,5 +1,11 @@
 # Changelog
 
+## 2025-04-11 "FileSet Archive Field & SDK Fixes" - version 1.9.5
+
+### Added
+- Added `is_archive` boolean field to `FileSet` model.
+- Updated `FileSet` tests to cover `is_archive` field during creation, retrieval, and updates.
+
 ## 2025-01-29 "URL Formation Fix" - version 1.9.4
 
 ### Fixed
