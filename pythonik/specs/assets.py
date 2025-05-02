@@ -1,12 +1,16 @@
 from typing import Union, Dict, Any
 
 from pythonik.models.assets.assets import Asset, AssetCreate, BulkDelete
-from pythonik.models.assets.segments import SegmentBody, SegmentResponse, BulkDeleteSegmentsBody
+from pythonik.models.assets.segments import (
+    SegmentBody,
+    SegmentResponse,
+    BulkDeleteSegmentsBody,
+)
 from pythonik.models.assets.versions import (
     AssetVersionCreate,
     AssetVersionResponse,
     AssetVersionFromAssetCreate,
-    AssetVersion
+    AssetVersion,
 )
 from pythonik.models.base import Response
 from pythonik.specs.base import Spec
@@ -30,7 +34,7 @@ BULK_DELETE_SEGMENTS_URL = SEGMENT_URL + "bulk/"
 class AssetSpec(Spec):
     server = "API/assets/"
 
-    def __init__(self, session, timeout=3, base_url: str ="https://app.iconik.io"):
+    def __init__(self, session, timeout=3, base_url: str = "https://app.iconik.io"):
         self._collection_spec = CollectionSpec(session=session, timeout=timeout)
         return super().__init__(session, timeout, base_url)
 
@@ -70,7 +74,7 @@ class AssetSpec(Spec):
         body: Union[BulkDelete, Dict[str, Any]],
         permanently_delete=False,
         exclude_defaults: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Response:
         """
         Bulk delete objects. If `permanently_delete` is True, the objects are
@@ -100,11 +104,7 @@ class AssetSpec(Spec):
             403 User does not have permission
         """
         json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
-        response = self._post(
-            BULK_DELETE_URL,
-            json=json_data,
-            **kwargs
-        )
+        response = self._post(BULK_DELETE_URL, json=json_data, **kwargs)
         if permanently_delete:
             response = self.permanently_delete().response
         return self.parse_response(response, model=None)
@@ -114,10 +114,10 @@ class AssetSpec(Spec):
         asset_id: str,
         body: Union[Asset, Dict[str, Any]],
         exclude_defaults: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Response:
         """Partially update an asset using PATCH
-        
+
         Args:
             asset_id: The asset ID to update
             body: Asset data to update, either as Asset model or dict
@@ -125,21 +125,17 @@ class AssetSpec(Spec):
             **kwargs: Additional kwargs to pass to the request
         """
         json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
-        response = self._patch(
-            GET_URL.format(asset_id),
-            json=json_data,
-            **kwargs
-        )
+        response = self._patch(GET_URL.format(asset_id), json=json_data, **kwargs)
         return self.parse_response(response, Asset)
 
     def get(self, asset_id: str, **kwargs) -> Response:
         """
         Get an iconik asset by id
-        
+
         Args:
             asset_id: The asset ID to get
             **kwargs: Additional kwargs to pass to the request
-            
+
         Returns: Response(model=Asset)
         """
         resp = self._get(GET_URL.format(asset_id), **kwargs)
@@ -149,24 +145,20 @@ class AssetSpec(Spec):
         self,
         body: Union[AssetCreate, Dict[str, Any]],
         exclude_defaults: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Response:
         """
         Create a new asset
-        
+
         Args:
             body: Asset creation parameters, either as AssetCreate model or dict
             exclude_defaults: Whether to exclude default values when dumping Pydantic models
             **kwargs: Additional kwargs to pass to the request
-            
+
         Returns: Response(model=Asset)
         """
         json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
-        response = self._post(
-            BASE,
-            json=json_data,
-            **kwargs
-        )
+        response = self._post(BASE, json=json_data, **kwargs)
         return self.parse_response(response, Asset)
 
     def create_segment(
@@ -174,11 +166,11 @@ class AssetSpec(Spec):
         asset_id: str,
         body: Union[SegmentBody, Dict[str, Any]],
         exclude_defaults: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Response:
         """
         Create a segment on an asset, such as a comment
-        
+
         Args:
             asset_id: The asset ID to create segment for
             body: Segment data, either as SegmentBody model or dict
@@ -186,11 +178,7 @@ class AssetSpec(Spec):
             **kwargs: Additional kwargs to pass to the request
         """
         json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
-        resp = self._post(
-            SEGMENT_URL.format(asset_id),
-            json=json_data,
-            **kwargs
-        )
+        resp = self._post(SEGMENT_URL.format(asset_id), json=json_data, **kwargs)
 
         return self.parse_response(resp, SegmentResponse)
 
@@ -200,11 +188,11 @@ class AssetSpec(Spec):
         segment_id: str,
         body: Union[SegmentBody, Dict[str, Any]],
         exclude_defaults: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Response:
         """
         Update a segment on an asset
-        
+
         Args:
             asset_id: The asset ID to update segment for
             segment_id: The segment ID to update
@@ -218,9 +206,7 @@ class AssetSpec(Spec):
         """
         json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         resp = self._put(
-            SEGMENT_URL_UPDATE.format(asset_id, segment_id),
-            json=json_data,
-            **kwargs
+            SEGMENT_URL_UPDATE.format(asset_id, segment_id), json=json_data, **kwargs
         )
 
         return self.parse_response(resp, SegmentResponse)
@@ -231,11 +217,11 @@ class AssetSpec(Spec):
         segment_id: str,
         body: Union[SegmentBody, Dict[str, Any]],
         exclude_defaults: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Response:
         """
         Partially update a segment on an asset
-        
+
         Args:
             asset_id: The asset ID to update segment for
             segment_id: The segment ID to update
@@ -248,9 +234,7 @@ class AssetSpec(Spec):
         """
         json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
         resp = self._patch(
-            SEGMENT_URL_UPDATE.format(asset_id, segment_id),
-            json=json_data,
-            **kwargs
+            SEGMENT_URL_UPDATE.format(asset_id, segment_id), json=json_data, **kwargs
         )
 
         return self.parse_response(resp, SegmentResponse)
@@ -262,7 +246,7 @@ class AssetSpec(Spec):
         immediately: bool = True,
         ignore_reindexing: bool = False,
         exclude_defaults: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Response:
         """
         Delete segments with either ids or by type.
@@ -289,15 +273,42 @@ class AssetSpec(Spec):
             404 No segments found
         """
         json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
-        params = {
-            "immediately": immediately,
-            "ignore_reindexing": ignore_reindexing
-        }
+        params = {"immediately": immediately, "ignore_reindexing": ignore_reindexing}
         response = self._delete(
             BULK_DELETE_SEGMENTS_URL.format(asset_id),
             json=json_data,
             params=params,
-            **kwargs
+            **kwargs,
+        )
+        # Expects 204 No Content on success
+        return self.parse_response(response, model=None)
+
+    def delete_segment(
+        self, asset_id: str, segment_id: str, soft_delete: bool = True, **kwargs
+    ) -> Response:
+        """
+        Delete a particular segment from an asset by id.
+
+        Args:
+            asset_id: The ID of the asset containing the segment.
+            segment_id: The ID of the segment to delete.
+            soft_delete: Query parameter to control soft/hard delete.
+            **kwargs: Additional kwargs to pass to the request.
+
+        Returns:
+            Response with no data model (204 status code).
+
+        Required roles:
+            - can_delete_segments
+
+        Raises:
+            401 Token is invalid
+            403 User does not have permission (Implicit from required roles)
+            404 Segment not found
+        """
+        params = {"soft_delete": soft_delete}
+        response = self._delete(
+            SEGMENT_URL_UPDATE.format(asset_id, segment_id), params=params, **kwargs
         )
         # Expects 204 No Content on success
         return self.parse_response(response, model=None)
@@ -307,11 +318,11 @@ class AssetSpec(Spec):
         asset_id: str,
         body: Union[AssetVersionCreate, Dict[str, Any]],
         exclude_defaults: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Response:
         """
         Create a new version of an asset
-        
+
         Args:
             asset_id: The ID of the asset to create a version for
             body: Version creation parameters, either as AssetVersionCreate model or dict
@@ -325,11 +336,7 @@ class AssetSpec(Spec):
             - can_write_versions
         """
         json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
-        response = self._post(
-            VERSIONS_URL.format(asset_id),
-            json=json_data,
-            **kwargs
-        )
+        response = self._post(VERSIONS_URL.format(asset_id), json=json_data, **kwargs)
         return self.parse_response(response, AssetVersionResponse)
 
     def create_version_from_asset(
@@ -338,11 +345,11 @@ class AssetSpec(Spec):
         source_asset_id: str,
         body: Union[AssetVersionFromAssetCreate, Dict[str, Any]],
         exclude_defaults: bool = True,
-        **kwargs
+        **kwargs,
     ) -> Response:
         """
         Create a new version of an asset from another asset
-        
+
         Args:
             asset_id: The ID of the asset to create a version for
             source_asset_id: The ID of the source asset to create version from
@@ -367,7 +374,7 @@ class AssetSpec(Spec):
         response = self._post(
             VERSIONS_FROM_ASSET_URL.format(asset_id, source_asset_id),
             json=json_data,
-            **kwargs
+            **kwargs,
         )
         # Since this returns 202 with no content, we don't need a response model
         return self.parse_response(response, None)
@@ -396,11 +403,7 @@ class AssetSpec(Spec):
         return self.parse_response(response, model=None)
 
     def partial_update_version(
-        self,
-        asset_id: str,
-        version_id: str,
-        body: AssetVersion,
-        **kwargs
+        self, asset_id: str, version_id: str, body: AssetVersion, **kwargs
     ) -> Response:
         """
         Partially update an asset version.
@@ -412,16 +415,12 @@ class AssetSpec(Spec):
         """
         response = self._patch(
             VERSION_URL.format(asset_id, version_id),
-            json=self._prepare_model_data(body)
+            json=self._prepare_model_data(body),
         )
         return self.parse_response(response, AssetVersionResponse)
 
     def update_version(
-        self,
-        asset_id: str,
-        version_id: str,
-        body: AssetVersion,
-        **kwargs
+        self, asset_id: str, version_id: str, body: AssetVersion, **kwargs
     ) -> Response:
         """
         Update an asset version.
@@ -433,19 +432,14 @@ class AssetSpec(Spec):
         """
         response = self._put(
             VERSION_URL.format(asset_id, version_id),
-            json=self._prepare_model_data(body)
+            json=self._prepare_model_data(body),
         )
         return self.parse_response(response, AssetVersionResponse)
 
-    def promote_version(
-        self,
-        asset_id: str,
-        version_id: str,
-        **kwargs
-    ) -> Response:
+    def promote_version(self, asset_id: str, version_id: str, **kwargs) -> Response:
         """
         Promote a particular asset version to latest version
-        
+
         Args:
             asset_id: The asset ID to promote version for
             version_id: The version ID to promote
@@ -462,20 +456,13 @@ class AssetSpec(Spec):
             401 Token is invalid
             404 Asset does not exist
         """
-        response = self._put(
-            VERSION_PROMOTE_URL.format(asset_id, version_id),
-            **kwargs
-        )
+        response = self._put(VERSION_PROMOTE_URL.format(asset_id, version_id), **kwargs)
         return self.parse_response(response, None)
 
-    def delete_old_versions(
-        self,
-        asset_id: str,
-        **kwargs
-    ) -> Response:
+    def delete_old_versions(self, asset_id: str, **kwargs) -> Response:
         """
         Delete all asset versions except the latest one
-        
+
         Args:
             asset_id: The asset ID to delete old versions for
             **kwargs: Additional kwargs to pass to the request
@@ -492,22 +479,15 @@ class AssetSpec(Spec):
             403 Forbidden
             404 Asset does not exist
         """
-        response = self._delete(
-            VERSION_OLD_URL.format(asset_id),
-            **kwargs
-        )
+        response = self._delete(VERSION_OLD_URL.format(asset_id), **kwargs)
         return self.parse_response(response, None)
 
     def delete_version(
-        self,
-        asset_id: str,
-        version_id: str,
-        hard_delete: bool = False,
-        **kwargs
+        self, asset_id: str, version_id: str, hard_delete: bool = False, **kwargs
     ) -> Response:
         """
         Delete a particular asset version by id
-        
+
         Args:
             asset_id: The asset ID to delete version from
             version_id: The version ID to delete
@@ -528,8 +508,6 @@ class AssetSpec(Spec):
         """
         params = {"hard_delete": hard_delete} if hard_delete else None
         response = self._delete(
-            VERSION_URL.format(asset_id, version_id),
-            params=params,
-            **kwargs
+            VERSION_URL.format(asset_id, version_id), params=params, **kwargs
         )
         return self.parse_response(response, None)
