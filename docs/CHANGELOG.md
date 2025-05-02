@@ -1,5 +1,17 @@
 # Changelog
 
+## 2025-05-02 "Segment Deletion" - version 1.10.0
+
+### Added
+- Add segment deletion endpoints to `AssetSpec`:
+  - `bulk_delete_segments()`: Delete multiple segments by ID or type using `DELETE /v1/assets/{asset_id}/segments/bulk/`.
+  - `delete_segment()`: Delete a single segment by ID using `DELETE /v1/assets/{asset_id}/segments/{segment_id}/`.
+- Add `BulkDeleteSegmentsBody` model for bulk deletion requests.
+- Add test coverage for segment deletion operations.
+
+### Technical Details
+This update adds methods for deleting asset segments, both individually and in bulk. The implementation includes necessary Pydantic models for request bodies and corresponding unit tests to ensure functionality.
+
 ## 2025-04-11 "FileSet Archive Field & SDK Fixes" - version 1.9.5
 
 ### Added
