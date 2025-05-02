@@ -1,7 +1,7 @@
 from typing import Union, Dict, Any
 
 from pythonik.models.assets.assets import Asset, AssetCreate, BulkDelete
-from pythonik.models.assets.segments import SegmentBody, SegmentResponse
+from pythonik.models.assets.segments import SegmentBody, SegmentResponse, BulkDeleteSegmentsBody
 from pythonik.models.assets.versions import (
     AssetVersionCreate,
     AssetVersionResponse,
@@ -24,6 +24,7 @@ VERSION_OLD_URL = VERSIONS_URL + "old/"
 VERSIONS_FROM_ASSET_URL = BASE + "/{}/versions/from/assets/{}/"
 BULK_DELETE_URL = DELETE_QUEUE + "/bulk/"
 PURGE_ALL_URL = DELETE_QUEUE + "/purge/all/"
+BULK_DELETE_SEGMENTS_URL = SEGMENT_URL + "bulk/"
 
 
 class AssetSpec(Spec):
@@ -253,6 +254,53 @@ class AssetSpec(Spec):
         )
 
         return self.parse_response(resp, SegmentResponse)
+
+    def bulk_delete_segments(
+        self,
+        asset_id: str,
+        body: Union[BulkDeleteSegmentsBody, Dict[str, Any]],
+        immediately: bool = True,
+        ignore_reindexing: bool = False,
+        exclude_defaults: bool = True,
+        **kwargs
+    ) -> Response:
+        """
+        Delete segments with either ids or by type.
+
+        Args:
+            asset_id: The ID of the asset containing the segments.
+            body: Request body containing segment_ids or segment_type, and optionally version_id.
+                  Can be BulkDeleteSegmentsBody model or dict.
+            immediately: If True, delete segments synchronously. If False, delete asynchronously.
+            ignore_reindexing: If True, skip reindexing after deletion.
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models.
+            **kwargs: Additional kwargs to pass to the request.
+
+        Returns:
+            Response with no data model (204 status code).
+
+        Required roles:
+            - can_delete_segments
+
+        Raises:
+            400 Segment ids or segment type not provided correctly
+            401 Token is invalid
+            403 User does not have permission (Implicit from required roles)
+            404 No segments found
+        """
+        json_data = self._prepare_model_data(body, exclude_defaults=exclude_defaults)
+        params = {
+            "immediately": immediately,
+            "ignore_reindexing": ignore_reindexing
+        }
+        response = self._delete(
+            BULK_DELETE_SEGMENTS_URL.format(asset_id),
+            json=json_data,
+            params=params,
+            **kwargs
+        )
+        # Expects 204 No Content on success
+        return self.parse_response(response, model=None)
 
     def create_version(
         self,
