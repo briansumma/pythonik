@@ -10,6 +10,7 @@ from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadata,
     UpdateMetadataResponse,
 )
+from pythonik.models.metadata.fields import Field, FieldCreate, FieldUpdate
 from pythonik.specs.base import Spec
 from typing import Literal, Union, Dict, Any, List
 
@@ -26,6 +27,10 @@ CREATE_VIEW_PATH = VIEWS_BASE
 GET_VIEW_PATH = VIEWS_BASE + "{view_id}/"
 UPDATE_VIEW_PATH = GET_VIEW_PATH
 DELETE_VIEW_PATH = GET_VIEW_PATH
+
+# Field paths
+FIELDS_BASE_PATH = "fields/"
+FIELD_BY_NAME_PATH = "fields/{field_name}/"
 
 
 ObjectType = Literal["segments"]
@@ -383,7 +388,7 @@ class MetadataSpec(Spec):
             - can_delete_metadata_views
 
         Returns:
-            Response: Empty response with 204 status code
+            Response: An empty response, expecting HTTP 204 No Content on success.
 
         Raises:
             - 400 Bad request
@@ -392,3 +397,71 @@ class MetadataSpec(Spec):
         """
         resp = self._delete(DELETE_VIEW_PATH.format(view_id=view_id), **kwargs)
         return self.parse_response(resp, None)
+
+    # Metadata Field Management
+    # -------------------------
+
+    def create_metadata_field(
+        self,
+        field_data: FieldCreate,
+        exclude_defaults: bool = True,
+        **kwargs,
+    ) -> Response:
+        """Create a new metadata field.
+
+        Args:
+            field_data: The data for the new field.
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models.
+            **kwargs: Additional kwargs to pass to the request.
+
+        Returns:
+            Response: The created metadata field.
+        """
+        json_data = self._prepare_model_data(
+            field_data, exclude_defaults=exclude_defaults
+        )
+        resp = self._post(FIELDS_BASE_PATH, json=json_data, **kwargs)
+        return self.parse_response(resp, Field)
+
+    def update_metadata_field(
+        self,
+        field_name: str,
+        field_data: FieldUpdate,
+        exclude_defaults: bool = True,
+        **kwargs,
+    ) -> Response:
+        """Update an existing metadata field by its name.
+
+        Args:
+            field_name: The name of the field to update.
+            field_data: The data to update the field with.
+            exclude_defaults: Whether to exclude default values when dumping Pydantic models.
+            **kwargs: Additional kwargs to pass to the request.
+
+        Returns:
+            Response: The updated metadata field.
+        """
+        json_data = self._prepare_model_data(
+            field_data, exclude_defaults=exclude_defaults
+        )
+        endpoint = FIELD_BY_NAME_PATH.format(field_name=field_name)
+        resp = self._put(endpoint, json=json_data, **kwargs)
+        return self.parse_response(resp, Field)
+
+    def delete_metadata_field(
+        self,
+        field_name: str,
+        **kwargs,
+    ) -> Response:
+        """Delete a metadata field by its name.
+
+        Args:
+            field_name: The name of the field to delete.
+            **kwargs: Additional kwargs to pass to the request.
+
+        Returns:
+            Response: An empty response, expecting HTTP 204 No Content on success.
+        """
+        endpoint = FIELD_BY_NAME_PATH.format(field_name=field_name)
+        resp = self._delete(endpoint, **kwargs)
+        return self.parse_response(resp)
