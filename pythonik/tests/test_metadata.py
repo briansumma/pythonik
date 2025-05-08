@@ -36,7 +36,7 @@ from pythonik.specs.metadata import (
     FIELD_BY_NAME_PATH,
 )
 
-from pythonik.models import Field, FieldCreate, FieldUpdate, FieldOption
+from pythonik.models.metadata.fields import Field, FieldCreate, FieldUpdate, FieldOption
 import pytest
 from pythonik.models.metadata.fields import IconikFieldType
 from pydantic import ValidationError
@@ -1336,18 +1336,20 @@ def test_get_view_alternate_base_url():
 def test_create_metadata_field(requests_mock):
     app_id = str(uuid.uuid4())
     auth_token = str(uuid.uuid4())
-    client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3) # Client instance
-    spec_instance = client.metadata() # MetadataSpec instance
+    client = PythonikClient(
+        app_id=app_id, auth_token=auth_token, timeout=3
+    )  # Client instance
+    spec_instance = client.metadata()  # MetadataSpec instance
 
     field_name = "new_test_field_create"
     field_create_payload = FieldCreate(
         name=field_name,
         label="New Test Field Create",
         field_type="string",
-        options=[FieldOption(label="Option 1", value="opt1_val_create")]
+        options=[FieldOption(label="Option 1", value="opt1_val_create")],
     )
     expected_field_response = Field(
-        id="generated_uuid_for_new_field_create", 
+        id="generated_uuid_for_new_field_create",
         name=field_name,
         label="New Test Field Create",
         field_type="string",
@@ -1355,15 +1357,21 @@ def test_create_metadata_field(requests_mock):
         date_created="2025-01-01T00:00:00Z",
         date_modified="2025-01-01T00:00:00Z",
     )
-    
+
     # mock_address = MetadataSpec.gen_url(FIELDS_BASE_PATH) # Old way (classmethod, relative URL)
-    mock_address = spec_instance.gen_url(FIELDS_BASE_PATH) # New way (instance method, absolute URL)
+    mock_address = spec_instance.gen_url(
+        FIELDS_BASE_PATH
+    )  # New way (instance method, absolute URL)
     requests_mock.post(
-        mock_address, json=json.loads(expected_field_response.model_dump_json()), status_code=201
+        mock_address,
+        json=json.loads(expected_field_response.model_dump_json()),
+        status_code=201,
     )
-    
+
     # client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3) # Already created above
-    result = spec_instance.create_metadata_field(field_create_payload) # Use the same spec_instance
+    result = spec_instance.create_metadata_field(
+        field_create_payload
+    )  # Use the same spec_instance
 
     assert result.response.ok
     assert result.response.status_code == 201
@@ -1396,11 +1404,15 @@ def test_update_metadata_field(requests_mock):
         FIELD_BY_NAME_PATH.format(field_name=field_to_update_name)
     )
     requests_mock.put(
-        mock_address, json=json.loads(expected_field_response.model_dump_json()), status_code=200
+        mock_address,
+        json=json.loads(expected_field_response.model_dump_json()),
+        status_code=200,
     )
 
     client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
-    result = client.metadata().update_metadata_field(field_to_update_name, field_update_payload)
+    result = client.metadata().update_metadata_field(
+        field_to_update_name, field_update_payload
+    )
 
     assert result.response.ok
     assert result.response.status_code == 200
@@ -1429,7 +1441,9 @@ def test_delete_metadata_field(requests_mock):
 def test_create_metadata_field_conflict_error(requests_mock):
     app_id = str(uuid.uuid4())
     auth_token = str(uuid.uuid4())
-    field_create_payload = FieldCreate(name="existing_name", label="Fail Label", field_type="string")
+    field_create_payload = FieldCreate(
+        name="existing_name", label="Fail Label", field_type="string"
+    )
     mock_address = MetadataSpec.gen_url(FIELDS_BASE_PATH)
     requests_mock.post(mock_address, json={"error": "conflict"}, status_code=409)
     client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
@@ -1443,10 +1457,14 @@ def test_update_metadata_field_not_found_error(requests_mock):
     auth_token = str(uuid.uuid4())
     field_update_payload = FieldUpdate(label="NonExistent Update")
     non_existent_field = "non_existent_field_name"
-    mock_address = MetadataSpec.gen_url(FIELD_BY_NAME_PATH.format(field_name=non_existent_field))
+    mock_address = MetadataSpec.gen_url(
+        FIELD_BY_NAME_PATH.format(field_name=non_existent_field)
+    )
     requests_mock.put(mock_address, json={"error": "not found"}, status_code=404)
     client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
-    result = client.metadata().update_metadata_field(non_existent_field, field_update_payload)
+    result = client.metadata().update_metadata_field(
+        non_existent_field, field_update_payload
+    )
     assert not result.response.ok
     assert result.response.status_code == 404
 
@@ -1455,7 +1473,9 @@ def test_delete_metadata_field_not_found_error(requests_mock):
     app_id = str(uuid.uuid4())
     auth_token = str(uuid.uuid4())
     non_existent_field = "another_non_existent_field"
-    mock_address = MetadataSpec.gen_url(FIELD_BY_NAME_PATH.format(field_name=non_existent_field))
+    mock_address = MetadataSpec.gen_url(
+        FIELD_BY_NAME_PATH.format(field_name=non_existent_field)
+    )
     requests_mock.delete(mock_address, json={"error": "not found"}, status_code=404)
     client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
     result = client.metadata().delete_metadata_field(non_existent_field)
@@ -1464,7 +1484,9 @@ def test_delete_metadata_field_not_found_error(requests_mock):
 
 
 @pytest.mark.parametrize("field_type_enum", list(IconikFieldType))
-def test_create_metadata_field_for_all_types(requests_mock, field_type_enum: IconikFieldType):
+def test_create_metadata_field_for_all_types(
+    requests_mock, field_type_enum: IconikFieldType
+):
     """Test creating a metadata field for each IconikFieldType."""
     app_id = str(uuid.uuid4())
     auth_token = str(uuid.uuid4())
@@ -1477,7 +1499,7 @@ def test_create_metadata_field_for_all_types(requests_mock, field_type_enum: Ico
     field_create_payload = {
         "name": field_name,
         "label": field_label,
-        "field_type": field_type_enum, # Use the Enum member directly
+        "field_type": field_type_enum,  # Use the Enum member directly
     }
 
     if field_type_enum == IconikFieldType.DROPDOWN:
@@ -1491,7 +1513,7 @@ def test_create_metadata_field_for_all_types(requests_mock, field_type_enum: Ico
         "id": str(uuid.uuid4()),
         "name": field_name,
         "label": field_label,
-        "field_type": field_type_enum.value, # API returns the string value
+        "field_type": field_type_enum.value,  # API returns the string value
         "date_created": "2023-01-01T12:00:00Z",
         "date_modified": "2023-01-01T12:00:00Z",
         # ... other fields with default/null values as per Field model
@@ -1520,7 +1542,6 @@ def test_create_metadata_field_for_all_types(requests_mock, field_type_enum: Ico
     else:
         expected_response_json["options"] = []
 
-
     create_url = spec_instance.gen_url(FIELDS_BASE_PATH)
     requests_mock.post(create_url, json=expected_response_json, status_code=201)
 
@@ -1532,7 +1553,9 @@ def test_create_metadata_field_for_all_types(requests_mock, field_type_enum: Ico
     assert response.data is not None
     assert response.data.name == field_name
     assert response.data.label == field_label
-    assert response.data.field_type == field_type_enum # Pydantic model converts back to Enum
+    assert (
+        response.data.field_type == field_type_enum
+    )  # Pydantic model converts back to Enum
 
     # Optional: Mock and test deletion for cleanup (good practice)
     delete_url = spec_instance.gen_url(FIELD_BY_NAME_PATH.format(field_name=field_name))
@@ -1560,7 +1583,7 @@ def test_create_metadata_field_with_unknown_type_raises_validation_error(request
     field_data_model = FieldCreate(
         name=field_name,
         label=field_label,
-        field_type=IconikFieldType.STRING  # A valid type for the request itself
+        field_type=IconikFieldType.STRING,  # A valid type for the request itself
     )
 
     # Mocked API response containing the unknown field_type in its body
