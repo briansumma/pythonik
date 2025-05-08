@@ -1,5 +1,23 @@
 # Changelog
 
+## 2025-05-08 "Metadata Field Management & Type Safety" - version 1.11.0
+
+### Added
+- **Metadata Field Management (in `pythonik.specs.metadata.MetadataSpec`):**
+  - `create_metadata_field()`: Added method to create new metadata fields.
+  - `update_metadata_field()`: Added method to update existing metadata fields by name.
+  - `delete_metadata_field()`: Added method to delete metadata fields by name.
+- **Type Safety & Modeling (in `pythonik.models.metadata.fields`):**
+  - Defined `IconikFieldType` Enum to represent all known metadata field types from the Iconik API.
+  - Integrated `IconikFieldType` into `FieldCreate`, `FieldUpdate`, and `Field` Pydantic models for robust type validation and clarity.
+- **Testing:**
+  - Added comprehensive test coverage for metadata field type handling and new CRUD operations:
+    - Parameterized test (`test_create_metadata_field_for_all_types`) for every defined `IconikFieldType`.
+    - Test (`test_create_metadata_field_with_unknown_type_raises_validation_error`) for API returning unrecognized `field_type`.
+
+### Technical Details
+This update introduces full programmatic management of metadata fields, including creation, update, and deletion capabilities. A dedicated Enum (`IconikFieldType`) enhances type safety and developer experience when working with these fields. This Enum is integrated throughout the relevant Pydantic models and the new `MetadataSpec` methods. Comprehensive tests ensure correct handling of all defined field types, robust behavior against unknown types from the API, and functionality of the new CRUD operations.
+
 ## 2025-05-02 "Segment Deletion" - version 1.10.0
 
 ### Added
