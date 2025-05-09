@@ -1,5 +1,14 @@
 # Changelog
 
+## 2025-05-09 "IconikFieldType Update" - version 1.13.0
+
+### Fixed
+- Updated `IconikFieldType` enum with the exact field types supported by the Iconik API
+- Added missing `string_exact` type and removed unsupported types
+
+### Technical Details
+This release updates the `IconikFieldType` enum to match the exact field types accepted by the Iconik API. The update ensures accurate field type validation when creating or updating metadata fields, preventing errors with field type validation.
+
 ## 2025-05-09 "ViewField Label Bugfix" - version 1.12.1
 
 ### Fixed

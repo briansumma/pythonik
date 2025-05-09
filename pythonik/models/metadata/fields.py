@@ -4,30 +4,36 @@ from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, HttpUrl
 
+
 class IconikFieldType(str, Enum):
-    """Known Iconik metadata field types based on documentation.
-    Actual values sent to/received from API.
+    """Iconik metadata field types as confirmed by API error messages.
+    These are the exact values accepted by the Iconik API.
     """
-    STRING = "string"        # General short text
-    TEXT = "text"            # Longer text (potentially multi-line in UI but distinct type)
-    TEXT_AREA = "text_area"  # Explicitly for larger amounts of text data
+
     INTEGER = "integer"
     FLOAT = "float"
-    BOOLEAN = "boolean"      # For Yes/No fields
+    BOOLEAN = "boolean"  # For Yes/No fields
+    STRING = "string"  # General short text
+    STRING_EXACT = "string_exact"  # Case-sensitive string matching
+    TEXT = "text"  # Longer text (potentially multi-line in UI)
     DATE = "date"
-    DATETIME = "datetime"    # For Date Time fields
-    DROPDOWN = "drop_down"   # For fields with predefined options
-    EMAIL = "email"
+    DATETIME = "datetime"  # For Date Time fields
     TAG_CLOUD = "tag_cloud"  # For free-form tag collections
     URL = "url"
+    DROPDOWN = "drop_down"  # For fields with predefined options
+    EMAIL = "email"
+
 
 class FieldOption(BaseModel):
     """Represents an option for a metadata field (e.g., for dropdowns)."""
+
     label: Optional[str] = None
     value: Optional[str] = None
 
+
 class _FieldConfigurable(BaseModel):
     """Base model for common configurable attributes of metadata fields."""
+
     label: Optional[str] = None
     field_type: Optional[IconikFieldType] = None
     description: Optional[str] = None
@@ -47,11 +53,14 @@ class _FieldConfigurable(BaseModel):
     external_id: Optional[str] = None
     source_url: Optional[HttpUrl] = None
 
+
 class FieldCreate(_FieldConfigurable):
     """Data Transfer Object for creating a new metadata field."""
+
     name: str
     label: str
     field_type: IconikFieldType
+
 
 class FieldUpdate(_FieldConfigurable):
     """
@@ -59,10 +68,13 @@ class FieldUpdate(_FieldConfigurable):
     All fields are optional to support partial updates.
     'name' is specified in the URL path for updates, not in the body.
     """
+
     pass
+
 
 class Field(_FieldConfigurable):
     """Represents a metadata field as returned by the API."""
+
     id: str
     name: str
     label: str
@@ -71,6 +83,7 @@ class Field(_FieldConfigurable):
     date_created: Optional[datetime] = None
     date_modified: Optional[datetime] = None
     mapped_field_name: Optional[str] = None
+
 
 class FieldResponse(BaseModel):
     auto_set: bool
