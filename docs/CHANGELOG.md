@@ -1,6 +1,6 @@
 # Changelog
 
-## 2025-05-09 "IconikFieldType Update" - version 1.13.0
+## 2025-05-09 "IconikFieldType Update" - version 1.12.2
 
 ### Fixed
 - Updated `IconikFieldType` enum with the exact field types supported by the Iconik API
