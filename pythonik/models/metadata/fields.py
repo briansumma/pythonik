@@ -71,3 +71,30 @@ class Field(_FieldConfigurable):
     date_created: Optional[datetime] = None
     date_modified: Optional[datetime] = None
     mapped_field_name: Optional[str] = None
+
+class FieldResponse(BaseModel):
+    auto_set: bool
+    date_created: datetime
+    date_modified: datetime
+    description: Optional[str] = None
+    external_id: Optional[str] = None
+    field_type: IconikFieldType
+    hide_if_not_set: bool
+    is_block_field: bool
+    is_warning_field: bool
+    label: str
+    mapped_field_name: Optional[str] = None
+    max_value: Optional[float] = None
+    min_value: Optional[float] = None
+    multi: bool
+    name: str
+    options: Optional[List[FieldOption]] = None
+    read_only: bool
+    representative: bool
+    required: bool
+    sortable: bool
+    source_url: Optional[HttpUrl] = None
+    use_as_facet: bool
+
+    class Config:
+        use_enum_values = True

@@ -1,5 +1,24 @@
 # Changelog
 
+## 2025-05-08 "Metadata Field API Improvements & Bugfixes" - version 1.12.0
+
+### Fixed
+- Fixed validation errors in field creation and updating by changing the return type from `Field` to `FieldResponse` model
+
+### Changed
+- **Improved Metadata Field API (in `pythonik.specs.metadata.MetadataSpec`):**
+  - Renamed `create_metadata_field()` to `create_field()` for more consistent naming
+  - Renamed `update_metadata_field()` to `update_field()` for more consistent naming
+  - Renamed `delete_metadata_field()` to `delete_field()` for more consistent naming
+  - Return type now uses `FieldResponse` model instead of `Field` for more comprehensive metadata field information
+  - Added backward compatibility aliases for the old method names (will be removed in a future version)
+- **Testing:**
+  - Updated all tests to use the new method names and return types
+  - Added tests to verify backward compatibility aliases work correctly
+
+### Technical Details
+This update fixes validation errors that occurred when creating and updating metadata fields by correctly using the `FieldResponse` model instead of `Field`, making the API work as expected. It also improves the metadata field management API with more consistent method naming while maintaining backward compatibility through aliases. The `FieldResponse` model provides the proper structure for the API responses, and the backward compatibility aliases ensure existing code continues to work correctly.
+
 ## 2025-05-08 "Metadata Field Management & Type Safety" - version 1.11.0
 
 ### Added
