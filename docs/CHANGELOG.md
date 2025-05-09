@@ -1,5 +1,14 @@
 # Changelog
 
+## 2025-05-09 "ViewField Label Bugfix" - version 1.12.1
+
+### Fixed
+- Made `label` field optional in `ViewField` model to prevent errors when processing views with unlabeled fields
+- Added test coverage to ensure views with missing labels are handled correctly
+
+### Technical Details
+This bugfix addresses an issue where the `ViewField` model in the metadata views module required a label for each field. In the Iconik API, the label field is actually optional, and this update ensures the SDK correctly handles fields without labels, preventing potential errors when processing API responses.
+
 ## 2025-05-08 "Metadata Field API Improvements & Bugfixes" - version 1.12.0
 
 ### Fixed
