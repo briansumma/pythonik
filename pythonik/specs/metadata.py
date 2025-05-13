@@ -42,6 +42,97 @@ ObjectType = Literal["segments"]
 class MetadataSpec(Spec):
     server = "API/metadata/"
 
+    def get_object_metadata(
+            self,
+            object_type: Literal["assets", "collections", "segments"],
+            object_id: str,
+            view_id: str,
+            intercept_404: ViewMetadata | bool = False,
+            **kwargs
+    ) -> Response:
+        """
+        Get object metadata by object type, object ID and view ID.
+
+        Args:
+            object_type: The type of object to retrieve
+            object_id: ID of the object to retrieve
+            view_id: ID of the view to retrieve
+            intercept_404: Iconik returns a 404 when a view has no metadata,
+                intercept_404 will intercept that error and return the
+                ViewMetadata model provided
+            **kwargs: Additional arguments to pass to the request
+
+        Returns:
+            Response with ViewMetadata model containing the object metadata
+
+        Raises:
+            ValueError: If object_type is not 'assets', 'collections', or
+                'segments'
+        """
+        if object_type not in ["assets", "collections", "segments"]:
+            raise ValueError(
+                "object_type must be one of assets, collections, or segments"
+            )
+        resp = self._get(
+            self.gen_url(f"{object_type}/{object_id}/views/{view_id}/"),
+            **kwargs
+        )
+        if intercept_404 and resp.status_code == 404:
+            parsed_response = self.parse_response(resp, ViewMetadata)
+            parsed_response.data = intercept_404
+            parsed_response.response.raise_for_status_404 = (
+                parsed_response.response.raise_for_status
+            )
+            parsed_response.response.raise_for_status = lambda: logger.warning(
+                "raise for status disabled due to intercept_404, please call"
+                " raise_for_status_404 to throw an error on 404"
+            )
+            return parsed_response
+        return self.parse_response(resp, ViewMetadata)
+
+    def get_object_metadata_direct(
+            self,
+            object_type: Literal["assets", "collections", "segments"],
+            object_id: str,
+            intercept_404: ViewMetadata | bool = False,
+            **kwargs
+    ) -> Response:
+        """
+        Get object metadata by object type and object ID.
+
+        Args:
+            object_type: The type of object to retrieve
+            object_id: ID of the object to retrieve
+            intercept_404: Iconik returns a 404 when a view has no metadata,
+                intercept_404 will intercept that error and return the
+                ViewMetadata model provided
+            **kwargs: Additional arguments to pass to the request
+
+        Returns:
+            Response with ViewMetadata model containing the object metadata
+
+        Raises:
+            ValueError: If object_type is not 'assets', 'collections', or
+                'segments'
+        """
+        if object_type not in ["assets", "collections", "segments"]:
+            raise ValueError(
+                "object_type must be one of assets, collections, or segments"
+            )
+        resp = self._get(self.gen_url(f"{object_type}/{object_id}/"), **kwargs)
+        if intercept_404 and resp.status_code == 404:
+            parsed_response = self.parse_response(resp, ViewMetadata)
+            parsed_response.data = intercept_404
+            parsed_response.response.raise_for_status_404 = (
+                parsed_response.response.raise_for_status
+            )
+            parsed_response.response.raise_for_status = lambda: logger.warning(
+                "raise for status disabled due to intercept_404, please call"
+                " raise_for_status_404 to throw an error on 404"
+            )
+            return parsed_response
+        return self.parse_response(resp, ViewMetadata)
+
     def get_asset_metadata(
         self,
         asset_id: str,
