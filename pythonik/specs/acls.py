@@ -115,8 +115,8 @@ class AclsSpec(Spec):
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, GroupACLSchema)
 
-    def fetch_object_permissions(self, object_type: str, object_key: str,
-                                 **kwargs) -> Response:
+    def list_object_permissions(self, object_type: str, object_key: str,
+                                **kwargs) -> Response:
         """
         List of object permissions
 
@@ -136,7 +136,7 @@ class AclsSpec(Spec):
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, ACLSchema)
 
-    def fetch_acl_templates(self, **kwargs) -> Response:
+    def list_acl_templates(self, **kwargs) -> Response:
         """
         Retrieve all ACL templates
 
@@ -751,7 +751,7 @@ class AclsSpec(Spec):
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, UserACLSchema)
 
-    def fetch_share_acls(
+    def list_share_acls(
         self,
         object_type: str,
         object_key: str,

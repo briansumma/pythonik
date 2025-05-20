@@ -156,7 +156,7 @@ def test_fetch_object_permissions():
         client = PythonikClient(app_id=app_id,
                                 auth_token=auth_token,
                                 timeout=3)
-        response = client.acls().fetch_object_permissions(
+        response = client.acls().list_object_permissions(
             object_type=object_type,
             object_key=object_key,
         )
@@ -198,7 +198,7 @@ def test_fetch_acl_templates():
         client = PythonikClient(app_id=app_id,
                                 auth_token=auth_token,
                                 timeout=3)
-        response = client.acls().fetch_acl_templates()
+        response = client.acls().list_acl_templates()
 
         # Verify the response and request
         assert response.response.ok
@@ -1150,7 +1150,7 @@ def test_fetch_share_acls():
         client = PythonikClient(app_id=app_id,
                                 auth_token=auth_token,
                                 timeout=3)
-        response = client.acls().fetch_share_acls(
+        response = client.acls().list_share_acls(
             object_type=object_type,
             object_key=object_key,
         )
