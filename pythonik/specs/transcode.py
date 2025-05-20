@@ -5,7 +5,6 @@ from typing import (
     Optional,
     Union,
 )
-from uuid import UUID
 
 from pythonik.models.base import Response
 from pythonik.specs._internal_utils import is_pydantic_model
@@ -36,7 +35,7 @@ class TranscodeSpec(Spec):
 
     def analyze_asset(
         self,
-        asset_id: Union[str, UUID],
+        asset_id: str,
         analyze_schema: Union[AnalyzeSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -66,7 +65,7 @@ class TranscodeSpec(Spec):
 
     def analyze_asset_default_profile(
         self,
-        asset_id: Union[str, UUID],
+        asset_id: str,
         analyze_schema: Union[AnalyzeSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -97,7 +96,7 @@ class TranscodeSpec(Spec):
 
     def analyze_asset_default_profile_media_type(
         self,
-        asset_id: Union[str, UUID],
+        asset_id: str,
         media_type: str,
         analyze_schema: Union[AnalyzeSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
@@ -131,8 +130,8 @@ class TranscodeSpec(Spec):
 
     def analyze_asset_custom_profile(
         self,
-        asset_id: Union[str, UUID],
-        profile_id: Union[str, UUID],
+        asset_id: str,
+        profile_id: str,
         analyze_schema: Union[AnalyzeSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -226,7 +225,7 @@ class TranscodeSpec(Spec):
 
     def acknowledge_edge_transcode_job(
         self,
-        job_id: Union[str, UUID],
+        job_id: str,
         **kwargs,
     ) -> Response:
         """
@@ -299,7 +298,7 @@ class TranscodeSpec(Spec):
 
     def get_edge_transcode_worker(
         self,
-        worker_id: Union[str, UUID],
+        worker_id: str,
         **kwargs,
     ) -> Response:
         """
@@ -323,7 +322,7 @@ class TranscodeSpec(Spec):
 
     def delete_edge_transcode_worker(
         self,
-        worker_id: Union[str, UUID],
+        worker_id: str,
         **kwargs,
     ) -> Response:
         """
@@ -347,7 +346,7 @@ class TranscodeSpec(Spec):
 
     def update_edge_transcode_worker(
         self,
-        worker_id: Union[str, UUID],
+        worker_id: str,
         worker_schema: Union[EdgeTranscodeWorkerSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -378,7 +377,7 @@ class TranscodeSpec(Spec):
 
     def partial_update_edge_transcode_worker(
         self,
-        worker_id: Union[str, UUID],
+        worker_id: str,
         worker_schema: Union[EdgeTranscodeWorkerSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -410,7 +409,7 @@ class TranscodeSpec(Spec):
 
     def generate_collection_keyframe(
         self,
-        collection_id: Union[str, UUID],
+        collection_id: str,
         keyframe_schema: Union[GenerateCollectionKeyframeSchema, Dict[str,
                                                                       Any]],
         exclude_defaults: bool = True,
@@ -441,7 +440,7 @@ class TranscodeSpec(Spec):
 
     def abort_storage_transcode_jobs(
         self,
-        storage_id: Union[str, UUID],
+        storage_id: str,
         abort_schema: Union[AbortStorageTranscodeJobsSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -472,7 +471,7 @@ class TranscodeSpec(Spec):
 
     def fetch_storage_edge_transcode_jobs(
         self,
-        storage_id: Union[str, UUID],
+        storage_id: str,
         limit: int = 10,
         **kwargs,
     ) -> Response:
@@ -498,8 +497,8 @@ class TranscodeSpec(Spec):
 
     def delete_storage_file_transcode(
         self,
-        storage_id: Union[str, UUID],
-        file_id: Union[str, UUID],
+        storage_id: str,
+        file_id: str,
         **kwargs,
     ) -> Response:
         """
@@ -522,7 +521,7 @@ class TranscodeSpec(Spec):
 
     def fetch_storage_transcode_jobs(
         self,
-        storage_id: Union[str, UUID],
+        storage_id: str,
         per_page: int = 10,
         last_id: Optional[str] = None,
         **kwargs,
@@ -548,8 +547,8 @@ class TranscodeSpec(Spec):
 
     def get_storage_transcode_job(
         self,
-        storage_id: Union[str, UUID],
-        record_id: Union[str, UUID],
+        storage_id: str,
+        record_id: str,
         **kwargs,
     ) -> Response:
         """
@@ -572,8 +571,8 @@ class TranscodeSpec(Spec):
 
     def delete_storage_transcode_job(
         self,
-        storage_id: Union[str, UUID],
-        record_id: Union[str, UUID],
+        storage_id: str,
+        record_id: str,
         **kwargs,
     ) -> Response:
         """
@@ -697,7 +696,7 @@ class TranscodeSpec(Spec):
     def fetch_transcode_object_queue_records(
         self,
         object_type: str,
-        object_id: Union[str, UUID],
+        object_id: str,
         **kwargs,
     ) -> Response:
         """
@@ -721,8 +720,8 @@ class TranscodeSpec(Spec):
     def fetch_transcode_version_queue_records(
         self,
         object_type: str,
-        object_id: Union[str, UUID],
-        version_id: Union[str, UUID],
+        object_id: str,
+        version_id: str,
         **kwargs,
     ) -> Response:
         """
@@ -747,7 +746,7 @@ class TranscodeSpec(Spec):
 
     def get_transcode_job(
         self,
-        transcode_job_id: Union[str, UUID],
+        transcode_job_id: str,
         **kwargs,
     ) -> Response:
         """
@@ -770,7 +769,7 @@ class TranscodeSpec(Spec):
 
     def delete_transcode_job(
         self,
-        transcode_job_id: Union[str, UUID],
+        transcode_job_id: str,
         **kwargs,
     ) -> Response:
         """
@@ -794,7 +793,7 @@ class TranscodeSpec(Spec):
 
     def move_transcode_job_position(
         self,
-        transcode_job_id: Union[str, UUID],
+        transcode_job_id: str,
         position: Literal["top", "bottom"],
         **kwargs,
     ) -> Response:
@@ -821,7 +820,7 @@ class TranscodeSpec(Spec):
 
     def update_transcode_job_priority(
         self,
-        transcode_job_id: Union[str, UUID],
+        transcode_job_id: str,
         priority: int,
         **kwargs,
     ) -> Response:
@@ -848,7 +847,7 @@ class TranscodeSpec(Spec):
 
     def transcribe_asset_default_profile(
         self,
-        asset_id: Union[str, UUID],
+        asset_id: str,
         transcribe_schema: Union[TranscribeSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,

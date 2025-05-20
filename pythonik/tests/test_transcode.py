@@ -1,12 +1,10 @@
 # pythonik/tests/test_transcode.py
-import json
 import uuid
 from datetime import datetime
 from typing import (
     Any,
     Dict,
 )
-from uuid import UUID
 
 import requests_mock
 
@@ -31,40 +29,6 @@ from pythonik.models.transcode import (
     TranscribeSchema,
 )
 from pythonik.specs.transcode import TranscodeSpec
-
-
-class UUIDEncoder(json.JSONEncoder):
-    """JSON encoder that handles UUID and Pydantic URL objects."""
-
-    def default(self, obj):
-        """Convert UUID objects to strings for JSON serialization."""
-        if isinstance(obj, UUID):
-            return str(obj)
-        # Handle HttpUrl specially
-        if str(type(obj)) == "<class 'pydantic_core._pydantic_core.Url'>":
-            return str(obj)
-        return super().default(obj)
-
-
-def serialize_model_for_json(model):
-    """
-    Convert a Pydantic model to a JSON-serializable dict with UUID support.
-
-    Args:
-        model: The Pydantic model to convert
-
-    Returns:
-        A dict that can be serialized to JSON
-    """
-    if hasattr(model, "model_dump"):  # Pydantic v2
-        # Convert model to dict
-        model_dict = model.model_dump(exclude_unset=True)
-        # Serialize to JSON string and back to handle UUIDs
-        return json.loads(json.dumps(model_dict, cls=UUIDEncoder))
-    # Handle dict case
-    if isinstance(model, dict):
-        return json.loads(json.dumps(model, cls=UUIDEncoder))
-    return model
 
 
 def test_analyze_asset():
@@ -443,16 +407,6 @@ def test_partial_update_edge_transcode_worker():
         client = PythonikClient(app_id=app_id,
                                 auth_token=auth_token,
                                 timeout=3)
-
-        # No need to patch for dict inputs, but we'll keep the pattern consistent
-        original_patch = client.transcode()._patch
-
-        def patched_patch(path, json=None, **kwargs):
-            if json is not None:
-                json = serialize_model_for_json(json)
-            return original_patch(path, json=json, **kwargs)
-
-        client.transcode()._patch = patched_patch
 
         response = client.transcode().partial_update_edge_transcode_worker(
             worker_id, worker_schema)

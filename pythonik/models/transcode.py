@@ -14,7 +14,6 @@ from typing import (
     Optional,
     Union,
 )
-from uuid import UUID
 
 from pydantic import (
     BaseModel,
@@ -29,7 +28,7 @@ class TranscribeSchema(BaseModel):
     engine: Optional[str] = None
     force: Optional[bool] = None
     language: Optional[str] = None
-    profile_id: Optional[Union[str, UUID]] = None
+    profile_id: Optional[str] = None
     speakers: Optional[int] = Field(None, ge=1, le=100)
     summary: Optional[bool] = None
     topics_extraction: Optional[bool] = None
@@ -76,21 +75,21 @@ class TranscodeQueueRecordSchema(BaseModel):
     bytes_params: Optional[Any] = None
     date_created: Optional[str] = None
     date_updated: Optional[str] = None
-    id: Optional[Union[str, UUID]] = None
-    job_id: Optional[Union[str, UUID]] = None
+    id: Optional[str] = None
+    job_id: Optional[str] = None
     media_info: Optional[str] = None
-    object_id: Optional[Union[str, UUID]] = None
+    object_id: Optional[str] = None
     object_type: Optional[str] = None
     params: Optional[str] = None
     priority: Optional[int] = None
     retry_count: Optional[int] = None
     spec: Optional[str] = None
     status: Optional[str] = None
-    system_domain_id: Optional[Union[str, UUID]] = None
+    system_domain_id: Optional[str] = None
     system_name: Optional[str] = None
     type: Optional[str] = None
-    user_id: Optional[Union[str, UUID]] = None
-    version_id: Optional[Union[str, UUID]] = None
+    user_id: Optional[str] = None
+    version_id: Optional[str] = None
 
 
 class TranscodeQueueObjectSchema(BaseModel):
@@ -98,17 +97,17 @@ class TranscodeQueueObjectSchema(BaseModel):
 
     date_created: Optional[datetime] = None
     date_updated: Optional[datetime] = None
-    id: Optional[Union[str, UUID]] = None
-    job_id: Optional[Union[str, UUID]] = None
+    id: Optional[str] = None
+    job_id: Optional[str] = None
     priority: Optional[int] = Field(None, ge=1, le=10)
     retry_count: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     status: Optional[str] = None
     system_domain: Optional[str] = None
-    system_domain_id: Optional[Union[str, UUID]] = None
+    system_domain_id: Optional[str] = None
     system_domain_timestamp: Optional[float] = None
     system_name: Optional[str] = None
     type: Optional[str] = None
-    user_id: Optional[Union[str, UUID]] = None
+    user_id: Optional[str] = None
 
 
 class TranscodeElasticQueueRecordSchema(BaseModel):
@@ -305,13 +304,13 @@ class JobsStateSchema(BaseModel):
     """Represents a JobsStateSchema in the Iconik system."""
 
     action: Literal["ABORT", "RESTART"]
-    job_ids: List[Union[str, UUID]]
+    job_ids: List[str]
 
 
 class JobsPrioritySchema(BaseModel):
     """Represents a JobsPrioritySchema in the Iconik system."""
 
-    job_ids: List[Union[str, UUID]]
+    job_ids: List[str]
     priority: int = Field(..., ge=1, le=10)
 
 
@@ -342,10 +341,9 @@ class JobBaseSchema(BaseModel):
 class GenerateCollectionKeyframeSchema(BaseModel):
     """Represents a GenerateCollectionKeyframeSchema in the Iconik system."""
 
-    deleted_asset_id: Optional[Union[str, UUID]] = None
+    deleted_asset_id: Optional[str] = None
     force: Optional[bool] = None
-    specified_asset_ids: Optional[List[Union[str, UUID]]] = Field(
-        default_factory=list)
+    specified_asset_ids: Optional[List[str]] = Field(default_factory=list)
     specified_keyframes: Optional[List["SpecifiedKeyframes"]] = Field(
         default_factory=list)
 
@@ -387,10 +385,10 @@ class EdgeTranscodeWorkersSchema(BaseModel):
 class EdgeTranscodeWorkerSchema(BaseModel):
     """Represents a EdgeTranscodeWorkerSchema in the Iconik system."""
 
-    id: Optional[Union[str, UUID]] = None
+    id: Optional[str] = None
     last_update_date: Optional[datetime] = None
     status: Literal["ACTIVE", "INACTIVE"]
-    storage_id: Union[str, UUID]
+    storage_id: str
 
 
 class EdgeTranscodeJobsSchema(BaseModel):
@@ -605,9 +603,9 @@ class BulkTranscribeSchema(BaseModel):
     engine: Optional[str] = None
     force: Optional[bool] = None
     language: Optional[str] = None
-    object_ids: List[Union[str, UUID]]
+    object_ids: List[str]
     object_type: Literal["assets", "collections", "saved_searches"]
-    profile_id: Optional[Union[str, UUID]] = None
+    profile_id: Optional[str] = None
     speakers: Optional[int] = Field(None, ge=1, le=100)
     summary: Optional[bool] = None
     topics_extraction: Optional[bool] = None
@@ -619,15 +617,15 @@ class BulkAnalyzeSchema(BaseModel):
 
     force: Optional[bool] = None
     force_type: Optional[Literal["OVERWRITE", "APPEND"]] = None
-    object_ids: List[Union[str, UUID]]
+    object_ids: List[str]
     object_type: Literal["assets", "collections", "saved_searches"]
-    profile_id: Optional[Union[str, UUID]] = None
+    profile_id: Optional[str] = None
 
 
 class BulkActionSchema(BaseModel):
     """Represents a BulkActionSchema in the Iconik system."""
 
-    object_ids: List[Union[str, UUID]]
+    object_ids: List[str]
     object_type: Literal["assets", "collections", "saved_searches"]
 
 
