@@ -1,11 +1,16 @@
-from typing import Any, Dict, Literal, Optional, Union
+from typing import (
+    Any,
+    Dict,
+    Literal,
+    Optional,
+    Union,
+)
+from uuid import UUID
 
 from pythonik.models.base import Response
+from pythonik.specs._internal_utils import is_pydantic_model
+from pythonik.specs.base import Spec
 
-from aiopythonik import is_pydantic_model
-from aiopythonik._pythonik_patches import Spec
-
-from .._typing import ObjectID
 from ..models.transcode import (
     AbortStorageTranscodeJobsSchema,
     AnalyzeSchema,
@@ -31,7 +36,7 @@ class TranscodeSpec(Spec):
 
     def analyze_asset(
         self,
-        asset_id: ObjectID,
+        asset_id: Union[str, UUID],
         analyze_schema: Union[AnalyzeSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -53,17 +58,15 @@ class TranscodeSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            analyze_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(analyze_schema) else analyze_schema
-        )
+        body = (analyze_schema.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(analyze_schema) else analyze_schema)
         url = self.gen_url(f"analyze/assets/{asset_id}/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, None)
 
     def analyze_asset_default_profile(
         self,
-        asset_id: ObjectID,
+        asset_id: Union[str, UUID],
         analyze_schema: Union[AnalyzeSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -86,17 +89,15 @@ class TranscodeSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            analyze_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(analyze_schema) else analyze_schema
-        )
+        body = (analyze_schema.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(analyze_schema) else analyze_schema)
         url = self.gen_url(f"analyze/assets/{asset_id}/profiles/default/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, None)
 
     def analyze_asset_default_profile_media_type(
         self,
-        asset_id: ObjectID,
+        asset_id: Union[str, UUID],
         media_type: str,
         analyze_schema: Union[AnalyzeSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
@@ -121,20 +122,17 @@ class TranscodeSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            analyze_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(analyze_schema) else analyze_schema
-        )
+        body = (analyze_schema.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(analyze_schema) else analyze_schema)
         url = self.gen_url(
-            f"analyze/assets/{asset_id}/profiles/default/{media_type}/"
-        )
+            f"analyze/assets/{asset_id}/profiles/default/{media_type}/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, None)
 
     def analyze_asset_custom_profile(
         self,
-        asset_id: ObjectID,
-        profile_id: ObjectID,
+        asset_id: Union[str, UUID],
+        profile_id: Union[str, UUID],
         analyze_schema: Union[AnalyzeSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -158,10 +156,8 @@ class TranscodeSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            analyze_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(analyze_schema) else analyze_schema
-        )
+        body = (analyze_schema.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(analyze_schema) else analyze_schema)
         url = self.gen_url(f"analyze/assets/{asset_id}/profiles/{profile_id}/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, None)
@@ -192,8 +188,7 @@ class TranscodeSpec(Spec):
         """
         body = (
             bulk_analyze_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(bulk_analyze_schema) else bulk_analyze_schema
-        )
+            if is_pydantic_model(bulk_analyze_schema) else bulk_analyze_schema)
         url = self.gen_url("analyze/bulk/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, None)
@@ -221,18 +216,17 @@ class TranscodeSpec(Spec):
             - 401 Token is invalid
             - 404 Could not extract data
         """
-        body = (
-            asset_link_url_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(asset_link_url_schema) else
-            asset_link_url_schema
-        )
+        body = (asset_link_url_schema.model_dump(
+            exclude_defaults=exclude_defaults)
+                if is_pydantic_model(asset_link_url_schema) else
+                asset_link_url_schema)
         url = self.gen_url("assets/link/metadata/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, AssetLinkData)
 
     def acknowledge_edge_transcode_job(
         self,
-        job_id: ObjectID,
+        job_id: Union[str, UUID],
         **kwargs,
     ) -> Response:
         """
@@ -297,21 +291,19 @@ class TranscodeSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            worker_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(worker_schema) else worker_schema
-        )
+        body = (worker_schema.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(worker_schema) else worker_schema)
         url = self.gen_url("edge_transcode/workers/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, EdgeTranscodeWorkerSchema)
 
     def get_edge_transcode_worker(
         self,
-        worker_id: ObjectID,
+        worker_id: Union[str, UUID],
         **kwargs,
     ) -> Response:
         """
-        Get a edge transcode worker
+        Get an edge transcode worker
 
         Args:
             worker_id: ID of the edge transcode worker
@@ -331,7 +323,7 @@ class TranscodeSpec(Spec):
 
     def delete_edge_transcode_worker(
         self,
-        worker_id: ObjectID,
+        worker_id: Union[str, UUID],
         **kwargs,
     ) -> Response:
         """
@@ -355,13 +347,13 @@ class TranscodeSpec(Spec):
 
     def update_edge_transcode_worker(
         self,
-        worker_id: ObjectID,
+        worker_id: Union[str, UUID],
         worker_schema: Union[EdgeTranscodeWorkerSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
     ) -> Response:
         """
-        Update a edge transcode worker
+        Update an edge transcode worker
 
         Args:
             worker_id: ID of the edge transcode worker
@@ -378,23 +370,21 @@ class TranscodeSpec(Spec):
             - 401 Token is invalid
             - 404 Edge transcode worker doesn't exist
         """
-        body = (
-            worker_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(worker_schema) else worker_schema
-        )
+        body = (worker_schema.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(worker_schema) else worker_schema)
         url = self.gen_url(f"edge_transcode/workers/{worker_id}/")
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, EdgeTranscodeWorkerSchema)
 
     def partial_update_edge_transcode_worker(
         self,
-        worker_id: ObjectID,
+        worker_id: Union[str, UUID],
         worker_schema: Union[EdgeTranscodeWorkerSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
     ) -> Response:
         """
-        Update a edge transcode worker partially
+        Update an edge transcode worker partially
 
         Args:
             worker_id: ID of the edge transcode worker
@@ -411,18 +401,16 @@ class TranscodeSpec(Spec):
             - 401 Token is invalid
             - 404 Edge transcode worker doesn't exist
         """
-        body = (
-            worker_schema.model_dump(
-                exclude_defaults=exclude_defaults, exclude_unset=True
-            ) if is_pydantic_model(worker_schema) else worker_schema
-        )
+        body = (worker_schema.model_dump(exclude_defaults=exclude_defaults,
+                                         exclude_unset=True)
+                if is_pydantic_model(worker_schema) else worker_schema)
         url = self.gen_url(f"edge_transcode/workers/{worker_id}/")
         resp = self._patch(url, json=body, **kwargs)
         return self.parse_response(resp, EdgeTranscodeWorkerSchema)
 
     def generate_collection_keyframe(
         self,
-        collection_id: ObjectID,
+        collection_id: Union[str, UUID],
         keyframe_schema: Union[GenerateCollectionKeyframeSchema, Dict[str,
                                                                       Any]],
         exclude_defaults: bool = True,
@@ -445,17 +433,15 @@ class TranscodeSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            keyframe_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(keyframe_schema) else keyframe_schema
-        )
+        body = (keyframe_schema.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(keyframe_schema) else keyframe_schema)
         url = self.gen_url(f"keyframes/collections/{collection_id}/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, None)
 
     def abort_storage_transcode_jobs(
         self,
-        storage_id: ObjectID,
+        storage_id: Union[str, UUID],
         abort_schema: Union[AbortStorageTranscodeJobsSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -478,17 +464,15 @@ class TranscodeSpec(Spec):
             - 401 Token is invalid
             - 404 User does not exist
         """
-        body = (
-            abort_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(abort_schema) else abort_schema
-        )
+        body = (abort_schema.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(abort_schema) else abort_schema)
         url = self.gen_url(f"storages/{storage_id}/")
         resp = self._delete(url, json=body, **kwargs)
         return self.parse_response(resp, None)
 
     def fetch_storage_edge_transcode_jobs(
         self,
-        storage_id: ObjectID,
+        storage_id: Union[str, UUID],
         limit: int = 10,
         **kwargs,
     ) -> Response:
@@ -514,8 +498,8 @@ class TranscodeSpec(Spec):
 
     def delete_storage_file_transcode(
         self,
-        storage_id: ObjectID,
-        file_id: ObjectID,
+        storage_id: Union[str, UUID],
+        file_id: Union[str, UUID],
         **kwargs,
     ) -> Response:
         """
@@ -538,7 +522,7 @@ class TranscodeSpec(Spec):
 
     def fetch_storage_transcode_jobs(
         self,
-        storage_id: ObjectID,
+        storage_id: Union[str, UUID],
         per_page: int = 10,
         last_id: Optional[str] = None,
         **kwargs,
@@ -564,8 +548,8 @@ class TranscodeSpec(Spec):
 
     def get_storage_transcode_job(
         self,
-        storage_id: ObjectID,
-        record_id: ObjectID,
+        storage_id: Union[str, UUID],
+        record_id: Union[str, UUID],
         **kwargs,
     ) -> Response:
         """
@@ -588,8 +572,8 @@ class TranscodeSpec(Spec):
 
     def delete_storage_transcode_job(
         self,
-        storage_id: ObjectID,
-        record_id: ObjectID,
+        storage_id: Union[str, UUID],
+        record_id: Union[str, UUID],
         **kwargs,
     ) -> Response:
         """
@@ -631,10 +615,8 @@ class TranscodeSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            job_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(job_schema) else job_schema
-        )
+        body = (job_schema.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(job_schema) else job_schema)
         url = self.gen_url("transcode/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, JobSchema)
@@ -715,7 +697,7 @@ class TranscodeSpec(Spec):
     def fetch_transcode_object_queue_records(
         self,
         object_type: str,
-        object_id: ObjectID,
+        object_id: Union[str, UUID],
         **kwargs,
     ) -> Response:
         """
@@ -739,8 +721,8 @@ class TranscodeSpec(Spec):
     def fetch_transcode_version_queue_records(
         self,
         object_type: str,
-        object_id: ObjectID,
-        version_id: ObjectID,
+        object_id: Union[str, UUID],
+        version_id: Union[str, UUID],
         **kwargs,
     ) -> Response:
         """
@@ -759,14 +741,13 @@ class TranscodeSpec(Spec):
             - 400 Bad request - malformed parameters
         """
         url = self.gen_url(
-            f"transcode/{object_type}/{object_id}/versions/{version_id}/"
-        )
+            f"transcode/{object_type}/{object_id}/versions/{version_id}/")
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, TranscodeESQueueRecordsSchema)
 
     def get_transcode_job(
         self,
-        transcode_job_id: ObjectID,
+        transcode_job_id: Union[str, UUID],
         **kwargs,
     ) -> Response:
         """
@@ -789,7 +770,7 @@ class TranscodeSpec(Spec):
 
     def delete_transcode_job(
         self,
-        transcode_job_id: ObjectID,
+        transcode_job_id: Union[str, UUID],
         **kwargs,
     ) -> Response:
         """
@@ -813,7 +794,7 @@ class TranscodeSpec(Spec):
 
     def move_transcode_job_position(
         self,
-        transcode_job_id: ObjectID,
+        transcode_job_id: Union[str, UUID],
         position: Literal["top", "bottom"],
         **kwargs,
     ) -> Response:
@@ -833,13 +814,14 @@ class TranscodeSpec(Spec):
             - 401 Token is invalid
             - 404 Transcode does not exist
         """
-        url = self.gen_url(f"transcode/{transcode_job_id}/position/{position}/")
+        url = self.gen_url(
+            f"transcode/{transcode_job_id}/position/{position}/")
         resp = self._post(url, **kwargs)
         return self.parse_response(resp, None)
 
     def update_transcode_job_priority(
         self,
-        transcode_job_id: ObjectID,
+        transcode_job_id: Union[str, UUID],
         priority: int,
         **kwargs,
     ) -> Response:
@@ -859,13 +841,14 @@ class TranscodeSpec(Spec):
             - 401 Token is invalid
             - 404 Transcode does not exist
         """
-        url = self.gen_url(f"transcode/{transcode_job_id}/priority/{priority}/")
+        url = self.gen_url(
+            f"transcode/{transcode_job_id}/priority/{priority}/")
         resp = self._put(url, **kwargs)
         return self.parse_response(resp, None)
 
     def transcribe_asset_default_profile(
         self,
-        asset_id: ObjectID,
+        asset_id: Union[str, UUID],
         transcribe_schema: Union[TranscribeSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -887,10 +870,8 @@ class TranscodeSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            transcribe_schema.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(transcribe_schema) else transcribe_schema
-        )
+        body = (transcribe_schema.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(transcribe_schema) else transcribe_schema)
         url = self.gen_url(f"transcribe/assets/{asset_id}/profiles/default/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, None)
@@ -917,12 +898,10 @@ class TranscodeSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            bulk_transcribe_schema.model_dump(
-                exclude_defaults=exclude_defaults
-            ) if is_pydantic_model(bulk_transcribe_schema) else
-            bulk_transcribe_schema
-        )
+        body = (bulk_transcribe_schema.model_dump(
+            exclude_defaults=exclude_defaults)
+                if is_pydantic_model(bulk_transcribe_schema) else
+                bulk_transcribe_schema)
         url = self.gen_url("transcribe/bulk/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, None)

@@ -6,10 +6,21 @@ This module contains Pydantic models for the Iconik Transcode API.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Literal, Optional
+from typing import (
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+)
 from uuid import UUID
 
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import (
+    BaseModel,
+    Field,
+    HttpUrl,
+)
 
 
 class TranscribeSchema(BaseModel):
@@ -18,7 +29,7 @@ class TranscribeSchema(BaseModel):
     engine: Optional[str] = None
     force: Optional[bool] = None
     language: Optional[str] = None
-    profile_id: Optional[UUID] = None
+    profile_id: Optional[Union[str, UUID]] = None
     speakers: Optional[int] = Field(None, ge=1, le=100)
     summary: Optional[bool] = None
     topics_extraction: Optional[bool] = None
@@ -48,15 +59,15 @@ class TranscodeQueueSchema(BaseModel):
     first_url: Optional[str] = None
     last_url: Optional[str] = None
     next_url: Optional[str] = None
-    objects: Optional[List["TranscodeQueueObjectSchema"]
-                      ] = Field(default_factory=list)
+    objects: Optional[List["TranscodeQueueObjectSchema"]] = Field(
+        default_factory=list)
     page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     prev_url: Optional[str] = None
-    total: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    total: Optional[int] = Field(None,
+                                 ge=-9223372036854775808,
+                                 le=9223372036854775807)
 
 
 class TranscodeQueueRecordSchema(BaseModel):
@@ -65,21 +76,21 @@ class TranscodeQueueRecordSchema(BaseModel):
     bytes_params: Optional[Any] = None
     date_created: Optional[str] = None
     date_updated: Optional[str] = None
-    id: Optional[UUID] = None
-    job_id: Optional[UUID] = None
+    id: Optional[Union[str, UUID]] = None
+    job_id: Optional[Union[str, UUID]] = None
     media_info: Optional[str] = None
-    object_id: Optional[UUID] = None
+    object_id: Optional[Union[str, UUID]] = None
     object_type: Optional[str] = None
     params: Optional[str] = None
     priority: Optional[int] = None
     retry_count: Optional[int] = None
     spec: Optional[str] = None
     status: Optional[str] = None
-    system_domain_id: Optional[UUID] = None
+    system_domain_id: Optional[Union[str, UUID]] = None
     system_name: Optional[str] = None
     type: Optional[str] = None
-    user_id: Optional[UUID] = None
-    version_id: Optional[UUID] = None
+    user_id: Optional[Union[str, UUID]] = None
+    version_id: Optional[Union[str, UUID]] = None
 
 
 class TranscodeQueueObjectSchema(BaseModel):
@@ -87,17 +98,17 @@ class TranscodeQueueObjectSchema(BaseModel):
 
     date_created: Optional[datetime] = None
     date_updated: Optional[datetime] = None
-    id: Optional[UUID] = None
-    job_id: Optional[UUID] = None
+    id: Optional[Union[str, UUID]] = None
+    job_id: Optional[Union[str, UUID]] = None
     priority: Optional[int] = Field(None, ge=1, le=10)
     retry_count: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     status: Optional[str] = None
     system_domain: Optional[str] = None
-    system_domain_id: Optional[UUID] = None
+    system_domain_id: Optional[Union[str, UUID]] = None
     system_domain_timestamp: Optional[float] = None
     system_name: Optional[str] = None
     type: Optional[str] = None
-    user_id: Optional[UUID] = None
+    user_id: Optional[Union[str, UUID]] = None
 
 
 class TranscodeElasticQueueRecordSchema(BaseModel):
@@ -125,8 +136,8 @@ class TranscodeElasticQueueRecordSchema(BaseModel):
 class TranscodeESQueueRecordsSchema(BaseModel):
     """Represents a TranscodeESQueueRecordsSchema in the Iconik system."""
 
-    objects: Optional[List["TranscodeElasticQueueRecord"]
-                      ] = Field(default_factory=list)
+    objects: Optional[List["TranscodeElasticQueueRecord"]] = Field(
+        default_factory=list)
 
 
 class TranscodeElasticQueueRecord(BaseModel):
@@ -157,20 +168,20 @@ class ThumbnailJobSchema(BaseModel):
     height: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     id: Optional[str] = None
     max_number: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-    min_interval: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    min_interval: Optional[int] = Field(None,
+                                        ge=-9223372036854775808,
+                                        le=9223372036854775807)
     output_endpoint: "OutputEndpointSchema"
     set_as_custom_keyframe: Optional[bool] = None
-    time_end_milliseconds: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
-    time_start_milliseconds: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
-    timestamp: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    time_end_milliseconds: Optional[int] = Field(None,
+                                                 ge=-9223372036854775808,
+                                                 le=9223372036854775807)
+    time_start_milliseconds: Optional[int] = Field(None,
+                                                   ge=-9223372036854775808,
+                                                   le=9223372036854775807)
+    timestamp: Optional[int] = Field(None,
+                                     ge=-9223372036854775808,
+                                     le=9223372036854775807)
     width: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
 
 
@@ -210,8 +221,8 @@ class LocalTranscodeJobSchema(BaseModel):
     speakers: Optional[int] = Field(None, ge=2, le=100)
     thumbnail: Optional[List["ThumbnailJob"]] = Field(default_factory=list)
     transcode: Optional[List["TranscodeJob"]] = Field(default_factory=list)
-    valid_transcoders: Optional[List["Transcoders"]
-                                ] = Field(default_factory=list)
+    valid_transcoders: Optional[List["Transcoders"]] = Field(
+        default_factory=list)
     version_id: Optional[str] = None
 
 
@@ -245,15 +256,15 @@ class LocalStorageFileTranscodeJobsSchema(BaseModel):
     first_url: Optional[str] = None
     last_url: Optional[str] = None
     next_url: Optional[str] = None
-    objects: Optional[List["LocalStorageFileTranscodeJobSchema"]
-                      ] = Field(default_factory=list)
+    objects: Optional[List["LocalStorageFileTranscodeJobSchema"]] = Field(
+        default_factory=list)
     page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     prev_url: Optional[str] = None
-    total: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    total: Optional[int] = Field(None,
+                                 ge=-9223372036854775808,
+                                 le=9223372036854775807)
 
 
 class LocalStorageFileTranscodeJobSchema(BaseModel):
@@ -285,22 +296,22 @@ class ListObjectsSchema(BaseModel):
     pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     prev_url: Optional[str] = None
-    total: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    total: Optional[int] = Field(None,
+                                 ge=-9223372036854775808,
+                                 le=9223372036854775807)
 
 
 class JobsStateSchema(BaseModel):
     """Represents a JobsStateSchema in the Iconik system."""
 
     action: Literal["ABORT", "RESTART"]
-    job_ids: List[UUID]
+    job_ids: List[Union[str, UUID]]
 
 
 class JobsPrioritySchema(BaseModel):
     """Represents a JobsPrioritySchema in the Iconik system."""
 
-    job_ids: List[UUID]
+    job_ids: List[Union[str, UUID]]
     priority: int = Field(..., ge=1, le=10)
 
 
@@ -331,11 +342,12 @@ class JobBaseSchema(BaseModel):
 class GenerateCollectionKeyframeSchema(BaseModel):
     """Represents a GenerateCollectionKeyframeSchema in the Iconik system."""
 
-    deleted_asset_id: Optional[UUID] = None
+    deleted_asset_id: Optional[Union[str, UUID]] = None
     force: Optional[bool] = None
-    specified_asset_ids: Optional[List[UUID]] = Field(default_factory=list)
-    specified_keyframes: Optional[List["SpecifiedKeyframes"]
-                                  ] = Field(default_factory=list)
+    specified_asset_ids: Optional[List[Union[str, UUID]]] = Field(
+        default_factory=list)
+    specified_keyframes: Optional[List["SpecifiedKeyframes"]] = Field(
+        default_factory=list)
 
 
 class SpecifiedKeyframes(BaseModel):
@@ -348,44 +360,44 @@ class FacetSchema(BaseModel):
     """Represents a FacetSchema in the Iconik system."""
 
     buckets: Optional[List["FacetBucketSchema"]] = Field(default_factory=list)
-    doc_count_error_upper_bound: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
-    sum_other_doc_count: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    doc_count_error_upper_bound: Optional[int] = Field(None,
+                                                       ge=-9223372036854775808,
+                                                       le=9223372036854775807)
+    sum_other_doc_count: Optional[int] = Field(None,
+                                               ge=-9223372036854775808,
+                                               le=9223372036854775807)
 
 
 class FacetBucketSchema(BaseModel):
     """Represents a FacetBucketSchema in the Iconik system."""
 
-    doc_count: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    doc_count: Optional[int] = Field(None,
+                                     ge=-9223372036854775808,
+                                     le=9223372036854775807)
     key: Optional[str] = None
 
 
 class EdgeTranscodeWorkersSchema(BaseModel):
     """Represents a EdgeTranscodeWorkersSchema in the Iconik system."""
 
-    objects: Optional[List["EdgeTranscodeWorkerSchema"]
-                      ] = Field(default_factory=list)
+    objects: Optional[List["EdgeTranscodeWorkerSchema"]] = Field(
+        default_factory=list)
 
 
 class EdgeTranscodeWorkerSchema(BaseModel):
     """Represents a EdgeTranscodeWorkerSchema in the Iconik system."""
 
-    id: Optional[UUID] = None
+    id: Optional[Union[str, UUID]] = None
     last_update_date: Optional[datetime] = None
     status: Literal["ACTIVE", "INACTIVE"]
-    storage_id: UUID
+    storage_id: Union[str, UUID]
 
 
 class EdgeTranscodeJobsSchema(BaseModel):
     """Represents a EdgeTranscodeJobsSchema in the Iconik system."""
 
-    objects: Optional[List["EdgeTranscodeJobSchema"]
-                      ] = Field(default_factory=list)
+    objects: Optional[List["EdgeTranscodeJobSchema"]] = Field(
+        default_factory=list)
 
 
 class TranscodeJobSchema(BaseModel):
@@ -428,8 +440,8 @@ class JobSchema(BaseModel):
     speakers: Optional[int] = Field(None, ge=2, le=100)
     thumbnail: Optional[List["ThumbnailJob"]] = Field(default_factory=list)
     transcode: Optional[List["TranscodeJob"]] = Field(default_factory=list)
-    valid_transcoders: Optional[List["Transcoders"]
-                                ] = Field(default_factory=list)
+    valid_transcoders: Optional[List["Transcoders"]] = Field(
+        default_factory=list)
     version_id: Optional[str] = None
 
 
@@ -451,10 +463,10 @@ class EdgeTranscodeJobSchema(BaseModel):
     job_id: Optional[str] = None
     job_steps: Optional[List["JobStep"]] = Field(default_factory=list)
     media_info: Optional[str] = None
-    thumbnail: Optional[List["EdgeThumbnailJobFieldSchema"]
-                        ] = Field(default_factory=list)
-    transcode: Optional[List["EdgeTranscodeJobFieldSchema"]
-                        ] = Field(default_factory=list)
+    thumbnail: Optional[List["EdgeThumbnailJobFieldSchema"]] = Field(
+        default_factory=list)
+    transcode: Optional[List["EdgeTranscodeJobFieldSchema"]] = Field(
+        default_factory=list)
 
 
 class JobStep(BaseModel):
@@ -474,20 +486,20 @@ class ThumbnailJob(BaseModel):
     height: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     id: Optional[str] = None
     max_number: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-    min_interval: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    min_interval: Optional[int] = Field(None,
+                                        ge=-9223372036854775808,
+                                        le=9223372036854775807)
     output_endpoint: "OutputEndpoint"
     set_as_custom_keyframe: Optional[bool] = None
-    time_end_milliseconds: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
-    time_start_milliseconds: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
-    timestamp: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    time_end_milliseconds: Optional[int] = Field(None,
+                                                 ge=-9223372036854775808,
+                                                 le=9223372036854775807)
+    time_start_milliseconds: Optional[int] = Field(None,
+                                                   ge=-9223372036854775808,
+                                                   le=9223372036854775807)
+    timestamp: Optional[int] = Field(None,
+                                     ge=-9223372036854775808,
+                                     le=9223372036854775807)
     width: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
 
 
@@ -578,12 +590,12 @@ class EdgeThumbnailJobFieldSchema(BaseModel):
     height: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     id: Optional[str] = None
     max_number: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
-    min_interval: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
-    timestamp: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    min_interval: Optional[int] = Field(None,
+                                        ge=-9223372036854775808,
+                                        le=9223372036854775807)
+    timestamp: Optional[int] = Field(None,
+                                     ge=-9223372036854775808,
+                                     le=9223372036854775807)
     width: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
 
 
@@ -593,9 +605,9 @@ class BulkTranscribeSchema(BaseModel):
     engine: Optional[str] = None
     force: Optional[bool] = None
     language: Optional[str] = None
-    object_ids: List[UUID]
+    object_ids: List[Union[str, UUID]]
     object_type: Literal["assets", "collections", "saved_searches"]
-    profile_id: Optional[UUID] = None
+    profile_id: Optional[Union[str, UUID]] = None
     speakers: Optional[int] = Field(None, ge=1, le=100)
     summary: Optional[bool] = None
     topics_extraction: Optional[bool] = None
@@ -607,22 +619,22 @@ class BulkAnalyzeSchema(BaseModel):
 
     force: Optional[bool] = None
     force_type: Optional[Literal["OVERWRITE", "APPEND"]] = None
-    object_ids: List[UUID]
+    object_ids: List[Union[str, UUID]]
     object_type: Literal["assets", "collections", "saved_searches"]
-    profile_id: Optional[UUID] = None
+    profile_id: Optional[Union[str, UUID]] = None
 
 
 class BulkActionSchema(BaseModel):
     """Represents a BulkActionSchema in the Iconik system."""
 
-    object_ids: List[UUID]
+    object_ids: List[Union[str, UUID]]
     object_type: Literal["assets", "collections", "saved_searches"]
 
 
 class AssetLinkURLSchema(BaseModel):
     """Represents a AssetLinkURLSchema in the Iconik system."""
 
-    url: HttpUrl
+    url: Union[str, HttpUrl]
 
 
 class AssetLinkData(BaseModel):
