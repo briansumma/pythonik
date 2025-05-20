@@ -247,7 +247,7 @@ class TranscodeSpec(Spec):
         resp = self._post(url, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_edge_transcode_workers(
+    def list_edge_transcode_workers(
         self,
         **kwargs,
     ) -> Response:
@@ -469,7 +469,7 @@ class TranscodeSpec(Spec):
         resp = self._delete(url, json=body, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_storage_edge_transcode_jobs(
+    def list_storage_edge_transcode_jobs(
         self,
         storage_id: str,
         limit: int = 10,
@@ -519,7 +519,7 @@ class TranscodeSpec(Spec):
         resp = self._delete(url, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_storage_transcode_jobs(
+    def list_storage_transcode_jobs(
         self,
         storage_id: str,
         per_page: int = 10,
@@ -620,7 +620,7 @@ class TranscodeSpec(Spec):
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, JobSchema)
 
-    def fetch_transcode_queue(
+    def list_transcode_queue(
         self,
         per_page: Optional[int] = None,
         page: Optional[int] = None,
@@ -655,7 +655,7 @@ class TranscodeSpec(Spec):
         resp = self._get(url, params=params, **kwargs)
         return self.parse_response(resp, TranscodeQueueSchema)
 
-    def fetch_transcode_queue_system(
+    def list_transcode_queue_system(
         self,
         per_domain_id: Optional[bool] = None,
         per_page: Optional[int] = None,
@@ -693,7 +693,7 @@ class TranscodeSpec(Spec):
         resp = self._get(url, params=params, **kwargs)
         return self.parse_response(resp, TranscodeQueueSchema)
 
-    def fetch_transcode_object_queue_records(
+    def list_transcode_object_queue_records(
         self,
         object_type: str,
         object_id: str,
@@ -717,7 +717,7 @@ class TranscodeSpec(Spec):
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, TranscodeESQueueRecordsSchema)
 
-    def fetch_transcode_version_queue_records(
+    def list_transcode_version_queue_records(
         self,
         object_type: str,
         object_id: str,

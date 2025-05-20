@@ -249,7 +249,7 @@ def test_fetch_edge_transcode_workers():
         client = PythonikClient(app_id=app_id,
                                 auth_token=auth_token,
                                 timeout=3)
-        response = client.transcode().fetch_edge_transcode_workers()
+        response = client.transcode().list_edge_transcode_workers()
 
         assert response.response.ok
         assert m.last_request.url == mock_address
@@ -515,7 +515,7 @@ def test_fetch_storage_edge_transcode_jobs():
         client = PythonikClient(app_id=app_id,
                                 auth_token=auth_token,
                                 timeout=3)
-        response = client.transcode().fetch_storage_edge_transcode_jobs(
+        response = client.transcode().list_storage_edge_transcode_jobs(
             storage_id, limit=5)
 
         assert response.response.ok
@@ -584,7 +584,7 @@ def test_fetch_storage_transcode_jobs():
         client = PythonikClient(app_id=app_id,
                                 auth_token=auth_token,
                                 timeout=3)
-        response = client.transcode().fetch_storage_transcode_jobs(
+        response = client.transcode().list_storage_transcode_jobs(
             storage_id, per_page=10, last_id="last-job-id")
 
         assert response.response.ok
@@ -723,9 +723,9 @@ def test_fetch_transcode_queue():
         client = PythonikClient(app_id=app_id,
                                 auth_token=auth_token,
                                 timeout=3)
-        response = client.transcode().fetch_transcode_queue(per_page=10,
-                                                            page=1,
-                                                            sort="priority")
+        response = client.transcode().list_transcode_queue(per_page=10,
+                                                           page=1,
+                                                           sort="priority")
 
         assert response.response.ok
         assert m.last_request.url.startswith(mock_address)
@@ -765,7 +765,7 @@ def test_fetch_transcode_queue_system():
         client = PythonikClient(app_id=app_id,
                                 auth_token=auth_token,
                                 timeout=3)
-        response = client.transcode().fetch_transcode_queue_system(
+        response = client.transcode().list_transcode_queue_system(
             per_domain_id=True, per_page=10, page=1, sort="priority")
 
         assert response.response.ok
@@ -804,7 +804,7 @@ def test_fetch_transcode_object_queue_records():
         client = PythonikClient(app_id=app_id,
                                 auth_token=auth_token,
                                 timeout=3)
-        response = client.transcode().fetch_transcode_object_queue_records(
+        response = client.transcode().list_transcode_object_queue_records(
             object_type, object_id)
 
         assert response.response.ok
@@ -841,7 +841,7 @@ def test_fetch_transcode_version_queue_records():
         client = PythonikClient(app_id=app_id,
                                 auth_token=auth_token,
                                 timeout=3)
-        response = client.transcode().fetch_transcode_version_queue_records(
+        response = client.transcode().list_transcode_version_queue_records(
             object_type, object_id, version_id)
 
         assert response.response.ok
