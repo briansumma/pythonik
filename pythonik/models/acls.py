@@ -6,10 +6,17 @@ This module contains Pydantic models for the Iconik Acls API.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Literal, Optional
+from typing import (
+    List,
+    Literal,
+    Optional,
+)
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import (
+    BaseModel,
+    Field,
+)
 
 
 class UsersSchema(BaseModel):
@@ -60,9 +67,9 @@ class SharesACLSchema(BaseModel):
     pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     prev_url: Optional[str] = None
-    total: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    total: Optional[int] = Field(None,
+                                 ge=-9223372036854775808,
+                                 le=9223372036854775807)
 
 
 class ShareACLSchema(BaseModel):
@@ -110,9 +117,9 @@ class ListObjectsSchema(BaseModel):
     pages: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     per_page: Optional[int] = Field(None, ge=-2147483648, le=2147483647)
     prev_url: Optional[str] = None
-    total: Optional[int] = Field(
-        None, ge=-9223372036854775808, le=9223372036854775807
-    )
+    total: Optional[int] = Field(None,
+                                 ge=-9223372036854775808,
+                                 le=9223372036854775807)
 
 
 class InheritedACLSchema(BaseModel):
@@ -300,14 +307,14 @@ class ACLSchema(BaseModel):
     """Represents a ACLSchema in the Iconik system."""
 
     groups_acl: Optional[List["GroupACLBase"]] = Field(default_factory=list)
-    inherited_groups_acl: Optional[List["PropagatingGroupACL"]
-                                   ] = Field(default_factory=list)
-    inherited_users_acl: Optional[List["PropagatingACL"]
-                                  ] = Field(default_factory=list)
-    propagating_groups_acl: Optional[List["PropagatingGroupACL"]
-                                     ] = Field(default_factory=list)
-    propagating_users_acl: Optional[List["PropagatingACL"]
-                                    ] = Field(default_factory=list)
+    inherited_groups_acl: Optional[List["PropagatingGroupACL"]] = Field(
+        default_factory=list)
+    inherited_users_acl: Optional[List["PropagatingACL"]] = Field(
+        default_factory=list)
+    propagating_groups_acl: Optional[List["PropagatingGroupACL"]] = Field(
+        default_factory=list)
+    propagating_users_acl: Optional[List["PropagatingACL"]] = Field(
+        default_factory=list)
     users_acl: Optional[List["UserACLBase"]] = Field(default_factory=list)
 
 

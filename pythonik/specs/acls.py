@@ -1,12 +1,13 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import (
+    Any,
+    Dict,
+    List,
+    Optional,
+    Union,
+)
+from uuid import UUID
 
-from pythonik.models.base import Response
-
-from aiopythonik import is_pydantic_model
-from aiopythonik._pythonik_patches import Spec
-
-from .._typing import ObjectID, ObjectKey
-from ..models.acls import (
+from pythonik.models.acls import (
     ACLSchema,
     ACLsSchema,
     ACLTemplateSchema,
@@ -26,6 +27,10 @@ from ..models.acls import (
     SharesACLSchema,
     UserACLSchema,
 )
+from pythonik.models.base import Response
+from pythonik.specs.base import Spec
+
+from ._internal_utils import is_pydantic_model
 
 
 class AclsSpec(Spec):
@@ -35,9 +40,9 @@ class AclsSpec(Spec):
     # pylint: disable=too-many-positional-arguments
     def apply_template_permissions(
         self,
-        template_id: ObjectID,
+        template_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         ignore_reindexing: Optional[bool] = False,
         restrict_acls_collection_id: Optional[str] = None,
         **kwargs,
@@ -68,16 +73,15 @@ class AclsSpec(Spec):
             "restrict_acls_collection_id": restrict_acls_collection_id,
         }
         url = self.gen_url(
-            f"acl/templates/{template_id}/{object_type}/{object_key}/"
-        )
+            f"acl/templates/{template_id}/{object_type}/{object_key}/")
         resp = self._post(url, params=params, **kwargs)
         return self.parse_response(resp, None)
 
     def apply_group_permissions(
         self,
-        group_id: ObjectID,
+        group_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         permissions: List[str],
         exclude_defaults: bool = True,
         **kwargs,
@@ -102,19 +106,19 @@ class AclsSpec(Spec):
             - 404 ACL does not exist
             - ValueError: If invalid permissions provided
         """
-        if permissions and not any(
-            _ in permissions for _ in self.VALID_PERMISSIONS
-        ):
+        if permissions and not any(_ in permissions
+                                   for _ in self.VALID_PERMISSIONS):
             raise ValueError(f"Value must be one of {self.VALID_PERMISSIONS}")
         model = GroupACLSchema(permissions=permissions)
         body = model.model_dump(exclude_defaults=exclude_defaults)
-        url = self.gen_url(f"groups/{group_id}/acl/{object_type}/{object_key}/")
+        url = self.gen_url(
+            f"groups/{group_id}/acl/{object_type}/{object_key}/")
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, GroupACLSchema)
 
-    def fetch_object_permissions(
-        self, object_type: str, object_key: ObjectKey, **kwargs
-    ) -> Response:
+    def fetch_object_permissions(self, object_type: str,
+                                 object_key: Union[UUID,
+                                                   str], **kwargs) -> Response:
         """
         List of object permissions
 
@@ -223,10 +227,8 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 404 ACL template does not exist
         """
-        body = (
-            template.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(template) else template
-        )
+        body = (template.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(template) else template)
         url = self.gen_url(f"acl/templates/{template_id}/")
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, ACLTemplateSchema)
@@ -256,11 +258,9 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 404 ACL template does not exist
         """
-        body = (
-            template.model_dump(
-                exclude_defaults=exclude_defaults, exclude_unset=True
-            ) if is_pydantic_model(template) else template
-        )
+        body = (template.model_dump(exclude_defaults=exclude_defaults,
+                                    exclude_unset=True)
+                if is_pydantic_model(template) else template)
         url = self.gen_url(f"acl/templates/{template_id}/")
         resp = self._patch(url, json=body, **kwargs)
         return self.parse_response(resp, ACLTemplateSchema)
@@ -308,10 +308,8 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 403 User doesn't have permission
         """
-        body = (
-            objects.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(objects) else objects
-        )
+        body = (objects.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(objects) else objects)
         url = self.gen_url("acl/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, BulkACLSchema)
@@ -319,7 +317,7 @@ class AclsSpec(Spec):
     def check_object_permission(
         self,
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         permission: str,
         **kwargs,
     ) -> Response:
@@ -347,7 +345,7 @@ class AclsSpec(Spec):
     def get_combined_permissions(
         self,
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         **kwargs,
     ) -> Response:
         """
@@ -395,10 +393,8 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 403 User doesn't have permission
         """
-        body = (
-            object_keys.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(object_keys) else object_keys
-        )
+        body = (object_keys.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(object_keys) else object_keys)
         url = self.gen_url(f"acl/{object_type}/{permission}/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, BulkACLSchema)
@@ -426,10 +422,8 @@ class AclsSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            acls.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(acls) else acls
-        )
+        body = (acls.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(acls) else acls)
         url = self.gen_url(f"acl/{object_type}/")
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, CreateACLsResultSchema)
@@ -457,10 +451,8 @@ class AclsSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            acls.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(acls) else acls
-        )
+        body = (acls.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(acls) else acls)
         url = self.gen_url(f"acl/{object_type}/bulk/")
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, None)
@@ -489,10 +481,8 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 501 Invalid object type
         """
-        body = (
-            acls.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(acls) else acls
-        )
+        body = (acls.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(acls) else acls)
         url = self.gen_url(f"acl/{object_type}/content/")
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, None)
@@ -520,10 +510,8 @@ class AclsSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            acls.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(acls) else acls
-        )
+        body = (acls.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(acls) else acls)
         url = self.gen_url(f"acl/{object_type}/")
         resp = self._delete(url, json=body, **kwargs)
         return self.parse_response(resp, None)
@@ -551,19 +539,17 @@ class AclsSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            acls.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(acls) else acls
-        )
+        body = (acls.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(acls) else acls)
         url = self.gen_url(f"acl/{object_type}/content/")
         resp = self._delete(url, json=body, **kwargs)
         return self.parse_response(resp, None)
 
     def get_group_acl(
         self,
-        group_id: ObjectID,
+        group_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         **kwargs,
     ) -> Response:
         """
@@ -582,15 +568,16 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 404 Group doesn't have permissions
         """
-        url = self.gen_url(f"groups/{group_id}/acl/{object_type}/{object_key}/")
+        url = self.gen_url(
+            f"groups/{group_id}/acl/{object_type}/{object_key}/")
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, GroupACLSchema)
 
     def check_group_permission(
         self,
-        group_id: ObjectID,
+        group_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         permission: str,
         **kwargs,
     ) -> Response:
@@ -612,18 +599,16 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 403 Group doesn't have particular permission
         """
-        url = self.gen_url(
-            f"groups/{group_id}/acl/{object_type}/{object_key}/"
-            f"{permission}/"
-        )
+        url = self.gen_url(f"groups/{group_id}/acl/{object_type}/{object_key}/"
+                           f"{permission}/")
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, None)
 
     def delete_group_acl(
         self,
-        group_id: ObjectID,
+        group_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         **kwargs,
     ) -> Response:
         """
@@ -643,15 +628,16 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 404 ACL does not exist
         """
-        url = self.gen_url(f"groups/{group_id}/acl/{object_type}/{object_key}/")
+        url = self.gen_url(
+            f"groups/{group_id}/acl/{object_type}/{object_key}/")
         resp = self._delete(url, **kwargs)
         return self.parse_response(resp, None)
 
     def get_user_acl(
         self,
-        user_id: ObjectID,
+        user_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         **kwargs,
     ) -> Response:
         """
@@ -676,9 +662,9 @@ class AclsSpec(Spec):
 
     def update_user_acl(
         self,
-        user_id: ObjectID,
+        user_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         acl: Union[UserACLSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -702,19 +688,17 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 404 ACL does not exist
         """
-        body = (
-            acl.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(acl) else acl
-        )
+        body = (acl.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(acl) else acl)
         url = self.gen_url(f"users/{user_id}/acl/{object_type}/{object_key}/")
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, UserACLSchema)
 
     def delete_user_acl(
         self,
-        user_id: ObjectID,
+        user_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         **kwargs,
     ) -> Response:
         """
@@ -740,9 +724,9 @@ class AclsSpec(Spec):
 
     def check_user_permission(
         self,
-        user_id: ObjectID,
+        user_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         permission: str,
         **kwargs,
     ) -> Response:
@@ -764,17 +748,15 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 403 User does not have permission
         """
-        url = self.gen_url(
-            f"users/{user_id}/acl/{object_type}/{object_key}/"
-            f"{permission}/"
-        )
+        url = self.gen_url(f"users/{user_id}/acl/{object_type}/{object_key}/"
+                           f"{permission}/")
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, UserACLSchema)
 
     def fetch_share_acls(
         self,
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         **kwargs,
     ) -> Response:
         """
@@ -798,7 +780,7 @@ class AclsSpec(Spec):
 
     def create_share_acls(
         self,
-        share_id: ObjectID,
+        share_id: Union[UUID, str],
         object_type: str,
         acls: Union[CreateShareACLsSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
@@ -821,19 +803,17 @@ class AclsSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            acls.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(acls) else acls
-        )
+        body = (acls.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(acls) else acls)
         url = self.gen_url(f"shares/{share_id}/acl/{object_type}/")
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, CreateACLsResultSchema)
 
     def get_share_acl(
         self,
-        share_id: ObjectID,
+        share_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         **kwargs,
     ) -> Response:
         """
@@ -852,18 +832,16 @@ class AclsSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        url = self.gen_url(
-            f"shares/{share_id}/acl/{object_type}/"
-            f"{object_key}/"
-        )
+        url = self.gen_url(f"shares/{share_id}/acl/{object_type}/"
+                           f"{object_key}/")
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, ShareACLSchema)
 
     def create_share_acl(
         self,
-        share_id: ObjectID,
+        share_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         acl: Union[ShareACLSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -886,22 +864,18 @@ class AclsSpec(Spec):
             - 400 Bad request
             - 401 Token is invalid
         """
-        body = (
-            acl.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(acl) else acl
-        )
-        url = self.gen_url(
-            f"shares/{share_id}/acl/{object_type}/"
-            f"{object_key}/"
-        )
+        body = (acl.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(acl) else acl)
+        url = self.gen_url(f"shares/{share_id}/acl/{object_type}/"
+                           f"{object_key}/")
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, ShareACLSchema)
 
     def update_share_acl(
         self,
-        share_id: ObjectID,
+        share_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         acl: Union[ShareACLSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -925,22 +899,18 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 404 ACL does not exist
         """
-        body = (
-            acl.model_dump(exclude_defaults=exclude_defaults)
-            if is_pydantic_model(acl) else acl
-        )
-        url = self.gen_url(
-            f"shares/{share_id}/acl/{object_type}/"
-            f"{object_key}/"
-        )
+        body = (acl.model_dump(exclude_defaults=exclude_defaults)
+                if is_pydantic_model(acl) else acl)
+        url = self.gen_url(f"shares/{share_id}/acl/{object_type}/"
+                           f"{object_key}/")
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, ShareACLSchema)
 
     def delete_share_acl(
         self,
-        share_id: ObjectID,
+        share_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         **kwargs,
     ) -> Response:
         """
@@ -960,18 +930,16 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 404 ACL does not exist
         """
-        url = self.gen_url(
-            f"shares/{share_id}/acl/{object_type}/"
-            f"{object_key}/"
-        )
+        url = self.gen_url(f"shares/{share_id}/acl/{object_type}/"
+                           f"{object_key}/")
         resp = self._delete(url, **kwargs)
         return self.parse_response(resp, None)
 
     def check_share_permission(
         self,
-        share_id: ObjectID,
+        share_id: Union[UUID, str],
         object_type: str,
-        object_key: ObjectKey,
+        object_key: Union[UUID, str],
         permission: str,
         **kwargs,
     ) -> Response:
@@ -993,9 +961,7 @@ class AclsSpec(Spec):
             - 401 Token is invalid
             - 403 User does not have permission
         """
-        url = self.gen_url(
-            f"shares/{share_id}/acl/{object_type}/"
-            f"{object_key}/{permission}/"
-        )
+        url = self.gen_url(f"shares/{share_id}/acl/{object_type}/"
+                           f"{object_key}/{permission}/")
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, None)
