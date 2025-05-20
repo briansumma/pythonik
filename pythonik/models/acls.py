@@ -11,7 +11,6 @@ from typing import (
     Literal,
     Optional,
 )
-from uuid import UUID
 
 from pydantic import (
     BaseModel,
@@ -29,13 +28,13 @@ class UsersCheckAclSchema(BaseModel):
     """Represents a UsersCheckAclSchema in the Iconik system."""
 
     group_ids: Optional[List[str]] = Field(default_factory=list)
-    user_id: Optional[UUID] = None
+    user_id: Optional[str] = None
 
 
 class UserIDsSchema(BaseModel):
     """Represents a UserIDsSchema in the Iconik system."""
 
-    user_ids: Optional[List[UUID]] = Field(default_factory=list)
+    user_ids: Optional[List[str]] = Field(default_factory=list)
 
 
 class UserACLSchema(BaseModel):
@@ -46,14 +45,14 @@ class UserACLSchema(BaseModel):
     object_key: Optional[str] = None
     object_type: Optional[str] = None
     permissions: List[str]
-    user_id: Optional[UUID] = None
+    user_id: Optional[str] = None
 
 
 class UserACLBaseSchema(BaseModel):
     """Represents a UserACLBaseSchema in the Iconik system."""
 
     permissions: List[str]
-    user_id: Optional[UUID] = None
+    user_id: Optional[str] = None
 
 
 class SharesACLSchema(BaseModel):
@@ -80,7 +79,7 @@ class ShareACLSchema(BaseModel):
     object_key: Optional[str] = None
     object_type: Optional[str] = None
     permissions: List[str]
-    share_id: Optional[UUID] = None
+    share_id: Optional[str] = None
 
 
 class ReindexPropagatingACLSchema(BaseModel):
@@ -92,7 +91,7 @@ class ReindexPropagatingACLSchema(BaseModel):
 class PropagatingGroupACLSchema(BaseModel):
     """Represents a PropagatingGroupACLSchema in the Iconik system."""
 
-    group_id: Optional[UUID] = None
+    group_id: Optional[str] = None
     object_key: Optional[str] = None
     object_type: Optional[str] = None
     permissions: List[str]
@@ -104,7 +103,7 @@ class PropagatingACLSchema(BaseModel):
     object_key: Optional[str] = None
     object_type: Optional[str] = None
     permissions: List[str]
-    user_id: Optional[UUID] = None
+    user_id: Optional[str] = None
 
 
 class ListObjectsSchema(BaseModel):
@@ -135,7 +134,7 @@ class InheritedACLSchema(BaseModel):
 class GroupIDsSchema(BaseModel):
     """Represents a GroupIDsSchema in the Iconik system."""
 
-    group_ids: Optional[List[UUID]] = Field(default_factory=list)
+    group_ids: Optional[List[str]] = Field(default_factory=list)
 
 
 class GroupACLSchema(BaseModel):
@@ -143,7 +142,7 @@ class GroupACLSchema(BaseModel):
 
     date_created: Optional[datetime] = None
     date_modified: Optional[datetime] = None
-    group_id: Optional[UUID] = None
+    group_id: Optional[str] = None
     object_key: Optional[str] = None
     object_type: Optional[str] = None
     permissions: List[str]
@@ -152,28 +151,28 @@ class GroupACLSchema(BaseModel):
 class GroupACLBaseSchema(BaseModel):
     """Represents a GroupACLBaseSchema in the Iconik system."""
 
-    group_id: Optional[UUID] = None
+    group_id: Optional[str] = None
     permissions: List[str]
 
 
 class DeleteBulkACLsSchema(BaseModel):
     """Represents a DeleteBulkACLsSchema in the Iconik system."""
 
-    group_ids: Optional[List[UUID]] = Field(default_factory=list)
+    group_ids: Optional[List[str]] = Field(default_factory=list)
     include_assets: bool
     include_collections: bool
-    object_ids: Optional[List[UUID]] = Field(default_factory=list)
+    object_ids: Optional[List[str]] = Field(default_factory=list)
     object_type: Optional[str] = None
-    user_ids: Optional[List[UUID]] = Field(default_factory=list)
+    user_ids: Optional[List[str]] = Field(default_factory=list)
 
 
 class DeleteACLsSchema(BaseModel):
     """Represents a DeleteACLsSchema in the Iconik system."""
 
-    group_ids: Optional[List[UUID]] = Field(default_factory=list)
+    group_ids: Optional[List[str]] = Field(default_factory=list)
     object_keys: Optional[List[str]] = Field(default_factory=list)
     object_type: Optional[str] = None
-    user_ids: Optional[List[UUID]] = Field(default_factory=list)
+    user_ids: Optional[List[str]] = Field(default_factory=list)
 
 
 class CreateShareACLsSchema(BaseModel):
@@ -182,7 +181,7 @@ class CreateShareACLsSchema(BaseModel):
     object_keys: Optional[List[str]] = Field(default_factory=list)
     object_type: Optional[str] = None
     permissions: List[str]
-    share_id: Optional[UUID] = None
+    share_id: Optional[str] = None
 
 
 class CreateMultipleACLsSchema(BaseModel):
@@ -194,36 +193,36 @@ class CreateMultipleACLsSchema(BaseModel):
 class CreateBulkACLsSchema(BaseModel):
     """Represents a CreateBulkACLsSchema in the Iconik system."""
 
-    group_ids: Optional[List[UUID]] = Field(default_factory=list)
+    group_ids: Optional[List[str]] = Field(default_factory=list)
     include_assets: bool
     include_collections: bool
     mode: Optional[Literal["APPEND", "OVERWRITE"]] = None
-    object_ids: Optional[List[UUID]] = Field(default_factory=list)
+    object_ids: Optional[List[str]] = Field(default_factory=list)
     object_type: Optional[str] = None
     permissions: List[str]
-    user_ids: Optional[List[UUID]] = Field(default_factory=list)
+    user_ids: Optional[List[str]] = Field(default_factory=list)
 
 
 class CreateACLsSchemaMultiple(BaseModel):
     """Represents a CreateACLsSchemaMultiple in the Iconik system."""
 
-    group_ids: Optional[List[UUID]] = Field(default_factory=list)
+    group_ids: Optional[List[str]] = Field(default_factory=list)
     mode: Optional[Literal["APPEND", "OVERWRITE"]] = None
     object_keys: List[str]
     object_type: Optional[str] = None
     permissions: List[str]
-    user_ids: Optional[List[UUID]] = Field(default_factory=list)
+    user_ids: Optional[List[str]] = Field(default_factory=list)
 
 
 class CreateACLsSchema(BaseModel):
     """Represents a CreateACLsSchema in the Iconik system."""
 
-    group_ids: Optional[List[UUID]] = Field(default_factory=list)
+    group_ids: Optional[List[str]] = Field(default_factory=list)
     mode: Optional[Literal["APPEND", "OVERWRITE"]] = None
     object_keys: List[str]
     object_type: Optional[str] = None
     permissions: List[str]
-    user_ids: Optional[List[UUID]] = Field(default_factory=list)
+    user_ids: Optional[List[str]] = Field(default_factory=list)
 
 
 class CreateACLsResultSchema(BaseModel):
@@ -257,14 +256,14 @@ class CheckBulkACLsSchema(BaseModel):
 class BulkDeleteShareACLs(BaseModel):
     """Represents a BulkDeleteShareACLs in the Iconik system."""
 
-    share_ids: List[UUID]
+    share_ids: List[str]
 
 
 class BulkCreateShareACLs(BaseModel):
     """Represents a BulkCreateShareACLs in the Iconik system."""
 
     permissions: List[str]
-    share_ids: List[UUID]
+    share_ids: List[str]
 
 
 class BulkACLsObjectSchema(BaseModel):
@@ -299,7 +298,7 @@ class ACLTemplateSchema(BaseModel):
 
     date_created: Optional[datetime] = None
     date_modified: Optional[datetime] = None
-    id: Optional[UUID] = None
+    id: Optional[str] = None
     name: str
 
 
@@ -321,7 +320,7 @@ class ACLSchema(BaseModel):
 class PropagatingGroupACL(BaseModel):
     """Represents a PropagatingGroupACL in the Iconik system."""
 
-    group_id: Optional[UUID] = None
+    group_id: Optional[str] = None
     object_key: Optional[str] = None
     object_type: Optional[str] = None
     permissions: List[str]
@@ -333,20 +332,20 @@ class PropagatingACL(BaseModel):
     object_key: Optional[str] = None
     object_type: Optional[str] = None
     permissions: List[str]
-    user_id: Optional[UUID] = None
+    user_id: Optional[str] = None
 
 
 class UserACLBase(BaseModel):
     """Represents a UserACLBase in the Iconik system."""
 
     permissions: List[str]
-    user_id: Optional[UUID] = None
+    user_id: Optional[str] = None
 
 
 class GroupACLBase(BaseModel):
     """Represents a GroupACLBase in the Iconik system."""
 
-    group_id: Optional[UUID] = None
+    group_id: Optional[str] = None
     permissions: List[str]
 
 

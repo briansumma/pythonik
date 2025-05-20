@@ -5,7 +5,6 @@ from typing import (
     Optional,
     Union,
 )
-from uuid import UUID
 
 from pythonik.models.acls import (
     ACLSchema,
@@ -40,9 +39,9 @@ class AclsSpec(Spec):
     # pylint: disable=too-many-positional-arguments
     def apply_template_permissions(
         self,
-        template_id: Union[UUID, str],
+        template_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         ignore_reindexing: Optional[bool] = False,
         restrict_acls_collection_id: Optional[str] = None,
         **kwargs,
@@ -79,9 +78,9 @@ class AclsSpec(Spec):
 
     def apply_group_permissions(
         self,
-        group_id: Union[UUID, str],
+        group_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         permissions: List[str],
         exclude_defaults: bool = True,
         **kwargs,
@@ -116,9 +115,8 @@ class AclsSpec(Spec):
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, GroupACLSchema)
 
-    def fetch_object_permissions(self, object_type: str,
-                                 object_key: Union[UUID,
-                                                   str], **kwargs) -> Response:
+    def fetch_object_permissions(self, object_type: str, object_key: str,
+                                 **kwargs) -> Response:
         """
         List of object permissions
 
@@ -317,7 +315,7 @@ class AclsSpec(Spec):
     def check_object_permission(
         self,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         permission: str,
         **kwargs,
     ) -> Response:
@@ -345,7 +343,7 @@ class AclsSpec(Spec):
     def get_combined_permissions(
         self,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         **kwargs,
     ) -> Response:
         """
@@ -547,9 +545,9 @@ class AclsSpec(Spec):
 
     def get_group_acl(
         self,
-        group_id: Union[UUID, str],
+        group_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         **kwargs,
     ) -> Response:
         """
@@ -575,9 +573,9 @@ class AclsSpec(Spec):
 
     def check_group_permission(
         self,
-        group_id: Union[UUID, str],
+        group_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         permission: str,
         **kwargs,
     ) -> Response:
@@ -606,9 +604,9 @@ class AclsSpec(Spec):
 
     def delete_group_acl(
         self,
-        group_id: Union[UUID, str],
+        group_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         **kwargs,
     ) -> Response:
         """
@@ -635,9 +633,9 @@ class AclsSpec(Spec):
 
     def get_user_acl(
         self,
-        user_id: Union[UUID, str],
+        user_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         **kwargs,
     ) -> Response:
         """
@@ -662,9 +660,9 @@ class AclsSpec(Spec):
 
     def update_user_acl(
         self,
-        user_id: Union[UUID, str],
+        user_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         acl: Union[UserACLSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -696,9 +694,9 @@ class AclsSpec(Spec):
 
     def delete_user_acl(
         self,
-        user_id: Union[UUID, str],
+        user_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         **kwargs,
     ) -> Response:
         """
@@ -724,9 +722,9 @@ class AclsSpec(Spec):
 
     def check_user_permission(
         self,
-        user_id: Union[UUID, str],
+        user_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         permission: str,
         **kwargs,
     ) -> Response:
@@ -756,7 +754,7 @@ class AclsSpec(Spec):
     def fetch_share_acls(
         self,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         **kwargs,
     ) -> Response:
         """
@@ -780,7 +778,7 @@ class AclsSpec(Spec):
 
     def create_share_acls(
         self,
-        share_id: Union[UUID, str],
+        share_id: str,
         object_type: str,
         acls: Union[CreateShareACLsSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
@@ -811,9 +809,9 @@ class AclsSpec(Spec):
 
     def get_share_acl(
         self,
-        share_id: Union[UUID, str],
+        share_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         **kwargs,
     ) -> Response:
         """
@@ -839,9 +837,9 @@ class AclsSpec(Spec):
 
     def create_share_acl(
         self,
-        share_id: Union[UUID, str],
+        share_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         acl: Union[ShareACLSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -873,9 +871,9 @@ class AclsSpec(Spec):
 
     def update_share_acl(
         self,
-        share_id: Union[UUID, str],
+        share_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         acl: Union[ShareACLSchema, Dict[str, Any]],
         exclude_defaults: bool = True,
         **kwargs,
@@ -908,9 +906,9 @@ class AclsSpec(Spec):
 
     def delete_share_acl(
         self,
-        share_id: Union[UUID, str],
+        share_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         **kwargs,
     ) -> Response:
         """
@@ -937,9 +935,9 @@ class AclsSpec(Spec):
 
     def check_share_permission(
         self,
-        share_id: Union[UUID, str],
+        share_id: str,
         object_type: str,
-        object_key: Union[UUID, str],
+        object_key: str,
         permission: str,
         **kwargs,
     ) -> Response:
