@@ -512,7 +512,7 @@ class AssetSpec(Spec):
         )
         return self.parse_response(response, None)
 
-    def fetch(self, **kwargs) -> Response:
+    def list_all(self, **kwargs) -> Response:
         """
         Get list of assets.
 
@@ -525,7 +525,7 @@ class AssetSpec(Spec):
         resp = self._get(self.gen_url("assets/"), **kwargs)
         return self.parse_response(resp, PaginatedResponse)
 
-    def fetch_asset_history_entities(self, asset_id: str, **kwargs) -> Response:
+    def list_asset_history_entities(self, asset_id: str, **kwargs) -> Response:
         """
         Get list of history entities for asset.
 

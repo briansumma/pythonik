@@ -32,7 +32,7 @@ def test_fetch():
 
         # Create client and call the method
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
-        result = client.assets().fetch()
+        result = client.assets().list_all()
 
         # Verify response
         assert result.response.ok
@@ -72,7 +72,7 @@ def test_fetch_with_params():
         # Create client and call method with params
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
         params = {"page": 1, "per_page": 1}
-        result = client.assets().fetch(params=params)
+        result = client.assets().list_all(params=params)
 
         # Verify response
         assert result.response.ok
@@ -117,7 +117,7 @@ def test_fetch_asset_history_entities():
 
         # Create client and call the method
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
-        result = client.assets().fetch_asset_history_entities(asset_id)
+        result = client.assets().list_asset_history_entities(asset_id)
 
         # Verify response
         assert result.response.ok
