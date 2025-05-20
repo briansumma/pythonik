@@ -898,7 +898,7 @@ class FilesSpec(Spec):
         )
         return self.parse_response(resp, PaginatedResponse)
 
-    def fetch_asset_format_components(
+    def list_asset_format_components(
             self, asset_id: str, format_id: str, **kwargs
     ) -> Response:
         """
@@ -918,7 +918,7 @@ class FilesSpec(Spec):
         )
         return self.parse_response(resp, PaginatedResponse)
 
-    def fetch_storage_files(self, storage_id: str, **kwargs) -> Response:
+    def list_storage_files(self, storage_id: str, **kwargs) -> Response:
         """
         Get all files on a storage, or files in a storage folder.
 

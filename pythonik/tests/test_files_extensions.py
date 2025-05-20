@@ -84,7 +84,7 @@ def test_fetch_asset_format_components():
         m.get(mock_address, json=response_data)
 
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
-        result = client.files().fetch_asset_format_components(asset_id, format_id)
+        result = client.files().list_asset_format_components(asset_id, format_id)
 
         # Verify response
         assert m.called
@@ -131,7 +131,7 @@ def test_fetch_storage_files():
         m.get(mock_address, json=response_data)
 
         client = PythonikClient(app_id=app_id, auth_token=auth_token, timeout=3)
-        result = client.files().fetch_storage_files(storage_id)
+        result = client.files().list_storage_files(storage_id)
 
         # Verify response
         assert m.called
@@ -388,8 +388,8 @@ def test_alternate_base_url():
             status=FileStatus.CLOSED,
         )
         files_spec.create_storage_file(storage_id, body=file_model)
-        files_spec.fetch_asset_format_components(asset_id, format_id)
-        files_spec.fetch_storage_files(storage_id)
+        files_spec.list_asset_format_components(asset_id, format_id)
+        files_spec.list_storage_files(storage_id)
         files_spec.get_deleted_file_sets()
         files_spec.get_deleted_formats()
         files_spec.create_mediainfo_job(asset_id, file_id)
