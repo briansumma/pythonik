@@ -12,6 +12,7 @@ from typing import (
     List,
     Literal,
     Optional,
+    Union,
 )
 
 from pydantic import (
@@ -366,7 +367,7 @@ class RedirectInfoTypeSchema(BaseModel):
     """Represents a RedirectInfoTypeSchema in the Iconik system."""
 
     headers: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    url: Optional[HttpUrl] = None
+    url: Optional[Union[HttpUrl, str]] = None
 
 
 class PasswordChecksSchema(BaseModel):
@@ -464,7 +465,7 @@ class NotifyOTPConfigurationChangedSchema(BaseModel):
 class MultiPlatformDomainUserSystemSchema(BaseModel):
     """Represents a MultiPlatformDomainUserSystemSchema in the Iconik system."""
 
-    logo_url: Optional[HttpUrl] = None
+    logo_url: Optional[Union[HttpUrl, str]] = None
     mfa_methods: Optional[List[Literal["TOTP", "MAIL_2SV"]]] = Field(
         default_factory=list)
     mfa_methods_configured: Optional[List[Literal["TOTP",
@@ -472,11 +473,11 @@ class MultiPlatformDomainUserSystemSchema(BaseModel):
                                                       default_factory=list)
     mfa_required: Optional[bool] = None
     mfa_required_configured: Optional[bool] = None
-    platform_url: Optional[HttpUrl] = None
+    platform_url: Optional[Union[HttpUrl, str]] = None
     system_domain_id: str
     system_domain_name: Optional[str] = None
     token: str
-    url: Optional[HttpUrl] = None
+    url: Optional[Union[HttpUrl, str]] = None
 
 
 class MultiDomainUserSystemsSchema(BaseModel):
@@ -499,7 +500,7 @@ class MultiDomainUserSystemsSchema(BaseModel):
 class MultiDomainUserSystemSchema(BaseModel):
     """Represents a MultiDomainUserSystemSchema in the Iconik system."""
 
-    logo_url: Optional[HttpUrl] = None
+    logo_url: Optional[Union[HttpUrl, str]] = None
     mfa_methods: Optional[List[Literal["TOTP", "MAIL_2SV"]]] = Field(
         default_factory=list)
     mfa_methods_configured: Optional[List[Literal["TOTP",
@@ -507,10 +508,10 @@ class MultiDomainUserSystemSchema(BaseModel):
                                                       default_factory=list)
     mfa_required: Optional[bool] = None
     mfa_required_configured: Optional[bool] = None
-    platform_url: Optional[HttpUrl] = None
+    platform_url: Optional[Union[HttpUrl, str]] = None
     system_domain_id: str
     system_domain_name: Optional[str] = None
-    url: Optional[HttpUrl] = None
+    url: Optional[Union[HttpUrl, str]] = None
 
 
 class MultiDomainLoginSchema(BaseModel):
@@ -710,7 +711,7 @@ class RedirectInfoType(BaseModel):
     """Represents a RedirectInfoType in the Iconik system."""
 
     headers: Optional[Dict[str, Any]] = Field(default_factory=dict)
-    url: Optional[HttpUrl] = None
+    url: Optional[Union[HttpUrl, str]] = None
 
 
 class EmailLoginSchema(BaseModel):
@@ -861,7 +862,7 @@ class AppSchema(BaseModel):
     id: Optional[str] = None
     name: str
     system_domain_id: Optional[str] = None
-    url: Optional[HttpUrl] = None
+    url: Optional[Union[HttpUrl, str]] = None
 
 
 # Update forward references
