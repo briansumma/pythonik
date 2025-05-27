@@ -69,7 +69,7 @@ class StatsSpec(Spec):
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, AssetUsageSchema)
 
-    def fetch_asset_usage_by_period(
+    def list_asset_usage_by_period(
         self,
         period: str,
         from_date: Optional[str] = None,
@@ -106,7 +106,7 @@ class StatsSpec(Spec):
         resp = self._get(url, params=params, **kwargs)
         return self.parse_response(resp, AssetUsagesSchema)
 
-    def fetch_automation_runs_by_day(
+    def list_automation_runs_by_day(
         self,
         from_date: Optional[str] = None,
         to_date: Optional[str] = None,
@@ -141,7 +141,7 @@ class StatsSpec(Spec):
         resp = self._get(url, params=params, **kwargs)
         return self.parse_response(resp, AutomationRunsSchema)
 
-    def fetch_billing(
+    def list_billing(
         self,
         from_date: Optional[str] = None,
         to_date: Optional[str] = None,
@@ -440,7 +440,7 @@ class StatsSpec(Spec):
         resp = self._delete(url, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_billing_invoices(
+    def list_billing_invoices(
         self,
         starting_after: Optional[str] = None,
         limit: Optional[int] = None,
@@ -474,7 +474,7 @@ class StatsSpec(Spec):
         resp = self._get(url, params=params, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_price_lists(
+    def list_price_lists(
         self,
         **kwargs,
     ) -> Response:
@@ -739,7 +739,7 @@ class StatsSpec(Spec):
         resp = self._delete(url, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_billing_expiration(
+    def list_billing_expiration(
         self,
         per_page: int = 100,
         **kwargs,
@@ -825,7 +825,7 @@ class StatsSpec(Spec):
         resp = self._delete(url, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_collection_usage_by_period(
+    def list_collection_usage_by_period(
         self,
         period: str,
         from_date: Optional[str] = None,
@@ -911,7 +911,7 @@ class StatsSpec(Spec):
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_ordway_billing(
+    def list_ordway_billing(
         self,
         from_date: Optional[str] = None,
         to_date: Optional[str] = None,
@@ -977,7 +977,7 @@ class StatsSpec(Spec):
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, BillingSchema)
 
-    def fetch_ordway_billing_invoices(
+    def list_ordway_billing_invoices(
         self,
         per_page: Optional[int] = None,
         page: int = 1,
@@ -1009,7 +1009,7 @@ class StatsSpec(Spec):
         resp = self._get(url, params=params, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_storage_access_by_period(
+    def list_storage_access_by_period(
         self,
         period: str,
         from_date: Optional[str] = None,
@@ -1046,7 +1046,7 @@ class StatsSpec(Spec):
         resp = self._get(url, params=params, **kwargs)
         return self.parse_response(resp, StorageAccessesSchema)
 
-    def fetch_storage_usage_by_period(
+    def list_storage_usage_by_period(
         self,
         period: str,
         from_date: Optional[str] = None,
@@ -1083,7 +1083,7 @@ class StatsSpec(Spec):
         resp = self._get(url, params=params, **kwargs)
         return self.parse_response(resp, StorageUsagesSchema)
 
-    def fetch_logs_recipients(
+    def list_logs_recipients(
         self,
         per_page: int = 10,
         last_id: Optional[str] = None,
@@ -1293,7 +1293,7 @@ class StatsSpec(Spec):
         resp = self._post(url, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_transcoder_usage_by_period(
+    def list_transcoder_usage_by_period(
         self,
         period: str,
         from_date: Optional[str] = None,
@@ -1330,7 +1330,7 @@ class StatsSpec(Spec):
         resp = self._get(url, params=params, **kwargs)
         return self.parse_response(resp, TranscoderUsagesSchema)
 
-    def fetch_user_audit_by_period(
+    def list_user_audit_by_period(
         self,
         period: str,
         from_date: Optional[str] = None,
