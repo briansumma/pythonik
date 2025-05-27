@@ -29,7 +29,7 @@ class UsersSpec(Spec):
     server = "API/users/"
 
     # pylint: disable=too-many-positional-arguments
-    def fetch_users(
+    def list_users(
         self,
         page: int = 1,
         per_page: int = 10,
@@ -157,7 +157,7 @@ class UsersSpec(Spec):
         return self.parse_response(resp, UserSchema)
 
     # pylint: disable=too-many-positional-arguments
-    def fetch_users_basic(
+    def list_users_basic(
         self,
         page: int = 1,
         per_page: int = 10,
@@ -613,7 +613,7 @@ class UsersSpec(Spec):
         return self.parse_response(resp, UserSchema)
 
     # pylint: disable=too-many-positional-arguments
-    def fetch_groups(
+    def list_groups(
         self,
         page: int = 1,
         per_page: int = 10,
@@ -712,7 +712,7 @@ class UsersSpec(Spec):
         return self.parse_response(resp, GroupSchema)
 
     # pylint: disable=too-many-positional-arguments
-    def fetch_groups_basic(
+    def list_groups_basic(
         self,
         page: int = 1,
         per_page: int = 10,
@@ -1004,7 +1004,7 @@ class UsersSpec(Spec):
         resp = self._delete(url, **kwargs)
         return self.parse_response(resp, UserSchema)
 
-    def fetch_group_mappings(
+    def list_group_mappings(
         self,
         per_page: Optional[int] = None,
         last_id: Optional[str] = None,
