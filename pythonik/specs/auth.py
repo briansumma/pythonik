@@ -54,10 +54,10 @@ T = TypeVar("T")
 class AuthSpec(Spec):
     server = "API/auth/"
 
-    def fetch_apps(self,
-                   per_page: int = 10,
-                   last_id: Optional[str] = None,
-                   **kwargs) -> Response:
+    def list_apps(self,
+                  per_page: int = 10,
+                  last_id: Optional[str] = None,
+                  **kwargs) -> Response:
         """
         List of apps
 
@@ -521,7 +521,7 @@ class AuthSpec(Spec):
         resp = self._delete(url, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_identity_providers(
+    def list_identity_providers(
         self,
         per_page: Optional[int] = None,
         last_id: Optional[str] = None,
@@ -992,10 +992,10 @@ class AuthSpec(Spec):
         resp = self._delete(url, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_tokens(self,
-                     per_page: int = 10,
-                     last_id: Optional[str] = None,
-                     **kwargs) -> Response:
+    def list_tokens(self,
+                    per_page: int = 10,
+                    last_id: Optional[str] = None,
+                    **kwargs) -> Response:
         """
         List of tokens
 
@@ -1192,7 +1192,7 @@ class AuthSpec(Spec):
         resp = self._get(url, **kwargs)
         return self.parse_response(resp, PasswordChecksSchema)
 
-    def fetch_referral_codes(self, **kwargs) -> Response:
+    def list_referral_codes(self, **kwargs) -> Response:
         """
         Get all referral_codes
 
@@ -1324,7 +1324,7 @@ class AuthSpec(Spec):
         resp = self._get(url, params=params, **kwargs)
         return self.parse_response(resp, WebflowContentSchema)
 
-    def fetch_countries(self, **kwargs) -> Response:
+    def list_countries(self, **kwargs) -> Response:
         """
         Returns list of countries
 
@@ -1362,7 +1362,7 @@ class AuthSpec(Spec):
         resp = self._post(url, **kwargs)
         return self.parse_response(resp, VerificationResponseSchema)
 
-    def fetch_system_domains(
+    def list_system_domains(
         self,
         query: Optional[str] = None,
         statuses: Optional[str] = None,
@@ -1450,7 +1450,7 @@ class AuthSpec(Spec):
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, SystemDomainFromTemplateSchema)
 
-    def fetch_system_domain_templates(self, **kwargs) -> Response:
+    def list_system_domain_templates(self, **kwargs) -> Response:
         """
         List of system domain templates
 
