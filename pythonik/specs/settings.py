@@ -22,7 +22,7 @@ from pythonik.specs.base import Spec
 class SettingsSpec(Spec):
     server = "API/settings/"
 
-    def fetch_cors_hosts(self, **kwargs) -> Response:
+    def list_cors_hosts(self, **kwargs) -> Response:
         """
         List of CORS hosts
 
