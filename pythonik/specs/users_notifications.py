@@ -22,7 +22,7 @@ from pythonik.specs.base import Spec
 class UsersNotificationsSpec(Spec):
     server = "API/users-notifications/"
 
-    def fetch_notification_settings(
+    def list_notification_settings(
         self,
         per_page: int = 10,
         last_id: Optional[str] = None,
@@ -125,7 +125,7 @@ class UsersNotificationsSpec(Spec):
         resp = self._put(url, json=body, **kwargs)
         return self.parse_response(resp, NotificationSettingSchema)
 
-    def fetch_notifications(
+    def list_notifications(
         self,
         per_page: int = 10,
         last_id: Optional[str] = None,
@@ -279,7 +279,7 @@ class UsersNotificationsSpec(Spec):
         resp = self._delete(url, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_subscriptions(self, **kwargs) -> Response:
+    def list_subscriptions(self, **kwargs) -> Response:
         """
         Returns all user subscriptions
 
@@ -374,7 +374,7 @@ class UsersNotificationsSpec(Spec):
         resp = self._delete(url, **kwargs)
         return self.parse_response(resp, None)
 
-    def fetch_object_subscriptions(
+    def list_object_subscriptions(
         self,
         object_type: str,
         object_id: str,
