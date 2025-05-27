@@ -20,7 +20,7 @@ from pythonik.specs.base import Spec
 class AutomationsSpec(Spec):
     server = "API/automations/"
 
-    def fetch_automations(
+    def list_automations(
         self,
         page: int = 1,
         per_page: int = 10,
@@ -76,7 +76,7 @@ class AutomationsSpec(Spec):
         resp = self._post(url, json=body, **kwargs)
         return self.parse_response(resp, AutomationSchema)
 
-    def fetch_automations_stats(self, **kwargs) -> Response:
+    def list_automations_stats(self, **kwargs) -> Response:
         """
         Return statistics for automations associated with the system domain
 
