@@ -17,7 +17,7 @@ from pythonik.specs.base import Spec
 class NotificationsSpec(Spec):
     server = "API/notifications/"
 
-    def fetch_webhooks(self, **kwargs) -> Response:
+    def list_webhooks(self, **kwargs) -> Response:
         """
         Get all webhooks
 
