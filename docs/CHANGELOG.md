@@ -5,6 +5,8 @@
 ### Added
 - Implemented `get_field(field_name: str)` method in `pythonik.specs.metadata.MetadataSpec` to retrieve a specific metadata field by its name.
 - Added corresponding unit tests for `get_field` covering success (200), not found (404), and unauthorized (401) scenarios.
+- Implemented `list_fields` method in `pythonik.specs.metadata.MetadataSpec` to retrieve a list of all metadata fields.
+- Added corresponding unit tests for `list_fields` 
 - Implemented methods for retrieving metadata for specific object types (e.g., assets, collections, segments) and generic object metadata retrieval in `MetadataSpec` (PR #78).
 
 ### Changed
