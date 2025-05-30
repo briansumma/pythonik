@@ -111,3 +111,22 @@ class FieldResponse(BaseModel):
 
     class Config:
         use_enum_values = True
+
+
+class FieldListResponse(BaseModel):
+    """Response model for a paginated list of metadata fields.
+    
+    This follows the standard pagination format used by the Iconik API.
+    """
+    first_url: Optional[str] = None
+    last_url: Optional[str] = None
+    next_url: Optional[str] = None
+    objects: List[FieldResponse] = []
+    page: Optional[int] = None
+    pages: Optional[int] = None
+    per_page: Optional[int] = None
+    prev_url: Optional[str] = None
+    total: Optional[int] = None
+    
+    class Config:
+        use_enum_values = True
