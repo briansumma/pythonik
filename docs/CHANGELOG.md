@@ -1,5 +1,21 @@
 # Changelog
 
+## 2025-05-30 "Metadata Enhancements & SDK Improvements" - version 1.13.0
+
+### Added
+- Implemented `get_field(field_name: str)` method in `pythonik.specs.metadata.MetadataSpec` to retrieve a specific metadata field by its name.
+- Added corresponding unit tests for `get_field` covering success (200), not found (404), and unauthorized (401) scenarios.
+- Implemented methods for retrieving metadata for specific object types (e.g., assets, collections, segments) and generic object metadata retrieval in `MetadataSpec` (PR #78).
+
+### Changed
+- Updated `.gitignore` to include macOS-specific patterns (e.g., `.DS_Store`) for improved repository hygiene (PR #82).
+
+### Fixed
+- N/A
+
+### Technical Details
+This release introduces the ability to fetch individual metadata fields by name, adds comprehensive integration testing capabilities for metadata fields, and enhances object metadata retrieval. It also includes improvements to the development environment with an updated .gitignore.
+
 ## 2025-05-09 "IconikFieldType Update" - version 1.12.2
 
 ### Fixed
