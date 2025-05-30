@@ -13,9 +13,14 @@ from pythonik.models.mutation.metadata.mutate import (
     UpdateMetadata,
     UpdateMetadataResponse,
 )
-from pythonik.models.metadata.fields import FieldCreate, FieldUpdate, FieldResponse
+from pythonik.models.metadata.fields import (
+    FieldCreate,
+    FieldUpdate,
+    FieldResponse,
+    FieldListResponse,
+)
 from pythonik.specs.base import Spec
-from typing import Literal, Union, Dict, Any, List
+from typing import Literal, Union, Dict, Any, List, Optional
 
 
 # Asset metadata paths
@@ -634,6 +639,33 @@ class MetadataSpec(Spec):
         resp = self._post(FIELDS_BASE_PATH, json=json_data, **kwargs)
         return self.parse_response(resp, FieldResponse)
 
+    def get_field(
+        self,
+        field_name: str,
+        **kwargs,
+    ) -> Response:
+        """Retrieve a specific metadata field by its name.
+
+        Args:
+            field_name: The name of the field to retrieve.
+            **kwargs: Additional kwargs to pass to the request.
+
+        Required roles:
+            - can_read_metadata_fields
+
+        Returns:
+            Response: An object containing the HTTP response and a `data` attribute
+                      with a `FieldResponse` model instance on success, or `None` on error.
+
+        Raises:
+            - 400 Bad request
+            - 401 Token is invalid
+            - 404 Metadata field doesn't exist
+        """
+        endpoint = FIELD_BY_NAME_PATH.format(field_name=field_name)
+        resp = self._get(endpoint, **kwargs)
+        return self.parse_response(resp, FieldResponse)
+
     def update_field(
         self,
         field_name: str,
@@ -678,8 +710,38 @@ class MetadataSpec(Spec):
         resp = self._delete(endpoint, **kwargs)
         return self.parse_response(resp)
 
-    # Backward compatibility aliases
-    # ------------------------------
+    def list_fields(
+        self,
+        per_page: Optional[int] = None,
+        last_field_name: Optional[str] = None,
+        filter: Optional[str] = None,
+        **kwargs,
+    ) -> Response:
+        """List all metadata fields.
+
+        Args:
+            per_page: Optional The number of items for each page (Default 500).
+            last_field_name: Optional If your request returns per_page entries,
+                             send the last value of "name" to fetch next page.
+            filter: Optional A comma separated list of fieldnames to filter by.
+            **kwargs: Additional query parameters to pass to the request.
+
+        Returns:
+            Response: A paginated response containing a list of FieldResponse objects.
+        """
+        params = {}
+        if per_page is not None:
+            params["per_page"] = per_page
+        if last_field_name:
+            params["last_field_name"] = last_field_name
+        if filter:
+            params["filter"] = filter
+
+        # Add any additional params from kwargs
+        params.update(kwargs)
+
+        resp = self._get(FIELDS_BASE_PATH, params=params)
+        return self.parse_response(resp, FieldListResponse)
 
     def create_metadata_field(
         self,
