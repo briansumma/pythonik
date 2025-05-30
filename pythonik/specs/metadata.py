@@ -710,7 +710,7 @@ class MetadataSpec(Spec):
         resp = self._delete(endpoint, **kwargs)
         return self.parse_response(resp)
 
-    def get_fields(
+    def list_fields(
         self,
         per_page: Optional[int] = None,
         last_field_name: Optional[str] = None,

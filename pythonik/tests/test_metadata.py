@@ -1896,7 +1896,7 @@ def test_get_fields(requests_mock):
     client = PythonikClient(
         app_id=str(uuid.uuid4()), auth_token=str(uuid.uuid4()), timeout=3
     )
-    response = client.metadata().get_fields()
+    response = client.metadata().list_fields()
 
     # Verify the response
     assert response.response.status_code == 200
@@ -1970,7 +1970,7 @@ def test_get_fields_with_pagination(requests_mock):
     client = PythonikClient(
         app_id=str(uuid.uuid4()), auth_token=str(uuid.uuid4()), timeout=3
     )
-    response = client.metadata().get_fields(
+    response = client.metadata().list_fields(
         per_page=current_per_page, last_field_name=last_field_name_from_prev_page
     )
 
@@ -2042,7 +2042,7 @@ def test_get_fields_with_filter_param(requests_mock):
     client = PythonikClient(
         app_id=str(uuid.uuid4()), auth_token=str(uuid.uuid4()), timeout=3
     )
-    response = client.metadata().get_fields(filter=filter_names)
+    response = client.metadata().list_fields(filter=filter_names)
 
     # Verify the response
     assert response.response.status_code == 200
@@ -2061,7 +2061,7 @@ def test_get_fields_unauthorized(requests_mock):
     client = PythonikClient(
         app_id=str(uuid.uuid4()), auth_token="invalid-token", timeout=3
     )
-    response = client.metadata().get_fields()
+    response = client.metadata().list_fields()
 
     # Verify the response
     assert response.response.status_code == 401
@@ -2080,7 +2080,7 @@ def test_get_fields_empty(requests_mock):
     client = PythonikClient(
         app_id=str(uuid.uuid4()), auth_token=str(uuid.uuid4()), timeout=3
     )
-    response = client.metadata().get_fields()
+    response = client.metadata().list_fields()
 
     # Verify the response
     assert response.response.status_code == 200
