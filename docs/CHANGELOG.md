@@ -1,5 +1,13 @@
 # Changelog
 
+## 2025-06-04 "Search Enhancements & Field Model Fixes" - version 1.14.0
+
+### Added
+- Added search query parameters and corresponding tests to the search endpoint.
+
+### Fixed
+- Made `FieldResponse` model fields optional to prevent errors when API returns partial data.
+
 ## 2025-05-30 "Metadata Enhancements & SDK Improvements" - version 1.13.0
 
 ### Added
