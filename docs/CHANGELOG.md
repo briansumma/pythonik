@@ -1,5 +1,15 @@
 # Changelog
 
+## 2025-06-26 "Asset Segments API Expansion" - version 1.14.2
+
+### Added
+- Added `get_segments` endpoint to `AssetSpec` to allow retrieving paginated lists of segments for an asset
+- Implemented extensive query parameter support for filtering segments by time, type, status, etc.
+- Added `SegmentDetailResponse` and `SegmentListResponse` models for rich segment API responses
+
+### Technical Details
+This release expands the SDK's segment handling capabilities by adding a `get_segments` endpoint that follows the Iconik API specification. The implementation supports comprehensive filtering and pagination options while maintaining backward compatibility with existing segment endpoints.
+
 ## 2025-06-06 "Search Response Model Improvements" - version 1.14.1
 
 ### Fixed
