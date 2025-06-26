@@ -18,6 +18,7 @@ from pythonik.models.assets.versions import (
 from pythonik.models.assets.segments import (
     BulkDeleteSegmentsBody,
     SegmentBody,
+    SegmentDetailResponse,
     SegmentListResponse,
     SegmentResponse,
 )
@@ -452,7 +453,7 @@ def test_get_segments():
         asset_id = str(uuid.uuid4())
 
         # Mock response with SegmentDetailResponse structure
-        mock_segment = SegmentResponse(
+        mock_segment = SegmentDetailResponse(
             id="segment123",
             asset_id=asset_id,
             segment_text="Test segment",
