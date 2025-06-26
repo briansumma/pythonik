@@ -1,10 +1,12 @@
 from typing import Union, Dict, Any
+from typing import Optional
 
 from pythonik.models.assets.assets import Asset, AssetCreate, BulkDelete
 from pythonik.models.assets.segments import (
-    SegmentBody,
-    SegmentResponse,
     BulkDeleteSegmentsBody,
+    SegmentBody,
+    SegmentListResponse,
+    SegmentResponse,
 )
 from pythonik.models.assets.versions import (
     AssetVersionCreate,
@@ -20,6 +22,7 @@ BASE = "assets"
 DELETE_QUEUE = "delete_queue"
 GET_URL = BASE + "/{}/"
 SEGMENT_URL = BASE + "/{}/segments/"
+GET_SEGMENTS_URL = BASE + "/{}/segments/"
 SEGMENT_URL_UPDATE = SEGMENT_URL + "{}/"
 VERSIONS_URL = BASE + "/{}/versions/"
 VERSION_URL = VERSIONS_URL + "{}/"
@@ -55,8 +58,7 @@ class AssetSpec(Spec):
         Args:
             **kwargs: Additional kwargs to pass to the request
 
-        Returns:
-            Response with no data model (202 status code)
+        Returns: Response with no data model (202 status code)
 
         Required roles:
             - can_purge_assets
@@ -511,3 +513,100 @@ class AssetSpec(Spec):
             VERSION_URL.format(asset_id, version_id), params=params, **kwargs
         )
         return self.parse_response(response, None)
+
+    def get_segments(
+        self,
+        asset_id: str,
+        per_page: Optional[int] = None,
+        page: Optional[int] = None,
+        scroll: Optional[bool] = None,
+        scroll_id: Optional[str] = None,
+        transcription_id: Optional[str] = None,
+        version_id: Optional[str] = None,
+        segment_type: Optional[str] = None,
+        segment_color: Optional[str] = None,
+        time_start_milliseconds: Optional[int] = None,
+        time_end_milliseconds: Optional[int] = None,
+        time_start_milliseconds__gte: Optional[int] = None,
+        time_end_milliseconds__lte: Optional[int] = None,
+        status: Optional[str] = None,
+        person_id: Optional[str] = None,
+        share_id: Optional[str] = None,
+        project_id: Optional[str] = None,
+        include_users: Optional[bool] = None,
+        include_all_versions: Optional[bool] = None,
+        **kwargs,
+    ) -> Response:
+        """
+        Get segments for an asset with optional filtering and pagination
+
+        Args:
+            asset_id: The asset ID to get segments for
+            per_page: The number of items for each page
+            page: Which page number to fetch
+            scroll: If true passed then uses scroll pagination instead of default one
+            scroll_id: In order to get next batch of results using scroll pagination the scroll_id is required
+            transcription_id: Filter segments by transcription_id
+            version_id: Filter segments by version_id
+            segment_type: Filter segments by segment_type
+            segment_color: Filter segments by segment_color
+            time_start_milliseconds: Filter segments by time_start_milliseconds
+            time_end_milliseconds: Filter segments by time_end_milliseconds
+            time_start_milliseconds__gte: Get segments with start time greater than or equal to time_start_milliseconds__gte
+            time_end_milliseconds__lte: Get segments with end time less than or equal to time_end_milliseconds__lte
+            status: Filter segments by status
+            person_id: Filter segments by person_id
+            share_id: Filter segments by share_id
+            project_id: Filter segments by project_id
+            include_users: Include segment's authors info
+            include_all_versions: If true return asset's segments for all versions
+            **kwargs: Additional kwargs to pass to the request
+
+        Returns:
+            Response[SegmentListResponse]: Paginated list of segments
+
+        Raises:
+            400 Bad request
+            401 Token is invalid
+            404 Page number does not exist
+        """
+        params = {}
+        if per_page is not None:
+            params["per_page"] = per_page
+        if page is not None:
+            params["page"] = page
+        if scroll is not None:
+            params["scroll"] = scroll
+        if scroll_id is not None:
+            params["scroll_id"] = scroll_id
+        if transcription_id is not None:
+            params["transcription_id"] = transcription_id
+        if version_id is not None:
+            params["version_id"] = version_id
+        if segment_type is not None:
+            params["segment_type"] = segment_type
+        if segment_color is not None:
+            params["segment_color"] = segment_color
+        if time_start_milliseconds is not None:
+            params["time_start_milliseconds"] = time_start_milliseconds
+        if time_end_milliseconds is not None:
+            params["time_end_milliseconds"] = time_end_milliseconds
+        if time_start_milliseconds__gte is not None:
+            params["time_start_milliseconds__gte"] = time_start_milliseconds__gte
+        if time_end_milliseconds__lte is not None:
+            params["time_end_milliseconds__lte"] = time_end_milliseconds__lte
+        if status is not None:
+            params["status"] = status
+        if person_id is not None:
+            params["person_id"] = person_id
+        if share_id is not None:
+            params["share_id"] = share_id
+        if project_id is not None:
+            params["project_id"] = project_id
+        if include_users is not None:
+            params["include_users"] = include_users
+        if include_all_versions is not None:
+            params["include_all_versions"] = include_all_versions
+
+        response = self._get(GET_SEGMENTS_URL.format(asset_id), params=params, **kwargs)
+        return self.parse_response(response, SegmentListResponse)
