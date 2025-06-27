@@ -1,6 +1,6 @@
 # Changelog
 
-## 2025-06-26 "Asset Segments API Expansion" - version 1.14.2
+## 2025-06-26 "Asset Segments API Expansion" - version 1.15.0
 
 ### Added
 - Added `get_segments` endpoint to `AssetSpec` to allow retrieving paginated lists of segments for an asset
